@@ -1,20 +1,19 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +36,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
+	}
+
+	public static DefaultAttributeContainer.Builder createAttributes() {
+		return MobEntity.createMobAttributes()
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
+				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0D);
 	}
 
 	@Override
@@ -72,12 +78,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.getOwner() != null;
 	}
 
-	private boolean isSitting() {
+	public boolean isSitting() {
 		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
 	}
 
 	private void setSitting(boolean sitting) {
-		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, sitting);
+		this.dataTracker.set(LittleMaidEntity.IS_SITTING, sitting);
 	}
 
 	private static final String KEY_OWNER = "Owner";
