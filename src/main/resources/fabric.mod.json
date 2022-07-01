@@ -1,0 +1,22 @@
+{
+	"schemaVersion": 1,
+	"id": "umu_little_maid",
+	"version": "${version}",
+	"name": "Umu_little_maid",
+	"description": "",
+	"authors": [ "Zemelua" ],
+	"contact": { },
+	"license": "All-Rights-Reserved",
+	"icon": "assets/umu_little_maid/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": [ "io.github.zemelua.umu_little_maid.client.UMULittleMaidClient" ],
+		"main": [ "io.github.zemelua.umu_little_maid.UMULittleMaid" ]
+	},
+	"mixins": [ "umu_little_maid.mixins.json" ],
+	"depends": {
+		"fabricloader": ">=0.14.8",
+		"fabric": "*",
+		"minecraft": "1.19"
+	}
+}
