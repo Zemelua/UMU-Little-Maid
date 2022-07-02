@@ -70,18 +70,24 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 
 	@Override
 	public void setAngles(LittleMaidEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		this.head.pitch = (float) Math.toRadians(headPitch);
+		this.head.yaw = (float) Math.toRadians(headYaw);
+	}
+
+	@Override
+	public void animateModel(LittleMaidEntity entity, float limbAngle, float limbDistance, float tickDelta) {
 		if (entity.isSitting()) {
-			this.head.pivotZ = (float) Math.toRadians(13.7F);
-			this.rightArm.pivotX = (float) Math.toRadians(-42.0);
-			this.rightArm.pivotY = (float) Math.toRadians(0.0F);
-			this.rightArm.pivotZ = (float) Math.toRadians(-25.0F);
-			this.leftArm.pivotX = (float) Math.toRadians(-42.0F);
-			this.leftArm.pivotY = (float) Math.toRadians(0.0F);
-			this.leftArm.pivotZ = (float) Math.toRadians(25.0F);
+			this.head.roll = (float) Math.toRadians(13.7F);
+			this.rightArm.pitch = (float) Math.toRadians(-42.0);
+			this.rightArm.yaw = (float) Math.toRadians(0.0F);
+			this.rightArm.roll = (float) Math.toRadians(-25.0F);
+			this.leftArm.pitch = (float) Math.toRadians(-42.0F);
+			this.leftArm.yaw = (float) Math.toRadians(0.0F);
+			this.leftArm.roll = (float) Math.toRadians(25.0F);
 		} else {
-			this.head.pivotZ = 0.0F;
-			this.rightArm.pivotZ = (float) Math.toRadians(15.0F);
-			this.leftArm.pivotZ = (float) Math.toRadians(-15.0F);
+			this.head.roll = 0.0F;
+			this.rightArm.roll = (float) Math.toRadians(15.0F);
+			this.leftArm.roll = (float) Math.toRadians(-15.0F);
 		}
 	}
 

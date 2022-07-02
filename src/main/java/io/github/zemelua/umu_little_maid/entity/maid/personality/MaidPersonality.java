@@ -3,62 +3,66 @@ package io.github.zemelua.umu_little_maid.entity.maid.personality;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 
 public class MaidPersonality {
-	protected final boolean leap;
+	protected final boolean pounce;
 	protected final boolean curt;
-	protected final double followStartDistance;
-	protected final double followStopDistance;
+	protected final double minFollowDistance;
+	protected final double maxFollowDistance;
 
-	protected MaidPersonality(Builder builder) {
-		this.leap = builder.leap;
+	public MaidPersonality(MaidPersonality.Builder builder) {
+		this.pounce = builder.pounce;
 		this.curt = builder.curt;
-		this.followStartDistance = builder.followStartDistance;
-		this.followStopDistance = builder.followStopDistance;
+		this.minFollowDistance = builder.minFollowDistance;
+		this.maxFollowDistance = builder.maxFollowDistance;
 	}
 
-	public boolean canLeapAtTarget(LittleMaidEntity maid) {
-		return this.leap;
+	public boolean canPounceAtTarget(LittleMaidEntity maid) {
+		return this.pounce;
 	}
 
 	public boolean isCurt(LittleMaidEntity maid) {
 		return this.curt;
 	}
 
-	public double getFollowStartDistance(LittleMaidEntity maid) {
-		return this.followStartDistance;
+	public double getMinFollowDistance(LittleMaidEntity maid) {
+		return this.minFollowDistance;
 	}
 
-	public double getFollowStopDistance(LittleMaidEntity maid) {
-		return this.followStopDistance;
+	public double getMaxFollowDistance(LittleMaidEntity maid) {
+		return this.maxFollowDistance;
 	}
 
-	protected static class Builder {
-		private boolean leap = false;
+	public static class Builder {
+		private boolean pounce = false;
 		private boolean curt = false;
-		private double followStartDistance = 10.0D;
-		private double followStopDistance = 2.9D;
+		private double minFollowDistance = 10.0D;
+		private double maxFollowDistance = 2.3D;
 
-		protected Builder setLeap() {
-			this.leap = true;
+		public Builder setPounce() {
+			this.pounce = true;
 
 			return this;
 		}
 
-		protected Builder setCurt() {
+		public Builder setCurt() {
 			this.curt = true;
 
 			return this;
 		}
 
-		protected Builder setFollowStartDistance(double followStartDistance) {
-			this.followStartDistance = followStartDistance;
+		public Builder setMinFollowDistance(double minFollowDistance) {
+			this.minFollowDistance = minFollowDistance;
 
 			return this;
 		}
 
-		protected Builder setFollowStopDistance(double followStopDistance) {
-			this.followStopDistance = followStopDistance;
+		public Builder setMaxFollowDistance(double maxFollowDistance) {
+			this.maxFollowDistance = maxFollowDistance;
 
 			return this;
+		}
+
+		public MaidPersonality build() {
+			return new MaidPersonality(this);
 		}
 	}
 }

@@ -1,7 +1,9 @@
 package io.github.zemelua.umu_little_maid.entity;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
+import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -9,6 +11,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.TrackedDataHandler;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -19,6 +22,14 @@ public final class ModEntities {
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
+	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
+
+	public static final MaidPersonality BRAVERY;
+	public static final MaidPersonality TSUNDERE;
+	public static final MaidPersonality SHY;
+
+	public static final MaidJob NONE;
+	public static final MaidJob FENCER;
 
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -26,12 +37,23 @@ public final class ModEntities {
 
 	private static boolean initialized = false;
 
+	@SuppressWarnings("ConstantConditions")
 	public static void initialize() {
 		if (ModEntities.initialized) throw new IllegalStateException("Entities are already initialized!");
 
 		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), ModEntities.LITTLE_MAID);
 
+		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
+		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
+
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
+
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.BRAVERY);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("tsundere"), ModEntities.TSUNDERE);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("shy"), ModEntities.SHY);
+
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("none"), ModEntities.NONE);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fencer"), ModEntities.FENCER);
 
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
@@ -44,5 +66,25 @@ public final class ModEntities {
 				.build();
 
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
+		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
+
+		BRAVERY = new MaidPersonality.Builder()
+				.setPounce()
+				.build();
+		TSUNDERE = new MaidPersonality.Builder()
+				.setCurt()
+				.setMinFollowDistance(10.0D)
+				.setMaxFollowDistance(5.0D)
+				.build();
+		SHY = new ShyPersonality(new MaidPersonality.Builder()
+				.setMinFollowDistance(8.0D)
+				.setMaxFollowDistance(5.0D));
+
+		NONE = new MaidJob.Builder()
+				.build();
+		FENCER = new MaidJob.Builder()
+				.setActive()
+				.setPounce()
+				.build();
 	}
 }
