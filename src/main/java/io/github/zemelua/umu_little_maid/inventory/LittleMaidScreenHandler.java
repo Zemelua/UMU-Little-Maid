@@ -3,6 +3,8 @@ package io.github.zemelua.umu_little_maid.inventory;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -93,6 +95,7 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 			super(new SimpleInventory(LittleMaidScreenHandler.this.maid.getMainHandStack()), 0, x, y);
 		}
 
+		@Environment(EnvType.CLIENT)
 		@Nullable
 		@Override
 		public Pair<Identifier, Identifier> getBackgroundSprite() {

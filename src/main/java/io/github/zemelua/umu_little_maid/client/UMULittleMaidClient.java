@@ -11,8 +11,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.screen.PlayerScreenHandler;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -30,6 +32,12 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
 
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
+
+		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
+			registry.register(LittleMaidScreen.EMPTY_HELD_SLOT_TEXTURE);
+			registry.register(LittleMaidScreen.EMPTY_ARMOR_SLOT_TEXTURES[0]);
+			registry.register(LittleMaidScreen.EMPTY_ARMOR_SLOT_TEXTURES[3]);
+		});
 
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Succeeded initializing mod client!");
 	}

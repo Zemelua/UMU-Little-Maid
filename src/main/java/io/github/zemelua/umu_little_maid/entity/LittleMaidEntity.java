@@ -71,7 +71,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.targetSelector.add(0, this.new JobWrapperGoal(
 				new PersonalityWrapperGoal(
 						new ActiveTargetGoal<>(this, MobEntity.class, false, living
-								-> !living.getType().getSpawnGroup().isPeaceful()),
+								-> !living.getType().getSpawnGroup().isPeaceful() && living.getType() != EntityType.CREEPER
+						),
 						ModEntities.BRAVERY, ModEntities.TSUNDERE),
 				ModEntities.FENCER, ModEntities.CRACKER)
 		);

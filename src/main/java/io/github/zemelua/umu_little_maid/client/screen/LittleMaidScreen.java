@@ -16,12 +16,12 @@ import net.minecraft.util.Identifier;
 
 public class LittleMaidScreen extends HandledScreen<LittleMaidScreenHandler> {
 	private static final Identifier MAID_SCREEN_TEXTURE = UMULittleMaid.identifier("textures/gui/little_maid.png");
-	public static final Identifier EMPTY_HELD_SLOT_TEXTURE = UMULittleMaid.identifier("textures/gui/empty_held_item_slot");
+	public static final Identifier EMPTY_HELD_SLOT_TEXTURE = UMULittleMaid.identifier("item/empty_held_item_slot");
 	public static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{
-			UMULittleMaid.identifier("textures/gui/empty_armor_slot_boots"),
+			UMULittleMaid.identifier("item/empty_armor_slot_boots"),
 			PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE,
 			PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE,
-			UMULittleMaid.identifier("textures/gui/empty_armor_slot_helmet")
+			UMULittleMaid.identifier("item/empty_armor_slot_helmet")
 	};
 
 	public LittleMaidScreen(LittleMaidScreenHandler handler, PlayerInventory inventory, Text title) {
