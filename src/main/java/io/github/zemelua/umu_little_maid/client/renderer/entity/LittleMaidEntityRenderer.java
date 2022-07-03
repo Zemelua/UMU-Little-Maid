@@ -6,11 +6,14 @@ import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityMod
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.util.Identifier;
 
 public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity, LittleMaidEntityModel> {
 	public LittleMaidEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new LittleMaidEntityModel(context.getPart(UMULittleMaidClient.LAYER_LITTLE_MAID)), 0.5F);
+
+		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 	}
 
 	@Override

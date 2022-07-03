@@ -6,12 +6,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
-public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
+public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> implements ModelWithArms {
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart skirt;
@@ -114,12 +115,11 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 			CrossbowPosing.swingArm(this.leftArm, animationProgress, -1.0f);
 		}
 
-
 		// 攻撃時の手の動き
 		Arm arm = entity.getMainArm();
 		Hand hand = entity.preferredHand;
 		if (hand != Hand.MAIN_HAND) arm = arm.getOpposite();
-		ModelPart modelPart = arm == Arm.LEFT ? this.leftArm : this.rightArm;
+		ModelPart modelPart = this.getArm(arm);
 
 		float progress = 1.0f - this.handSwingProgress;
 		progress *= progress;
@@ -146,5 +146,21 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 		this.leftArm.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
 		this.rightLeg.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
 		this.leftLeg.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
+	}
+
+	@Override
+	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+		this.getArm(arm).rotate(matrixStack);
+
+		matrixStack.translate(0.025F, 0.0F, 0.025F);
+		matrixStack.scale(0.68F, 0.68F, 0.68F);
+	}
+
+	protected ModelPart getArm(Arm arm) {
+		if (arm == Arm.LEFT) {
+			return this.leftArm;
+		}
+
+		return this.rightArm;
 	}
 }
