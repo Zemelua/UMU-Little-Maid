@@ -18,8 +18,6 @@ public class MaidPounceGoal extends PounceAtTargetGoal {
 
 	@Override
 	public boolean canStart() {
-		return this.maid.getPersonality().canPounceAtTarget(this.maid)
-				&& this.maid.getJob().canPounceAtTarget()
-				&& super.canStart();
+		return this.maid.getPersonality().canPounceAtTarget(this.maid) && super.canStart();
 	}
 }

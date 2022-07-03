@@ -1,16 +1,22 @@
 package io.github.zemelua.umu_little_maid.entity.maid.job;
 
+import net.minecraft.item.ItemStack;
+
+import java.util.function.Predicate;
+
 public class MaidJob {
+	private final Predicate<ItemStack> itemStackPredicate;
 	private final Aggression aggression;
 	private final boolean pounce;
 
 	private MaidJob(MaidJob.Builder builder) {
+		this.itemStackPredicate = builder.itemStackPredicate;
 		this.aggression = builder.aggression;
 		this.pounce = builder.pounce;
 	}
 
-	public boolean isMad() {
-		return this.aggression == Aggression.MAD;
+	public boolean canApply(ItemStack itemStack) {
+		return this.itemStackPredicate.test(itemStack);
 	}
 
 	public boolean isActive() {
@@ -30,11 +36,12 @@ public class MaidJob {
 	}
 
 	public static class Builder {
+		private Predicate<ItemStack> itemStackPredicate = (itemStack -> false);
 		private Aggression aggression = Aggression.AVOID;
 		private boolean pounce = false;
 
-		public Builder setMad() {
-			this.aggression = Aggression.MAD;
+		public Builder setItemStackPredicate(Predicate<ItemStack> itemStackPredicate) {
+			this.itemStackPredicate = itemStackPredicate;
 
 			return this;
 		}
@@ -63,8 +70,8 @@ public class MaidJob {
 	}
 
 	private enum Aggression {
-		MAD,
 		ACTIVE,
+		RANGED,
 		GUARD,
 		AVOID
 	}

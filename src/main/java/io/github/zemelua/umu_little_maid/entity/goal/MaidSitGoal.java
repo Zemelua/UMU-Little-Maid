@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity.goal;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -45,12 +44,5 @@ public class MaidSitGoal extends Goal {
 	@Override
 	public void stop() {
 		this.maid.setSitting(false);
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-
-		UMULittleMaid.LOGGER.info("sittttttt");
 	}
 }

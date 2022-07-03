@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid;
 
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
@@ -20,6 +21,7 @@ public class UMULittleMaid implements ModInitializer {
 
 		ModRegistries.initialize();
 		ModEntities.initialize();
+		ModInventories.initialize();
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}
