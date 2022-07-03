@@ -62,7 +62,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.goalSelector.add(2, new MaidSitGoal(this));
 		this.goalSelector.add(3, new MaidAvoidGoal(this));
 		this.goalSelector.add(4, new MaidPounceGoal(this));
-		this.goalSelector.add(5, this.new JobWrapperGoal(new MeleeAttackGoal(this, 0.8D, true), ModEntities.FENCER));
+		this.goalSelector.add(5, this.new JobWrapperGoal(new MeleeAttackGoal(this, 1.0D, true), ModEntities.FENCER));
 		this.goalSelector.add(5, this.new JobWrapperGoal(new MeleeAttackGoal(this, 0.4D, true), ModEntities.CRACKER));
 		this.goalSelector.add(6, new MaidFollowGoal(this));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
@@ -98,6 +98,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			}
 		}
 		if (!applied) this.setJob(ModEntities.NONE);
+	}
+
+	@Override
+	public void tickMovement() {
+		super.tickMovement();
+
+		this.tickHandSwing();
 	}
 
 	@Override

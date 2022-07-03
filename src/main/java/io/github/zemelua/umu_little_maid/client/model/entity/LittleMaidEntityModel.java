@@ -3,8 +3,13 @@ package io.github.zemelua.umu_little_maid.client.model.entity;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 
 public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 	private final ModelPart head;
@@ -15,6 +20,11 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 
+	private BipedEntityModel.ArmPose rightArmPose;
+	private BipedEntityModel.ArmPose leftArmPose;
+
+	public float leaningPitch;
+
 	public LittleMaidEntityModel(ModelPart base) {
 		this.head = base.getChild("head");
 		this.body = base.getChild("body");
@@ -23,6 +33,9 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 		this.leftArm = base.getChild("left_arm");
 		this.rightLeg = base.getChild("right_leg");
 		this.leftLeg = base.getChild("left_leg");
+
+		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -72,10 +85,7 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 	public void setAngles(LittleMaidEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.head.pitch = (float) Math.toRadians(headPitch);
 		this.head.yaw = (float) Math.toRadians(headYaw);
-	}
 
-	@Override
-	public void animateModel(LittleMaidEntity entity, float limbAngle, float limbDistance, float tickDelta) {
 		if (entity.isSitting()) {
 			this.head.roll = (float) Math.toRadians(13.7F);
 			this.rightArm.pitch = (float) Math.toRadians(-42.0);
@@ -86,9 +96,45 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> {
 			this.leftArm.roll = (float) Math.toRadians(25.0F);
 		} else {
 			this.head.roll = 0.0F;
+			this.rightArm.pitch = (-0.2f + 1.5f * MathHelper.wrap(limbAngle, 13.0f)) * limbDistance;
+			this.rightArm.yaw = 0.0F;
 			this.rightArm.roll = (float) Math.toRadians(15.0F);
+			this.leftArm.pitch = (-0.2f - 1.5f * MathHelper.wrap(limbAngle, 13.0f)) * limbDistance;
+			this.leftArm.yaw = 0.0F;
 			this.leftArm.roll = (float) Math.toRadians(-15.0F);
 		}
+
+		this.rightLeg.pitch = -1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
+		this.leftLeg.pitch = 1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
+
+		if (this.rightArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
+			CrossbowPosing.swingArm(this.rightArm, animationProgress, 1.0f);
+		}
+		if (this.leftArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
+			CrossbowPosing.swingArm(this.leftArm, animationProgress, -1.0f);
+		}
+
+
+		// 攻撃時の手の動き
+		Arm arm = entity.getMainArm();
+		Hand hand = entity.preferredHand;
+		if (hand != Hand.MAIN_HAND) arm = arm.getOpposite();
+		ModelPart modelPart = arm == Arm.LEFT ? this.leftArm : this.rightArm;
+
+		float progress = 1.0f - this.handSwingProgress;
+		progress *= progress;
+		progress *= progress;
+		progress = 1.0f - progress;
+		float g = MathHelper.sin(progress * (float) Math.PI);
+		float h = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
+		modelPart.pitch -= g * 1.2f + h;
+		modelPart.yaw += this.body.yaw * 2.0f;
+		modelPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4f;
+	}
+
+	@Override
+	public void animateModel(LittleMaidEntity entity, float limbAngle, float limbDistance, float tickDelta) {
+		this.leaningPitch = entity.getLeaningPitch(tickDelta);
 	}
 
 	@Override
