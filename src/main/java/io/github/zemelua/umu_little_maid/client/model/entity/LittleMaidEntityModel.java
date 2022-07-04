@@ -8,6 +8,8 @@ import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -108,6 +110,27 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		this.rightLeg.pitch = -1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
 		this.leftLeg.pitch = 1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
 
+		// 手のポーズ(弓とか)
+		boolean mainArm = entity.getMainArm() == Arm.RIGHT;
+		if (entity.isUsingItem()) {
+			boolean activeHand = entity.getActiveHand() == Hand.MAIN_HAND;
+			if (mainArm == activeHand) {
+				this.positionRightArm(entity);
+			} else {
+				this.positionLeftArm(entity);
+			}
+		} else {
+			boolean isTwoHanded = mainArm ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
+			if (mainArm != isTwoHanded) {
+				this.positionLeftArm(entity);
+				this.positionRightArm(entity);
+			} else {
+				this.positionRightArm(entity);
+				this.positionLeftArm(entity);
+			}
+		}
+
+		// 手の揺れ
 		if (this.rightArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
 			CrossbowPosing.swingArm(this.rightArm, animationProgress, 1.0f);
 		}
@@ -135,6 +158,86 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	@Override
 	public void animateModel(LittleMaidEntity entity, float limbAngle, float limbDistance, float tickDelta) {
 		this.leaningPitch = entity.getLeaningPitch(tickDelta);
+
+		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+
+		ItemStack itemStack = entity.getMainHandStack();
+		if (itemStack.isOf(Items.BOW) && entity.isAttacking()) {
+			if (entity.getMainArm() == Arm.LEFT) {
+				this.leftArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+			} else {
+				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+			}
+		}
+	}
+
+	private void positionRightArm(LittleMaidEntity entity) {
+		switch (this.rightArmPose) {
+			case EMPTY -> this.rightArm.yaw = 0.0f;
+			case BLOCK -> {
+				this.rightArm.pitch = this.rightArm.pitch * 0.5f - 0.9424779f;
+				this.rightArm.yaw = -0.5235988f;
+			}
+			case ITEM -> {
+				this.rightArm.pitch = this.rightArm.pitch * 0.5f - 0.31415927f;
+				this.rightArm.yaw = 0.0f;
+			}
+			case THROW_SPEAR -> {
+				this.rightArm.pitch = this.rightArm.pitch * 0.5f - (float) Math.PI;
+				this.rightArm.yaw = 0.0f;
+			}
+			case BOW_AND_ARROW -> {
+				this.rightArm.yaw = -0.1f + this.head.yaw;
+				this.leftArm.yaw = 0.1f + this.head.yaw + 0.4f;
+				this.rightArm.pitch = -1.5707964f + this.head.pitch;
+				this.leftArm.pitch = -1.5707964f + this.head.pitch;
+			}
+			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, true);
+			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
+			case SPYGLASS -> {
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (entity.isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
+				this.rightArm.yaw = this.head.yaw - 0.2617994f;
+			}
+			case TOOT_HORN -> {
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
+				this.rightArm.yaw = this.head.yaw - 0.5235988f;
+			}
+		}
+	}
+
+	private void positionLeftArm(LittleMaidEntity entity) {
+		switch (this.leftArmPose) {
+			case EMPTY -> this.leftArm.yaw = 0.0f;
+			case BLOCK -> {
+				this.leftArm.pitch = this.leftArm.pitch * 0.5f - 0.9424779f;
+				this.leftArm.yaw = 0.5235988f;
+			}
+			case ITEM -> {
+				this.leftArm.pitch = this.leftArm.pitch * 0.5f - 0.31415927f;
+				this.leftArm.yaw = 0.0f;
+			}
+			case THROW_SPEAR -> {
+				this.leftArm.pitch = this.leftArm.pitch * 0.5f - (float) Math.PI;
+				this.leftArm.yaw = 0.0f;
+			}
+			case BOW_AND_ARROW -> {
+				this.rightArm.yaw = -0.1f + this.head.yaw - 0.4f;
+				this.leftArm.yaw = 0.1f + this.head.yaw;
+				this.rightArm.pitch = -1.5707964f + this.head.pitch;
+				this.leftArm.pitch = -1.5707964f + this.head.pitch;
+			}
+			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, false);
+			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
+			case SPYGLASS -> {
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (entity.isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
+				this.leftArm.yaw = this.head.yaw + 0.2617994f;
+			}
+			case TOOT_HORN -> {
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
+				this.leftArm.yaw = this.head.yaw + 0.5235988f;
+			}
+		}
 	}
 
 	@Override
@@ -152,7 +255,7 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
 		this.getArm(arm).rotate(matrixStack);
 
-		matrixStack.translate(0.025F, 0.0F, 0.025F);
+		matrixStack.translate(0.025F, 0.0F, 0.0F);
 		matrixStack.scale(0.68F, 0.68F, 0.68F);
 	}
 

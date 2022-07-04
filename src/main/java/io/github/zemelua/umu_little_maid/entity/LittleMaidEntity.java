@@ -1,14 +1,12 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.goal.MaidAvoidGoal;
-import io.github.zemelua.umu_little_maid.entity.goal.MaidFollowGoal;
-import io.github.zemelua.umu_little_maid.entity.goal.MaidPounceGoal;
-import io.github.zemelua.umu_little_maid.entity.goal.MaidSitGoal;
+import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
@@ -21,13 +19,15 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
@@ -37,10 +37,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
@@ -75,23 +72,32 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new MaidSitGoal(this));
-		this.goalSelector.add(3, new MaidAvoidGoal(this));
-		this.goalSelector.add(4, this.new JobWrapperGoal(new MaidPounceGoal(this), ModEntities.FENCER));
-		this.goalSelector.add(5, this.new JobWrapperGoal(new MeleeAttackGoal(this, 1.0D, true), ModEntities.FENCER));
-		this.goalSelector.add(5, this.new JobWrapperGoal(new MeleeAttackGoal(this, 0.7D, true), ModEntities.CRACKER));
-		this.goalSelector.add(5, this.new JobWrapperGoal(this.new MaidBowGoal(), ModEntities.BOW));
+		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new MaidAvoidGoal(this))
+				.addJob(ModEntities.NONE)
+				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
+				.build());
+		this.goalSelector.add(4, new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
+				.addJob(ModEntities.FENCER)
+				.build());
+		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
+				.addJob(ModEntities.FENCER)
+				.build());
+		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 0.5D, true))
+				.addJob(ModEntities.CRACKER)
+				.build());
+		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MaidBowGoal(this))
+				.addJob(ModEntities.ARCHER)
+				.build());
 		this.goalSelector.add(6, new MaidFollowGoal(this));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 
-		this.targetSelector.add(0, this.new JobWrapperGoal(
-				new PersonalityWrapperGoal(
-						new ActiveTargetGoal<>(this, MobEntity.class, false, living
-								-> !living.getType().getSpawnGroup().isPeaceful() && living.getType() != EntityType.CREEPER
-						),
-						ModEntities.BRAVERY, ModEntities.TSUNDERE),
-				ModEntities.FENCER, ModEntities.CRACKER, ModEntities.BOW)
-		);
+		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
+				this, MobEntity.class, false, living
+				-> !living.getType().getSpawnGroup().isPeaceful() && living.getType() != EntityType.CREEPER))
+				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
+				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
+				.build());
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -122,8 +128,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setJob(ModEntities.NONE);
 			this.setTarget(null);
 		}
-
-		UMULittleMaid.LOGGER.info(this.isSitting());
 	}
 
 	@Override
@@ -179,17 +183,28 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
-		ItemStack itemStack = this.getArrowType(this.getMainHandStack());
-		if (itemStack.isEmpty()) return;
+		ItemStack itemStack = this.getMainHandStack();
+		ItemStack arrow = this.getArrowType(itemStack);
+		if (arrow.isEmpty()) return;
 
-		PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
+		boolean consumeArrow = ModUtils.hasEnchantment(Enchantments.INFINITY, itemStack);
+
+		PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
 		double xVelocity = target.getX() - this.getX();
 		double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
 		double zVelocity = target.getZ() - this.getZ();
 		double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
-		projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 14 - this.world.getDifficulty().getId() * 4);
-		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
+		projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
+
 		this.world.spawnEntity(projectile);
+		itemStack.damage(1, this, entity -> {
+		});
+		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+
+		if (!consumeArrow) {
+			arrow.decrement(1);
+		}
 	}
 
 	@Override
@@ -297,12 +312,27 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return 0;
 	}
 
+	private static final String KEY_INVENTORY = "Inventory";
+	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
+
+		NbtList nbtList = new NbtList();
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
+
+			if (!itemStack.isEmpty()) {
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putInt(LittleMaidEntity.KEY_SLOT, i);
+				itemStack.writeNbt(nbtCompound);
+				nbtList.add(nbtCompound);
+			}
+		}
+		nbt.put(LittleMaidEntity.KEY_INVENTORY, nbtList);
 
 		UUID uuid = this.getOwnerUuid();
 		if (uuid != null) {
@@ -316,8 +346,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 
+		NbtList nbtList = nbt.getList(LittleMaidEntity.KEY_INVENTORY, NbtElement.COMPOUND_TYPE);
+		for (int i = 0; i < nbtList.size(); i++) {
+			NbtCompound nbtCompound = nbtList.getCompound(i);
+			this.inventory.setStack(nbtCompound.getInt("Slot"), ItemStack.fromNbt(nbtCompound));
+		}
+
 		UUID uuid;
-		super.readCustomDataFromNbt(nbt);
 		if (nbt.containsUuid(LittleMaidEntity.KEY_OWNER)) {
 			uuid = nbt.getUuid(LittleMaidEntity.KEY_OWNER);
 		} else {
@@ -336,6 +371,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private class JobWrapperGoal extends Goal {
 		private final MaidJob[] jobs;
+		private final List<Predicate<MaidJob>> jobPredicates = new ArrayList<>();
 		private final Goal goal;
 
 		private JobWrapperGoal(Goal goal, MaidJob... jobs) {
@@ -345,9 +381,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setControls(this.goal.getControls());
 		}
 
+		private void addJobPredicate(Predicate<MaidJob> jobPredicate) {
+			this.jobPredicates.add(jobPredicate);
+		}
+
 		@Override
 		public boolean canStart() {
 			return Arrays.stream(this.jobs).anyMatch(job -> job == LittleMaidEntity.this.getJob())
+					&& this.jobPredicates.stream().anyMatch(jobPredicate -> jobPredicate.test(LittleMaidEntity.this.getJob()))
 					&& this.goal.canStart();
 		}
 
@@ -471,109 +512,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		@Override
 		protected int getTickCount(int ticks) {
 			return this.shouldRunEveryTick() ? ticks : Goal.toGoalTicks(ticks);
-		}
-	}
-
-	private class MaidBowGoal extends Goal {
-		private static final double RANGE = 15.0D;
-		private static final double SPEED = 1.0D;
-		private static final int INTERVAL = 20;
-
-		private int targetSeeingTicker;
-		private int coolDown = -1;
-		private int combatTicks = -1;
-		private boolean movingToLeft;
-		private boolean backward;
-
-		private MaidBowGoal() {
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		}
-
-		@Override
-		public boolean canStart() {
-			return LittleMaidEntity.this.getTarget() != null
-					&& !LittleMaidEntity.this.getArrowType(LittleMaidEntity.this.getMainHandStack()).isEmpty();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return (this.canStart() || !LittleMaidEntity.this.getNavigation().isIdle())
-					&& !LittleMaidEntity.this.getArrowType(LittleMaidEntity.this.getMainHandStack()).isEmpty();
-		}
-
-		@Override
-		public void start() {
-			LittleMaidEntity.this.setAttacking(true);
-		}
-
-		@Override
-		public void stop() {
-			LittleMaidEntity.this.setAttacking(false);
-			this.targetSeeingTicker = 0;
-			this.coolDown = -1;
-			LittleMaidEntity.this.clearActiveItem();
-		}
-
-		@Override
-		public boolean shouldRunEveryTick() {
-			return true;
-		}
-
-		@Override
-		public void tick() {
-			LivingEntity target = LittleMaidEntity.this.getTarget();
-			if (target == null) return;
-
-			double distance = LittleMaidEntity.this.distanceTo(target);
-			boolean canSeeTarget = LittleMaidEntity.this.getVisibilityCache().canSee(target);
-			boolean isSeeingTarget = this.targetSeeingTicker > 0;
-
-			if (canSeeTarget != isSeeingTarget) this.targetSeeingTicker = 0;
-			if (canSeeTarget) this.targetSeeingTicker++;
-			else              this.targetSeeingTicker--;
-
-			if (distance > MaidBowGoal.RANGE || this.targetSeeingTicker < 20) {
-				LittleMaidEntity.this.getNavigation().startMovingTo(target, MaidBowGoal.SPEED);
-				this.combatTicks = -1;
-			} else {
-				LittleMaidEntity.this.getNavigation().stop();
-				this.combatTicks++;
-			}
-
-			if (this.combatTicks >= 20) {
-				if (LittleMaidEntity.this.getRandom().nextDouble() < 0.3D) {
-					this.movingToLeft = !this.movingToLeft;
-				}
-				if (LittleMaidEntity.this.getRandom().nextDouble() < 0.3D) {
-					this.backward = !this.backward;
-				}
-
-				this.combatTicks = 0;
-			}
-
-			if (this.combatTicks > -1) {
-				if      (distance > MaidBowGoal.RANGE * Math.sqrt(0.75D)) this.backward = false;
-				else if (distance < MaidBowGoal.RANGE * Math.sqrt(0.25D)) this.backward = true;
-
-				LittleMaidEntity.this.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
-				LittleMaidEntity.this.lookAtEntity(target, 30.0F, 30.0F);
-			} else {
-				LittleMaidEntity.this.getLookControl().lookAt(target, 30.0F, 30.0F);
-			}
-
-			if (LittleMaidEntity.this.isUsingItem()) {
-				int itemUseTime = LittleMaidEntity.this.getItemUseTime();
-
-				if (!canSeeTarget && this.targetSeeingTicker < -60) {
-					LittleMaidEntity.this.clearActiveItem();
-				} else if (canSeeTarget && itemUseTime >= 20) {
-					LittleMaidEntity.this.clearActiveItem();
-					LittleMaidEntity.this.attack(target, BowItem.getPullProgress(itemUseTime));
-					this.coolDown = MaidBowGoal.INTERVAL;
-				}
-			} else if (--this.coolDown <= 0 && this.targetSeeingTicker >= -60) {
-				LittleMaidEntity.this.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(LittleMaidEntity.this, Items.BOW));
-			}
 		}
 	}
 

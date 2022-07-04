@@ -22,7 +22,7 @@ public class MaidAvoidGoal extends FleeEntityGoal<MobEntity> {
 
 	@Override
 	public boolean canStart() {
-		if (!((LittleMaidEntity) this.mob).getJob().isAvoid() || ((LittleMaidEntity) this.mob).isSitting()) return false;
+		if (((LittleMaidEntity) this.mob).isSitting()) return false;
 
 		this.targetEntity = this.mob.getWorld().getClosestEntity(this.mob.getWorld().getEntitiesByClass(
 						MobEntity.class, this.mob.getBoundingBox().expand(24.0D, 3.0D, 24.0D), (mob
