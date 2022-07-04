@@ -22,10 +22,8 @@ public class MaidSitGoal extends Goal {
 		if (!this.maid.isOnGround()) return false;
 
 		Entity owner = this.maid.getOwner();
-		if (owner == null) return true;
-
 		if (owner instanceof LivingEntity ownerLiving) {
-			if (this.maid.distanceTo(owner) >= 12.0F && ownerLiving.getAttacker() == null) return false;
+			if (this.maid.distanceTo(owner) >= 12.0F || ownerLiving.getAttacker() == null) return false;
 		}
 
 		return this.maid.isSitting();

@@ -13,6 +13,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.BowItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Marker;
@@ -33,6 +34,7 @@ public final class ModEntities {
 	public static final MaidJob NONE;
 	public static final MaidJob FENCER;
 	public static final MaidJob CRACKER;
+	public static final MaidJob BOW;
 
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -58,6 +60,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("none"), ModEntities.NONE);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fencer"), ModEntities.FENCER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("cracker"), ModEntities.CRACKER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("bow"), ModEntities.BOW);
 
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
@@ -93,6 +96,11 @@ public final class ModEntities {
 				.build();
 		CRACKER = new MaidJob.Builder()
 				.setItemStackPredicate(itemStack -> itemStack.getItem() instanceof AxeItem)
+				.setActive()
+				.build();
+		BOW = new MaidJob.Builder()
+				.setItemStackPredicate(itemStack -> itemStack.getItem() instanceof BowItem)
+				.setActive()
 				.build();
 	}
 }

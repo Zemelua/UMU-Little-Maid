@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid.job;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
 import java.util.function.Predicate;
@@ -15,8 +16,8 @@ public class MaidJob {
 		this.pounce = builder.pounce;
 	}
 
-	public boolean canApply(ItemStack itemStack) {
-		return this.itemStackPredicate.test(itemStack);
+	public boolean canApply(LivingEntity entity) {
+		return entity.isHolding(this.itemStackPredicate);
 	}
 
 	public boolean isActive() {
