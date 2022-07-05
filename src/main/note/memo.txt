@@ -1,0 +1,2 @@
+preferredHand 攻撃とかの動作をしたときに動かす手(Main or Off)
+Arm メインハンド(Right or Left)

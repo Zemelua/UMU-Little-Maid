@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -170,6 +171,8 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
 			}
 		}
+
+		UMULittleMaid.LOGGER.info(entity.isLeftHanded());
 	}
 
 	private void positionRightArm(LittleMaidEntity entity) {
@@ -255,7 +258,7 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
 		this.getArm(arm).rotate(matrixStack);
 
-		matrixStack.translate(0.025F, 0.0F, 0.0F);
+		matrixStack.translate(arm == Arm.RIGHT ? 0.025F : -0.025F, 0.0F, 0.0F);
 		matrixStack.scale(0.68F, 0.68F, 0.68F);
 	}
 

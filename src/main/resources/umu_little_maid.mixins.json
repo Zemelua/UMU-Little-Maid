@@ -4,6 +4,7 @@
 	"package": "io.github.zemelua.umu_little_maid.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"SpawnEggItemAccessor"
 	],
 	"client": [
 	],
