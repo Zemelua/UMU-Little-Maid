@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity;
 
 import com.google.common.collect.ImmutableList;
-import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -11,7 +10,6 @@ import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
@@ -37,7 +35,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -157,16 +154,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-	@Override
-	protected void mobTick() {
-		this.world.getProfiler().push("goatBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("goatActivityUpdate");
-		LittleMaidBrain.updateActivities(this);
-		this.world.getProfiler().pop();
-		super.mobTick();
-	}
+//	@Override
+//	protected void mobTick() {
+//		this.world.getProfiler().push("goatBrain");
+//		this.getBrain().tick((ServerWorld)this.world, this);
+//		this.world.getProfiler().pop();
+//		this.world.getProfiler().push("goatActivityUpdate");
+//		LittleMaidBrain.updateActivities(this);
+//		this.world.getProfiler().pop();
+//		super.mobTick();
+//	}
 
 	@Override
 	public void tickMovement() {
@@ -294,11 +291,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.inventory;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Brain<LittleMaidEntity> getBrain() {
-		return (Brain<LittleMaidEntity>) super.getBrain();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public Brain<LittleMaidEntity> getBrain() {
+//		return (Brain<LittleMaidEntity>) super.getBrain();
+//	}
 
 	@Nullable
 	@Override
