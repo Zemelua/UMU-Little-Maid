@@ -1,5 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity;
 
+import com.google.common.collect.ImmutableList;
+import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -9,6 +11,10 @@ import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -31,13 +37,15 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
@@ -48,6 +56,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidJob> JOB;
+
+	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
+	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 
@@ -69,6 +80,17 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.NONE);
 	}
+
+	// Brainむずかしいから一旦保留で
+//	@Override
+//	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
+//		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+//	}
+//
+//	@Override
+//	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+//		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
+//	}
 
 	@Override
 	protected void initGoals() {
@@ -96,10 +118,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 
-		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
+		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
 				this, MobEntity.class, false, living
 				-> !living.getType().getSpawnGroup().isPeaceful() && living.getType() != EntityType.CREEPER))
 				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
+				.build())
 				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
 				.build());
 	}
@@ -132,6 +155,17 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setJob(ModEntities.NONE);
 			this.setTarget(null);
 		}
+	}
+
+	@Override
+	protected void mobTick() {
+		this.world.getProfiler().push("goatBrain");
+		this.getBrain().tick((ServerWorld)this.world, this);
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("goatActivityUpdate");
+		LittleMaidBrain.updateActivities(this);
+		this.world.getProfiler().pop();
+		super.mobTick();
 	}
 
 	@Override
@@ -260,6 +294,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.inventory;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Brain<LittleMaidEntity> getBrain() {
+		return (Brain<LittleMaidEntity>) super.getBrain();
+	}
+
 	@Nullable
 	@Override
 	public UUID getOwnerUuid() {
@@ -373,157 +413,31 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
 	}
 
-	private class JobWrapperGoal extends Goal {
-		private final MaidJob[] jobs;
-		private final List<Predicate<MaidJob>> jobPredicates = new ArrayList<>();
-		private final Goal goal;
-
-		private JobWrapperGoal(Goal goal, MaidJob... jobs) {
-			this.jobs = jobs;
-			this.goal = goal;
-
-			this.setControls(this.goal.getControls());
-		}
-
-		private void addJobPredicate(Predicate<MaidJob> jobPredicate) {
-			this.jobPredicates.add(jobPredicate);
-		}
-
-		@Override
-		public boolean canStart() {
-			return Arrays.stream(this.jobs).anyMatch(job -> job == LittleMaidEntity.this.getJob())
-					&& this.jobPredicates.stream().anyMatch(jobPredicate -> jobPredicate.test(LittleMaidEntity.this.getJob()))
-					&& this.goal.canStart();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return Arrays.stream(this.jobs).anyMatch(job -> job == LittleMaidEntity.this.getJob())
-					&& this.goal.shouldContinue();
-		}
-
-		@Override
-		public boolean canStop() {
-			return Arrays.stream(this.jobs).noneMatch(job -> job == LittleMaidEntity.this.getJob())
-					&& this.goal.canStop();
-		}
-
-		@Override
-		public void start() {
-			this.goal.start();
-		}
-
-		@Override
-		public void stop() {
-			this.goal.stop();
-		}
-
-		@Override
-		public boolean shouldRunEveryTick() {
-			return this.goal.shouldRunEveryTick();
-		}
-
-		@Override
-		public void tick() {
-			this.goal.tick();
-		}
-
-		@Override
-		public void setControls(EnumSet<Control> controls) {
-			this.goal.setControls(controls);
-		}
-
-		@Override
-		public String toString() {
-			return this.goal.toString();
-		}
-
-		@Override
-		public EnumSet<Control> getControls() {
-			return this.goal.getControls();
-		}
-
-		@Override
-		protected int getTickCount(int ticks) {
-			return this.shouldRunEveryTick() ? ticks : Goal.toGoalTicks(ticks);
-		}
-	}
-
-	private class PersonalityWrapperGoal extends Goal {
-		private final MaidPersonality[] personalities;
-		private final Goal goal;
-
-		private PersonalityWrapperGoal(Goal goal, MaidPersonality... personalities) {
-			this.personalities = personalities;
-			this.goal = goal;
-
-			this.setControls(this.goal.getControls());
-		}
-
-		@Override
-		public boolean canStart() {
-			return Arrays.stream(this.personalities).anyMatch(personality -> personality == LittleMaidEntity.this.getPersonality())
-					&& this.goal.canStart();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return Arrays.stream(this.personalities).anyMatch(personality -> personality == LittleMaidEntity.this.getPersonality())
-					&& this.goal.shouldContinue();
-		}
-
-		@Override
-		public boolean canStop() {
-			return Arrays.stream(this.personalities).noneMatch(personality -> personality == LittleMaidEntity.this.getPersonality())
-					&& this.goal.canStop();
-		}
-
-		@Override
-		public void start() {
-			this.goal.start();
-		}
-
-		@Override
-		public void stop() {
-			this.goal.stop();
-		}
-
-		@Override
-		public boolean shouldRunEveryTick() {
-			return this.goal.shouldRunEveryTick();
-		}
-
-		@Override
-		public void tick() {
-			this.goal.tick();
-		}
-
-		@Override
-		public void setControls(EnumSet<Control> controls) {
-			this.goal.setControls(controls);
-		}
-
-		@Override
-		public String toString() {
-			return this.goal.toString();
-		}
-
-		@Override
-		public EnumSet<Control> getControls() {
-			return this.goal.getControls();
-		}
-
-		@Override
-		protected int getTickCount(int ticks) {
-			return this.shouldRunEveryTick() ? ticks : Goal.toGoalTicks(ticks);
-		}
-	}
-
 	static {
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_TAMED = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
+
+
+		//noinspection unchecked
+		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder().add(
+				SensorType.NEAREST_LIVING_ENTITIES,
+				SensorType.NEAREST_PLAYERS,
+				SensorType.HURT_BY
+		).build();
+		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
+				MemoryModuleType.PATH,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleType.HURT_BY,
+				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+				MemoryModuleType.LIKED_PLAYER,
+				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
+				MemoryModuleType.IS_PANICKING
+		).build();
 	}
 }
