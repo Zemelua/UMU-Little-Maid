@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -163,6 +162,7 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 
+		// 手に持ってるアイテムでArmPoseを切り替え
 		ItemStack itemStack = entity.getMainHandStack();
 		if (itemStack.isOf(Items.BOW) && entity.isAttacking()) {
 			if (entity.getMainArm() == Arm.LEFT) {
@@ -170,9 +170,13 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 			} else {
 				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
 			}
+		} else if (itemStack.isOf(Items.SHIELD) && entity.isBlocking()) {
+			if (entity.getMainArm() == Arm.LEFT) {
+				this.leftArmPose = BipedEntityModel.ArmPose.BLOCK;
+			} else {
+				this.rightArmPose = BipedEntityModel.ArmPose.BLOCK;
+			}
 		}
-
-		UMULittleMaid.LOGGER.info(entity.isLeftHanded());
 	}
 
 	private void positionRightArm(LittleMaidEntity entity) {
