@@ -9,7 +9,7 @@ import net.minecraft.item.Items;
 
 import java.util.EnumSet;
 
-public class MaidBowGoal extends Goal {
+public class MaidBowAttackGoal extends Goal {
 	private static final double RANGE = 15.0D;
 	private static final double SPEED = 1.0D;
 	private static final int INTERVAL = 20;
@@ -22,7 +22,7 @@ public class MaidBowGoal extends Goal {
 	private boolean movingToLeft;
 	private boolean backward;
 
-	public MaidBowGoal(LittleMaidEntity maid) {
+	public MaidBowAttackGoal(LittleMaidEntity maid) {
 		this.maid = maid;
 
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
@@ -71,8 +71,8 @@ public class MaidBowGoal extends Goal {
 		if (canSeeTarget) this.targetSeeingTicker++;
 		else              this.targetSeeingTicker--;
 
-		if (distance > MaidBowGoal.RANGE || this.targetSeeingTicker < 20) {
-			this.maid.getNavigation().startMovingTo(target, MaidBowGoal.SPEED);
+		if (distance > MaidBowAttackGoal.RANGE || this.targetSeeingTicker < 20) {
+			this.maid.getNavigation().startMovingTo(target, MaidBowAttackGoal.SPEED);
 			this.combatTicks = -1;
 		} else {
 			this.maid.getNavigation().stop();
@@ -91,8 +91,8 @@ public class MaidBowGoal extends Goal {
 		}
 
 		if (this.combatTicks > -1) {
-			if      (distance > MaidBowGoal.RANGE * Math.sqrt(0.75D)) this.backward = false;
-			else if (distance < MaidBowGoal.RANGE * Math.sqrt(0.25D)) this.backward = true;
+			if      (distance > MaidBowAttackGoal.RANGE * Math.sqrt(0.75D)) this.backward = false;
+			else if (distance < MaidBowAttackGoal.RANGE * Math.sqrt(0.25D)) this.backward = true;
 
 			this.maid.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
 			this.maid.lookAtEntity(target, 30.0F, 30.0F);
@@ -108,7 +108,7 @@ public class MaidBowGoal extends Goal {
 			} else if (canSeeTarget && itemUseTime >= 20) {
 				this.maid.clearActiveItem();
 				this.maid.attack(target, BowItem.getPullProgress(itemUseTime));
-				this.coolDown = MaidBowGoal.INTERVAL;
+				this.coolDown = MaidBowAttackGoal.INTERVAL;
 			}
 		} else if (--this.coolDown <= 0 && this.targetSeeingTicker >= -60) {
 			this.maid.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.maid, Items.BOW));

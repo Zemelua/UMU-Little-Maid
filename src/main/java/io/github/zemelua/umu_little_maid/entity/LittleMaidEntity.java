@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import com.google.common.collect.ImmutableList;
 import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -10,9 +9,6 @@ import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -50,6 +46,8 @@ import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
+	public static final Predicate<LivingEntity> IS_ENEMY = (living
+			-> ModUtils.isMonster(living) && living.getType() != EntityType.CREEPER);
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_TAMED;
@@ -58,8 +56,21 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<OptionalInt> GUARD_FROM;
 
-	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
-	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
+	private final Goal swimGoal;
+	private final Goal escapeDangerGoal;
+	private final Goal aggressiveEscapeDangerGoal;
+	private final Goal sitGoal;
+	private final Goal fleeFromEnemyGoal;
+	private final Goal pounceWhenAttackGoal;
+	private final Goal meleeAttackGoal;
+	private final Goal bowAttackGoal;
+	private final Goal guardGoal;
+	private final Goal followOwnerGoal;
+	private final Goal lookAtPlayerGoal;
+	private final Goal lookAroundGoal;
+
+//	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
+//	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 
@@ -98,36 +109,21 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected void initGoals() {
-		super.initGoals();
-
-		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(2, new MaidSitGoal(this));
-		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new MaidAvoidGoal(this))
-				.addJob(ModEntities.NONE)
-				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
-				.build());
-		this.goalSelector.add(4, new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
-				.addJob(ModEntities.FENCER)
-				.build());
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
-				.addJob(ModEntities.FENCER)
-				.build());
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 0.5D, true))
-				.addJob(ModEntities.CRACKER)
-				.build());
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MaidBowGoal(this))
-				.addJob(ModEntities.ARCHER)
-				.build());
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MaidShieldGoal(this))
-				.addJob(ModEntities.GUARD)
-				.build());
-		this.goalSelector.add(6, new MaidFollowGoal(this));
-		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(7, new LookAroundGoal(this));
+		this.goalSelector.add(0, this.swimGoal);
+		this.goalSelector.add(1, this.escapeDangerGoal);
+		this.goalSelector.add(1, this.aggressiveEscapeDangerGoal);
+		this.goalSelector.add(2, this.sitGoal);
+		this.goalSelector.add(3, this.fleeFromEnemyGoal);
+		this.goalSelector.add(4, this.pounceWhenAttackGoal);
+		this.goalSelector.add(5, this.meleeAttackGoal);
+		this.goalSelector.add(5, this.bowAttackGoal);
+		this.goalSelector.add(5, this.guardGoal);
+		this.goalSelector.add(6, this.followOwnerGoal);
+		this.goalSelector.add(7, this.lookAtPlayerGoal);
+		this.goalSelector.add(7, this.lookAroundGoal);
 
 		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
-				this, MobEntity.class, false, living
-				-> !living.getType().getSpawnGroup().isPeaceful() && living.getType() != EntityType.CREEPER))
+				this, MobEntity.class, false, LittleMaidEntity.IS_ENEMY))
 				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
 				.build())
 				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
@@ -502,23 +498,55 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		GUARD_FROM = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 
-		//noinspection unchecked
-		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder().add(
-				SensorType.NEAREST_LIVING_ENTITIES,
-				SensorType.NEAREST_PLAYERS,
-				SensorType.HURT_BY
-		).build();
-		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
-				MemoryModuleType.PATH,
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-				MemoryModuleType.HURT_BY,
-				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
-				MemoryModuleType.LIKED_PLAYER,
-				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
-				MemoryModuleType.IS_PANICKING
-		).build();
+//		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder().add(
+//				SensorType.NEAREST_LIVING_ENTITIES,
+//				SensorType.NEAREST_PLAYERS,
+//				SensorType.HURT_BY
+//		).build();
+//		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
+//				MemoryModuleType.PATH,
+//				MemoryModuleType.LOOK_TARGET,
+//				MemoryModuleType.VISIBLE_MOBS,
+//				MemoryModuleType.WALK_TARGET,
+//				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+//				MemoryModuleType.HURT_BY,
+//				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+//				MemoryModuleType.LIKED_PLAYER,
+//				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
+//				MemoryModuleType.IS_PANICKING
+//		).build();
+	}
+
+	{
+		this.swimGoal = new SwimGoal(this);
+		this.escapeDangerGoal = new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
+				.addJob(ModEntities.NONE)
+				.build();
+		this.aggressiveEscapeDangerGoal = new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
+				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
+				.build();
+		this.sitGoal = new MaidSitGoal(this);
+		this.fleeFromEnemyGoal = new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
+				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
+				.addJob(ModEntities.NONE)
+				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
+				.build();
+		this.pounceWhenAttackGoal = new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
+				.addJob(ModEntities.FENCER)
+				.build();
+		this.meleeAttackGoal = new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
+				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
+				.build();
+		this.bowAttackGoal = new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
+				.addJob(ModEntities.ARCHER)
+				.build();
+		this.guardGoal = new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
+				.addJob(ModEntities.GUARD)
+				.build();
+		this.followOwnerGoal = new MaidFollowGoal(this);
+		this.lookAtPlayerGoal = new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
+				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
+				.build();
+		this.lookAroundGoal = new LookAroundGoal(this);
 	}
 }

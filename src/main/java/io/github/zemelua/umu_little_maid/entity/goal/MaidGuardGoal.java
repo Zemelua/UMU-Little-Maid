@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MaidShieldGoal extends Goal {
+public class MaidGuardGoal extends Goal {
 	private static final double GUARD_DISTANCE = 6.0D;
 	private static final double STOP_DISTANCE = 3.0D;
 	private static final float NORMAL_SPEED = 1.5F;
@@ -26,7 +26,7 @@ public class MaidShieldGoal extends Goal {
 
 	private final LittleMaidEntity maid;
 
-	public MaidShieldGoal(LittleMaidEntity maid) {
+	public MaidGuardGoal(LittleMaidEntity maid) {
 		this.maid = maid;
 
 		this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
@@ -41,7 +41,7 @@ public class MaidShieldGoal extends Goal {
 	@Override
 	public boolean shouldContinue() {
 		Entity owner = this.maid.getOwner();
-		if (owner != null && this.maid.squaredDistanceTo(owner) > MaidShieldGoal.STOP_DISTANCE) return false;
+		if (owner != null && this.maid.squaredDistanceTo(owner) > MaidGuardGoal.STOP_DISTANCE) return false;
 
 		return this.maid.getGuardFrom() != null;
 	}
@@ -92,7 +92,7 @@ public class MaidShieldGoal extends Goal {
 			Vec3f sidewaysVec = lookVec.copy();
 
 			moveVec.normalize();
-			float speed = this.maid.isBlocking() ? MaidShieldGoal.GUARD_SPEED : MaidShieldGoal.NORMAL_SPEED;
+			float speed = this.maid.isBlocking() ? MaidGuardGoal.GUARD_SPEED : MaidGuardGoal.NORMAL_SPEED;
 			float forwardSpeed = moveVec.dot(forwardVec) * speed;
 			float sidewaysSpeed = moveVec.dot(sidewaysVec) * speed;
 
@@ -124,7 +124,7 @@ public class MaidShieldGoal extends Goal {
 	private LivingEntity getNearestGuardFrom() {
 		return this.maid.getWorld().getClosestEntity(
 				this.getGuardFrom(),
-				TargetPredicate.createAttackable().setBaseMaxDistance(MaidShieldGoal.GUARD_DISTANCE),
+				TargetPredicate.createAttackable().setBaseMaxDistance(MaidGuardGoal.GUARD_DISTANCE),
 				this.maid, this.maid.getX(), this.maid.getY(), this.maid.getZ()
 		);
 	}
