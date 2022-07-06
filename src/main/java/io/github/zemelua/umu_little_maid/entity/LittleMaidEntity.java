@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -30,12 +31,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,20 +58,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidJob> JOB;
+	private static final TrackedData<Integer> EATING_TICKS;
 	private static final TrackedData<OptionalInt> GUARD_FROM;
-
-	private final Goal swimGoal;
-	private final Goal escapeDangerGoal;
-	private final Goal aggressiveEscapeDangerGoal;
-	private final Goal sitGoal;
-	private final Goal fleeFromEnemyGoal;
-	private final Goal pounceWhenAttackGoal;
-	private final Goal meleeAttackGoal;
-	private final Goal bowAttackGoal;
-	private final Goal guardGoal;
-	private final Goal followOwnerGoal;
-	private final Goal lookAtPlayerGoal;
-	private final Goal lookAroundGoal;
 
 //	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 //	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
@@ -93,6 +85,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.NONE);
+		this.dataTracker.startTracking(LittleMaidEntity.EATING_TICKS, 0);
 		this.dataTracker.startTracking(LittleMaidEntity.GUARD_FROM, OptionalInt.empty());
 	}
 
@@ -109,18 +102,37 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(0, this.swimGoal);
-		this.goalSelector.add(1, this.escapeDangerGoal);
-		this.goalSelector.add(1, this.aggressiveEscapeDangerGoal);
-		this.goalSelector.add(2, this.sitGoal);
-		this.goalSelector.add(3, this.fleeFromEnemyGoal);
-		this.goalSelector.add(4, this.pounceWhenAttackGoal);
-		this.goalSelector.add(5, this.meleeAttackGoal);
-		this.goalSelector.add(5, this.bowAttackGoal);
-		this.goalSelector.add(5, this.guardGoal);
-		this.goalSelector.add(6, this.followOwnerGoal);
-		this.goalSelector.add(7, this.lookAtPlayerGoal);
-		this.goalSelector.add(7, this.lookAroundGoal);
+		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(1, new MaidSitGoal(this));
+		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
+				.addJob(ModEntities.NONE)
+				.build());
+		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
+				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
+				.build());
+		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
+				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
+				.addJob(ModEntities.NONE)
+				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
+				.build());
+		this.goalSelector.add(4, new MaidEatGoal(this));
+		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
+				.addJob(ModEntities.FENCER)
+				.build());
+		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
+				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
+				.build());
+		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
+				.addJob(ModEntities.ARCHER)
+				.build());
+		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
+				.addJob(ModEntities.GUARD)
+				.build());
+		this.goalSelector.add(7, new MaidFollowGoal(this));
+		this.goalSelector.add(8, new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
+				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
+				.build());
+		this.goalSelector.add(9, new LookAroundGoal(this));
 
 		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
 				this, MobEntity.class, false, LittleMaidEntity.IS_ENEMY))
@@ -140,6 +152,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public void tick() {
 		super.tick();
+
+		UMULittleMaid.LOGGER.info(this.getHealth());
 
 		MaidJob lastJob = this.getJob();
 		boolean applied = false;
@@ -328,6 +342,27 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
+	public void playEatingAnimation() {
+		if (this.getEatingTicks() % 5 == 0) {
+			this.playSound(SoundEvents.ENTITY_CAT_EAT, 0.5f + 0.5f * (float) this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
+			for (int i = 0; i < 6; ++i) {
+				Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
+				vec3d = vec3d.rotateX(-this.getPitch() * ((float)Math.PI / 180));
+				vec3d = vec3d.rotateY(-this.getYaw() * ((float)Math.PI / 180));
+				double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
+				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.3, d, 0.6);
+				vec3d2 = vec3d2.rotateX(-this.getPitch() * ((float)Math.PI / 180));
+				vec3d2 = vec3d2.rotateY(-this.getYaw() * ((float)Math.PI / 180));
+				vec3d2 = vec3d2.add(this.getX(), this.getEyeY(), this.getZ());
+
+				// this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
+				if (!this.world.isClient()) {
+					((ServerWorld) this.world).spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), vec3d2.x, vec3d2.y, vec3d2.z, 0, vec3d.x, vec3d.y + 0.05, vec3d.z, 1.0);
+				}
+			}
+		}
+	}
+
 	@Override
 	public boolean canTarget(EntityType<?> type) {
 		return !this.isSitting() && super.canTarget(type);
@@ -399,6 +434,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public MaidPersonality getPersonality() {
 		return this.dataTracker.get(LittleMaidEntity.PERSONALITY);
+	}
+
+	public int getEatingTicks() {
+		return this.dataTracker.get(LittleMaidEntity.EATING_TICKS);
+	}
+
+	public void setEatingTicks(int value) {
+		this.dataTracker.set(LittleMaidEntity.EATING_TICKS, value);
 	}
 
 	public OptionalInt getGuardFromId() {
@@ -496,6 +539,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
+		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		GUARD_FROM = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 
 //		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder().add(
@@ -515,38 +559,5 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 //				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
 //				MemoryModuleType.IS_PANICKING
 //		).build();
-	}
-
-	{
-		this.swimGoal = new SwimGoal(this);
-		this.escapeDangerGoal = new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
-				.addJob(ModEntities.NONE)
-				.build();
-		this.aggressiveEscapeDangerGoal = new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
-				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
-				.build();
-		this.sitGoal = new MaidSitGoal(this);
-		this.fleeFromEnemyGoal = new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
-				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
-				.addJob(ModEntities.NONE)
-				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
-				.build();
-		this.pounceWhenAttackGoal = new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
-				.addJob(ModEntities.FENCER)
-				.build();
-		this.meleeAttackGoal = new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
-				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
-				.build();
-		this.bowAttackGoal = new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
-				.addJob(ModEntities.ARCHER)
-				.build();
-		this.guardGoal = new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
-				.addJob(ModEntities.GUARD)
-				.build();
-		this.followOwnerGoal = new MaidFollowGoal(this);
-		this.lookAtPlayerGoal = new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
-				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
-				.build();
-		this.lookAroundGoal = new LookAroundGoal(this);
 	}
 }
