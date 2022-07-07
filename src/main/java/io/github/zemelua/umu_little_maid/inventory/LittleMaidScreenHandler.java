@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class LittleMaidScreenHandler extends ScreenHandler {
-	public static final Text TITLE = Text.translatable("umu_little_maid.container.little_maid");
+	public static final Text TITLE = Text.translatable("container.umu_little_maid.little_maid");
 
 	private final LittleMaidEntity maid;
 
