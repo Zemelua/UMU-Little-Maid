@@ -10,15 +10,20 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
@@ -27,6 +32,8 @@ public final class ModEntities {
 
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
+
+	public static final MemoryModuleType<UUID> OWNER;
 
 	public static final MaidPersonality BRAVERY;
 	public static final MaidPersonality TSUNDERE;
@@ -53,6 +60,8 @@ public final class ModEntities {
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.OWNER);
+
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.BRAVERY);
@@ -77,6 +86,8 @@ public final class ModEntities {
 
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
+
+		OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 
 		BRAVERY = new MaidPersonality.Builder()
 				.setPounce()

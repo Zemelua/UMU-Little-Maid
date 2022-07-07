@@ -1,6 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import io.github.zemelua.umu_little_maid.entity.goal.*;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
+import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -9,7 +11,10 @@ import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -64,8 +69,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Integer> EATING_TICKS;
 	private static final TrackedData<OptionalInt> GUARD_FROM;
 
-//	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
-//	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
+	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
+	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 
@@ -104,58 +109,57 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.GUARD_FROM, OptionalInt.empty());
 	}
 
-	// Brainむずかしいから一旦保留で
-//	@Override
-//	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-//		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
-//	}
-//
-//	@Override
-//	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-//		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
-//	}
+	@Override
+	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
+		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+	}
 
 	@Override
-	protected void initGoals() {
-		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new MaidSitGoal(this));
-		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
-				.addJob(ModEntities.NONE)
-				.build());
-		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
-				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
-				.build());
-		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
-				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
-				.addJob(ModEntities.NONE)
-				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
-				.build());
-		this.goalSelector.add(4, new MaidEatGoal(this));
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new PounceAtTargetGoal(this, 0.4F))
-				.addJob(ModEntities.FENCER)
-				.build());
-		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
-				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
-				.build());
-		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
-				.addJob(ModEntities.ARCHER)
-				.build());
-		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
-				.addJob(ModEntities.GUARD)
-				.build());
-		this.goalSelector.add(7, new MaidFollowGoal(this));
-		this.goalSelector.add(8, new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
-				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
-				.build());
-		this.goalSelector.add(9, new LookAroundGoal(this));
-
-		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
-				this, MobEntity.class, false, LittleMaidEntity.IS_ENEMY))
-				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
-				.build())
-				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
-				.build());
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
 	}
+
+//	@Override
+//	protected void initGoals() {
+//		this.goalSelector.add(0, new SwimGoal(this));
+//		this.goalSelector.add(1, new MaidSitGoal(this));
+//		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
+//				.addJob(ModEntities.NONE)
+//				.build());
+//		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
+//				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
+//				.build());
+//		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
+//				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
+//				.addJob(ModEntities.NONE)
+//				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
+//				.build());
+//		this.goalSelector.add(4, new MaidEatGoal(this));
+//		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new PounceAtTargetGoal(this, 0.4F))
+//				.addJob(ModEntities.FENCER)
+//				.build());
+//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
+//				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
+//				.build());
+//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
+//				.addJob(ModEntities.ARCHER)
+//				.build());
+//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
+//				.addJob(ModEntities.GUARD)
+//				.build());
+//		this.goalSelector.add(7, new MaidFollowGoal(this));
+//		this.goalSelector.add(8, new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
+//				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
+//				.build());
+//		this.goalSelector.add(9, new LookAroundGoal(this));
+//
+//		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
+//				this, MobEntity.class, false, LittleMaidEntity.IS_ENEMY))
+//				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
+//				.build())
+//				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
+//				.build());
+//	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
 		return MobEntity.createMobAttributes()
@@ -187,16 +191,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-//	@Override
-//	protected void mobTick() {
-//		this.world.getProfiler().push("goatBrain");
-//		this.getBrain().tick((ServerWorld)this.world, this);
-//		this.world.getProfiler().pop();
-//		this.world.getProfiler().push("goatActivityUpdate");
-//		LittleMaidBrain.updateActivities(this);
-//		this.world.getProfiler().pop();
-//		super.mobTick();
-//	}
+	@Override
+	protected void mobTick() {
+		this.getBrain().tick((ServerWorld)this.world, this);
+		LittleMaidBrain.updateActivities(this);
+
+		super.mobTick();
+	}
 
 	@Override
 	public void tickMovement() {
@@ -401,11 +402,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.inventory;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public Brain<LittleMaidEntity> getBrain() {
-//		return (Brain<LittleMaidEntity>) super.getBrain();
-//	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Brain<LittleMaidEntity> getBrain() {
+		return (Brain<LittleMaidEntity>) super.getBrain();
+	}
 
 	@Nullable
 	@Override
@@ -415,6 +416,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void setOwnerUuid(@Nullable UUID uuid) {
 		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
+		this.getBrain().remember(ModEntities.OWNER, uuid);
 	}
 
 	@Nullable
@@ -565,22 +567,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		GUARD_FROM = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 
-//		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder().add(
-//				SensorType.NEAREST_LIVING_ENTITIES,
-//				SensorType.NEAREST_PLAYERS,
-//				SensorType.HURT_BY
-//		).build();
-//		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
-//				MemoryModuleType.PATH,
-//				MemoryModuleType.LOOK_TARGET,
-//				MemoryModuleType.VISIBLE_MOBS,
-//				MemoryModuleType.WALK_TARGET,
-//				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-//				MemoryModuleType.HURT_BY,
-//				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
-//				MemoryModuleType.LIKED_PLAYER,
-//				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
-//				MemoryModuleType.IS_PANICKING
-//		).build();
+		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder()
+				.add(SensorType.HURT_BY)
+				.build();
+
+		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleType.HURT_BY,
+				MemoryModuleType.HURT_BY_ENTITY,
+				MemoryModuleType.IS_PANICKING,
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleType.PATH,
+				ModEntities.OWNER
+		).build();
 	}
 }

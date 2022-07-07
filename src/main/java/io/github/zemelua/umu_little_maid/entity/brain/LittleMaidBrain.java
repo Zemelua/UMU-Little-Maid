@@ -2,10 +2,11 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
 
 public final class LittleMaidBrain {
@@ -39,13 +40,13 @@ public final class LittleMaidBrain {
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.<Task<? super LittleMaidEntity>>builder().add(
-				new StayAboveWaterTask(0.8f),
-				new WalkTask(2.0f),
-				new LookAroundTask(45, 90),
-				new WanderAroundTask(),
-				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
-		).build());
+		brain.setTaskList(Activity.CORE, ImmutableList.<Pair<Integer, ? extends Task<? super LittleMaidEntity>>>builder()
+				.add(Pair.of(0, new StayAboveWaterTask(0.8f)))
+				.add(Pair.of(1, new WalkTask(1.0F)))
+				.add(Pair.of(2, new LookAroundTask(45, 90)))
+				.add(Pair.of(3, new FollowOwnerTask<>(10.0F, 2.0F)))
+				.add(Pair.of(4, new WanderAroundTask()))
+				.build());
 	}
 
 //	private static void addIdleTasks(Brain<LittleMaidEntity> brain) {
