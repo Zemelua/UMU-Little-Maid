@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.goal.*;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -12,6 +11,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -40,6 +40,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,6 +77,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (this.getRandom().nextDouble() > 0.85D) {
 			this.setLeftHanded(true);
 		}
+	}
+
+	@Nullable
+	@Override
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
+	                             @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+		Random random = world.getRandom();
+		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE));
+
+
+
+		return entityData;
 	}
 
 	@Override
@@ -116,7 +131,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
 				.build());
 		this.goalSelector.add(4, new MaidEatGoal(this));
-		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new MaidPounceGoal(this))
+		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new PounceAtTargetGoal(this, 0.4F))
 				.addJob(ModEntities.FENCER)
 				.build());
 		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
@@ -152,8 +167,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public void tick() {
 		super.tick();
-
-		UMULittleMaid.LOGGER.info(this.getHealth());
 
 		MaidJob lastJob = this.getJob();
 		boolean applied = false;
@@ -266,6 +279,17 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public boolean isInvulnerableTo(DamageSource source) {
+		@Nullable UUID owner = this.getOwnerUuid();
+
+		if (owner != null && source.getAttacker() instanceof PlayerEntity player) {
+			return this.getOwnerUuid().equals(player.getUuid());
+		}
+
+		return super.isInvulnerableTo(source);
+	}
+
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean result = super.damage(source, amount);
 
@@ -343,22 +367,21 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public void playEatingAnimation() {
-		if (this.getEatingTicks() % 5 == 0) {
-			this.playSound(SoundEvents.ENTITY_CAT_EAT, 0.5f + 0.5f * (float) this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
-			for (int i = 0; i < 6; ++i) {
-				Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
-				vec3d = vec3d.rotateX(-this.getPitch() * ((float)Math.PI / 180));
-				vec3d = vec3d.rotateY(-this.getYaw() * ((float)Math.PI / 180));
-				double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
-				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.3, d, 0.6);
-				vec3d2 = vec3d2.rotateX(-this.getPitch() * ((float)Math.PI / 180));
-				vec3d2 = vec3d2.rotateY(-this.getYaw() * ((float)Math.PI / 180));
-				vec3d2 = vec3d2.add(this.getX(), this.getEyeY(), this.getZ());
+		if (!this.world.isClient() && this.getEatingTicks() % 5 == 0) {
+			this.playSound(SoundEvents.ENTITY_CAT_EAT, 0.5F + 0.5F * (float) this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 
-				// this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
-				if (!this.world.isClient()) {
-					((ServerWorld) this.world).spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), vec3d2.x, vec3d2.y, vec3d2.z, 0, vec3d.x, vec3d.y + 0.05, vec3d.z, 1.0);
-				}
+			for (int i = 0; i < 6; i++) {
+				double d = -this.random.nextDouble() * 0.6D - 0.3D;
+				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, d, 0.6D);
+				pos = pos.rotateX(-this.getPitch() * ((float) Math.PI / 180));
+				pos = pos.rotateY(-this.getYaw() * ((float) Math.PI / 180));
+				pos = pos.add(this.getX(), this.getEyeY(), this.getZ());
+
+				Vec3d delta = new Vec3d((this.random.nextDouble() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+				delta = delta.rotateX(-this.getPitch() * ((float) Math.PI / 180));
+				delta = delta.rotateY(-this.getYaw() * ((float) Math.PI / 180));
+
+				((ServerWorld) this.world).spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), pos.x, pos.y, pos.z, 0, delta.x, delta.y + 0.05, delta.z, 1.0);
 			}
 		}
 	}

@@ -29,6 +29,13 @@ public class LittleMaidScreen extends HandledScreen<LittleMaidScreenHandler> {
 	}
 
 	@Override
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrixStack);
+		super.render(matrixStack, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrixStack, mouseX, mouseY);
+	}
+
+	@Override
 	protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

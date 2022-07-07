@@ -104,6 +104,7 @@ public class MaidGuardGoal extends Goal {
 	@Override
 	public void stop() {
 		this.maid.setGuardFromNull();
+		this.maid.clearActiveItem();
 	}
 
 	private List<LivingEntity> getGuardFrom() {
