@@ -10,13 +10,11 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
 
-import java.util.Set;
-
 public final class LittleMaidBrain {
-
-	public static Brain<?> create(Brain<LittleMaidEntity> brain) {
+	public static Brain<LittleMaidEntity> create(Brain<LittleMaidEntity> brain) {
 		LittleMaidBrain.addCoreTasks(brain);
 		LittleMaidBrain.addSitTasks(brain);
 		LittleMaidBrain.addIdleTasks(brain);
@@ -39,8 +37,9 @@ public final class LittleMaidBrain {
 	private static void addSitTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.SIT, ImmutableList.<Pair<Integer, ? extends Task<? super LittleMaidEntity>>>builder()
 				.add(Pair.of(0, new SitTask()))
-				.build(), Set.of(
-				Pair.of(ModEntities.IS_SITTING, MemoryModuleState.VALUE_PRESENT)));
+				.build(), ImmutableSet.<Pair<MemoryModuleType<?>, MemoryModuleState>>builder()
+				.add(Pair.of(ModEntities.IS_SITTING, MemoryModuleState.VALUE_PRESENT))
+				.build());
 	}
 
 	private static void addIdleTasks(Brain<LittleMaidEntity> brain) {
@@ -75,7 +74,7 @@ public final class LittleMaidBrain {
 	public static void updateActivities(LittleMaidEntity littleMaid) {
 		// UMULittleMaid.LOGGER.info(littleMaid.getBrain().getPossibleActivities().stream().map(Activity::getId).toList());
 
-		Brain<LittleMaidEntity> brain = littleMaid.getBrain();
+		Brain<?> brain = littleMaid.getBrain();
 		Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
 		littleMaid.getBrain().resetPossibleActivities(ImmutableList.of(ModEntities.SIT, Activity.IDLE));
 	}

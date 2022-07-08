@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Activity.class)
 public interface ActivityAccessor {
 	@Invoker("<init>")
-	static Activity createActivity(String id) {
+	static Activity constructor(String ignoredId) {
 		throw new UnsupportedOperationException();
 	}
 }

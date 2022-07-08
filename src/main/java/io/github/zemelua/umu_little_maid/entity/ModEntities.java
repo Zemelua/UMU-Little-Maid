@@ -2,18 +2,20 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.IsSittingSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.OwnerSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
 import io.github.zemelua.umu_little_maid.mixin.ActivityAccessor;
+import io.github.zemelua.umu_little_maid.mixin.SensorTypeAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.AxeItem;
@@ -39,6 +41,9 @@ public final class ModEntities {
 
 	public static final MemoryModuleType<UUID> OWNER;
 	public static final MemoryModuleType<Unit> IS_SITTING;
+
+	public static final SensorType<OwnerSensor> SENSOR_OWNER;
+	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
 
 	public static final Activity SIT;
 
@@ -70,6 +75,8 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.OWNER);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.IS_SITTING);
 
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("owner"), ModEntities.SENSOR_OWNER);
+
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.SIT);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
@@ -100,7 +107,10 @@ public final class ModEntities {
 		OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 		IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 
-		SIT = ActivityAccessor.createActivity("sit");
+		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
+		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);
+
+		SIT = ActivityAccessor.constructor("sit");
 
 		BRAVERY = new MaidPersonality.Builder()
 				.setPounce()

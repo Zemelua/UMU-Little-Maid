@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -44,7 +43,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Unit;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -117,7 +115,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
 	}
 
@@ -418,7 +416,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void setOwnerUuid(@Nullable UUID uuid) {
 		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
-		this.getBrain().remember(ModEntities.OWNER, uuid);
+		// this.getBrain().remember(ModEntities.OWNER, uuid);
 	}
 
 	@Nullable
@@ -449,13 +447,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void setSitting(boolean sitting) {
 		this.dataTracker.set(LittleMaidEntity.IS_SITTING, sitting);
-		if (sitting) {
-			this.getBrain().remember(ModEntities.IS_SITTING, Unit.INSTANCE);
-		} else {
-			UMULittleMaid.LOGGER.info("forget");
-
-			this.getBrain().forget(ModEntities.IS_SITTING);
-		}
 	}
 
 	public MaidJob getJob() {
@@ -578,6 +569,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder()
 				.add(SensorType.HURT_BY)
+				.add(ModEntities.SENSOR_OWNER)
+				.add(ModEntities.SENSOR_IS_SITTING)
 				.build();
 
 		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
