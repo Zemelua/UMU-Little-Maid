@@ -1,15 +1,18 @@
 package io.github.zemelua.umu_little_maid.entity;
 
+import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
+import io.github.zemelua.umu_little_maid.mixin.ActivityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -17,6 +20,7 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
+import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Marker;
@@ -34,6 +38,9 @@ public final class ModEntities {
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
 
 	public static final MemoryModuleType<UUID> OWNER;
+	public static final MemoryModuleType<Unit> IS_SITTING;
+
+	public static final Activity SIT;
 
 	public static final MaidPersonality BRAVERY;
 	public static final MaidPersonality TSUNDERE;
@@ -61,6 +68,9 @@ public final class ModEntities {
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.OWNER);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.IS_SITTING);
+
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.SIT);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
@@ -88,6 +98,9 @@ public final class ModEntities {
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
 
 		OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
+		IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+
+		SIT = ActivityAccessor.createActivity("sit");
 
 		BRAVERY = new MaidPersonality.Builder()
 				.setPounce()

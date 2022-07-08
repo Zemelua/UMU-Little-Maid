@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Tameable;
@@ -43,8 +42,6 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
 
 		if (owner != null) {
-			UMULittleMaid.LOGGER.info(!owner.isSpectator() && entity.distanceTo(owner) > this.minDistance);
-
 			return !owner.isSpectator() && entity.distanceTo(owner) > this.minDistance;
 		}
 
