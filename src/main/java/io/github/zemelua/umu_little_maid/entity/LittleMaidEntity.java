@@ -567,13 +567,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		GUARD_FROM = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 
-		SENSORS = ImmutableList.<SensorType<? extends Sensor<? super LittleMaidEntity>>>builder()
-				.add(SensorType.HURT_BY)
-				.add(ModEntities.SENSOR_OWNER)
-				.add(ModEntities.SENSOR_IS_SITTING)
-				.build();
+		SENSORS = ImmutableList.of(
+				SensorType.HURT_BY,
+				ModEntities.SENSOR_OWNER,
+				ModEntities.SENSOR_IS_SITTING
+		);
 
-		MEMORY_MODULES = ImmutableList.<MemoryModuleType<?>>builder().add(
+		MEMORY_MODULES = ImmutableList.of(
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleType.HURT_BY,
 				MemoryModuleType.HURT_BY_ENTITY,
@@ -582,6 +582,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				MemoryModuleType.PATH,
 				ModEntities.OWNER,
 				ModEntities.IS_SITTING
-		).build();
+		);
 	}
 }

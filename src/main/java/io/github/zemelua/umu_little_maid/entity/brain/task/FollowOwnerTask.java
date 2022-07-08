@@ -78,7 +78,7 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 		if (entity.distanceTo(owner) >= 12.0F) {
 			this.tryTeleport(entity, owner);
 		} else {
-			entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(owner, 1.0F, 0));
+			entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(owner, 0.9F, 0));
 		}
 	}
 
