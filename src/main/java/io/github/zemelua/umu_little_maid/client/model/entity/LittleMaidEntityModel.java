@@ -99,16 +99,16 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 			this.leftArm.roll = (float) Math.toRadians(25.0F);
 		} else {
 			this.head.roll = 0.0F;
-			this.rightArm.pitch = (-0.2f + 1.5f * MathHelper.wrap(limbAngle, 13.0f)) * limbDistance;
+			this.rightArm.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
 			this.rightArm.yaw = 0.0F;
 			this.rightArm.roll = (float) Math.toRadians(15.0F);
-			this.leftArm.pitch = (-0.2f - 1.5f * MathHelper.wrap(limbAngle, 13.0f)) * limbDistance;
+			this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
 			this.leftArm.yaw = 0.0F;
 			this.leftArm.roll = (float) Math.toRadians(-15.0F);
 		}
 
-		this.rightLeg.pitch = -1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
-		this.leftLeg.pitch = 1.5f * MathHelper.wrap(limbAngle, 13.0f) * limbDistance;
+		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
+		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
 
 		// 手のポーズ(弓とか)
 		boolean mainArm = entity.getMainArm() == Arm.RIGHT;
