@@ -7,6 +7,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.MaidBowAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.MaidJobTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import net.minecraft.entity.EntityType;
@@ -68,7 +69,9 @@ public final class LittleMaidBrain {
 				Pair.of(1, new MaidJobTask(
 						new RangedApproachTask(1.0F), ModEntities.FENCER, ModEntities.CRACKER)),
 				Pair.of(2, new MaidJobTask(
-						new MeleeAttackTask(20), ModEntities.FENCER, ModEntities.CRACKER))
+						new MeleeAttackTask(20), ModEntities.FENCER, ModEntities.CRACKER)),
+				Pair.of(2, new MaidJobTask(
+						new MaidBowAttackTask(15.0D, 1.0F, 20), ModEntities.ARCHER))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT)
 		));
