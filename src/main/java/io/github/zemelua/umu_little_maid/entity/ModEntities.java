@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.IsSittingSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttackablesSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.OwnerSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
@@ -44,6 +45,7 @@ public final class ModEntities {
 
 	public static final SensorType<OwnerSensor> SENSOR_OWNER;
 	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
+	public static final SensorType<MaidAttackablesSensor> SENSOR_MAID_ATTACKABLES;
 
 	public static final Activity SIT;
 
@@ -109,6 +111,7 @@ public final class ModEntities {
 
 		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
 		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);
+		SENSOR_MAID_ATTACKABLES = SensorTypeAccessor.constructor(MaidAttackablesSensor::new);
 
 		SIT = ActivityAccessor.constructor("sit");
 

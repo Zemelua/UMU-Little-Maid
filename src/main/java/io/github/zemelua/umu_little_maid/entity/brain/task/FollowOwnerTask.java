@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<E> {
-	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.<MemoryModuleType<?>, MemoryModuleState>builder()
-			.put(ModEntities.OWNER, MemoryModuleState.VALUE_PRESENT)
-			.build();
+	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
+			ModEntities.OWNER, MemoryModuleState.VALUE_PRESENT
+	);
 
 	private final float minDistance;
 	private final float maxDistance;
