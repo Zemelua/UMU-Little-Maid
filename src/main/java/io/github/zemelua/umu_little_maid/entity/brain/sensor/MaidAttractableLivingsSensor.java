@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-public class MaidAttractTargetSensor extends Sensor<LittleMaidEntity> {
+public class MaidAttractableLivingsSensor extends Sensor<LittleMaidEntity> {
 	@Override
 	protected void sense(ServerWorld world, LittleMaidEntity maid) {
 		List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, maid.getBoundingBox().expand(6.0D, 3.0D, 6.0D), living -> {
@@ -34,11 +34,11 @@ public class MaidAttractTargetSensor extends Sensor<LittleMaidEntity> {
 		list.sort(Comparator.comparingDouble(maid::squaredDistanceTo));
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		brain.remember(ModEntities.MEMORY_ATTRACT_TARGETS, list);
+		brain.remember(ModEntities.MEMORY_ATTRACTABLE_LIVINGS, list);
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(ModEntities.MEMORY_ATTRACT_TARGETS);
+		return ImmutableSet.of(ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
 	}
 }

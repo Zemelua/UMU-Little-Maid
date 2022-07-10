@@ -573,9 +573,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.SENSOR_IS_SITTING,
 				SensorType.NEAREST_LIVING_ENTITIES,
 				SensorType.NEAREST_PLAYERS,
-				ModEntities.SENSOR_MAID_ATTACKABLES,
-				ModEntities.SENSOR_MAID_ATTRACT_TARGETS,
-				ModEntities.SENSOR_MAID_GUARD_FROM_TARGET
+				ModEntities.SENSOR_MAID_ATTACKABLE,
+				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
+				ModEntities.SENSOR_MAID_GUARDABLE_LIVING
 		);
 
 		MEMORY_MODULES = ImmutableList.of(
@@ -594,8 +594,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				MemoryModuleType.MOBS,
 				ModEntities.MEMORY_OWNER,
 				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_ATTRACT_TARGETS,
-				ModEntities.MEMORY_GUARD_FROM_TARGET
+				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
+				ModEntities.MEMORY_GUARDABLE_LIVING
 		);
 	}
 }

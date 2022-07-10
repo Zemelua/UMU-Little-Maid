@@ -44,14 +44,14 @@ public final class ModEntities {
 
 	public static final MemoryModuleType<UUID> MEMORY_OWNER;
 	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
-	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACT_TARGETS;
-	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_FROM_TARGET;
+	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS;
+	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
 
 	public static final SensorType<OwnerSensor> SENSOR_OWNER;
 	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
-	public static final SensorType<MaidAttackablesSensor> SENSOR_MAID_ATTACKABLES;
-	public static final SensorType<MaidAttractTargetSensor> SENSOR_MAID_ATTRACT_TARGETS;
-	public static final SensorType<MaidGuardFromTargetSensor> SENSOR_MAID_GUARD_FROM_TARGET;
+	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
+	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
+	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
 
 	public static final Activity ACTIVITY_SIT;
 	public static final Activity ACTIVITY_GUARD;
@@ -83,14 +83,14 @@ public final class ModEntities {
 
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.MEMORY_OWNER);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_from_target"), ModEntities.MEMORY_GUARD_FROM_TARGET);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attract_targets"), ModEntities.MEMORY_ATTRACT_TARGETS);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attractable_livings"), ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("owner"), ModEntities.SENSOR_OWNER);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.SENSOR_IS_SITTING);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackables"), ModEntities.SENSOR_MAID_ATTACKABLES);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attract_targets"), ModEntities.SENSOR_MAID_ATTRACT_TARGETS);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guard_from_target"), ModEntities.SENSOR_MAID_GUARD_FROM_TARGET);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
 
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.ACTIVITY_SIT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModEntities.ACTIVITY_GUARD);
@@ -122,14 +122,14 @@ public final class ModEntities {
 
 		MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_ATTRACT_TARGETS = new MemoryModuleType<>(Optional.empty());
-		MEMORY_GUARD_FROM_TARGET = new MemoryModuleType<>(Optional.empty());
+		MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
+		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
 		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);
-		SENSOR_MAID_ATTACKABLES = SensorTypeAccessor.constructor(MaidAttackablesSensor::new);
-		SENSOR_MAID_ATTRACT_TARGETS = SensorTypeAccessor.constructor(MaidAttractTargetSensor::new);
-		SENSOR_MAID_GUARD_FROM_TARGET = SensorTypeAccessor.constructor(MaidGuardFromTargetSensor::new);
+		SENSOR_MAID_ATTACKABLE = SensorTypeAccessor.constructor(MaidAttackableSensor::new);
+		SENSOR_MAID_ATTRACTABLE_LIVINGS = SensorTypeAccessor.constructor(MaidAttractableLivingsSensor::new);
+		SENSOR_MAID_GUARDABLE_LIVING = SensorTypeAccessor.constructor(MaidGuardableLivingSensor::new);
 
 		ACTIVITY_SIT = ActivityAccessor.constructor("sit");
 		ACTIVITY_GUARD = ActivityAccessor.constructor("guard");

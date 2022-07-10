@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.NearestVisibleLivingEntitySensor;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 
-public class MaidAttackablesSensor extends NearestVisibleLivingEntitySensor {
+public class MaidAttackableSensor extends NearestVisibleLivingEntitySensor {
 	@Override
 	protected boolean matches(LivingEntity littleMaid, LivingEntity target) {
 		return !target.getType().getSpawnGroup().isPeaceful()

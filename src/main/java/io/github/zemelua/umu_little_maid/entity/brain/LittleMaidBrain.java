@@ -79,11 +79,11 @@ public final class LittleMaidBrain {
 
 	private static void addGuardTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_GUARD, ImmutableList.of(
-				Pair.of(2, new MaidJobTask(
+				Pair.of(0, new MaidJobTask(
 						new MaidGuardTask(6.0D, 2.0D, 1.5F), ModEntities.GUARD))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_GUARD_FROM_TARGET, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModEntities.MEMORY_ATTRACTABLE_LIVINGS, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModEntities.MEMORY_GUARDABLE_LIVING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
