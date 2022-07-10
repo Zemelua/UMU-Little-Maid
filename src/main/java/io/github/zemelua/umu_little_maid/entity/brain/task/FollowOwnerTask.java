@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.OWNER, MemoryModuleState.VALUE_PRESENT
+			ModEntities.MEMORY_OWNER, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final float minDistance;
@@ -36,7 +36,7 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
-		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.OWNER);
+		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.MEMORY_OWNER);
 		if (ownerUUID.isEmpty()) return false;
 
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
@@ -50,7 +50,7 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {
-		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.OWNER);
+		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.MEMORY_OWNER);
 		if (ownerUUID.isEmpty()) return false;
 
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
@@ -64,7 +64,7 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 
 	@Override
 	protected void keepRunning(ServerWorld world, E entity, long time) {
-		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.OWNER);
+		Optional<UUID> ownerUUID = entity.getBrain().getOptionalMemory(ModEntities.MEMORY_OWNER);
 		if (ownerUUID.isEmpty()) return;
 
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());

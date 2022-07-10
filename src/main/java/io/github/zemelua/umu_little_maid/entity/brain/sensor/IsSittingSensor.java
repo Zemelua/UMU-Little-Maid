@@ -21,16 +21,16 @@ public class IsSittingSensor extends Sensor<LittleMaidEntity> {
 		Brain<?> brain = entity.getBrain();
 
 		if (entity.isSitting()) {
-			brain.remember(ModEntities.IS_SITTING, Unit.INSTANCE);
+			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		} else {
-			brain.forget(ModEntities.IS_SITTING);
+			brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.<MemoryModuleType<?>>builder()
-				.add(ModEntities.IS_SITTING)
+				.add(ModEntities.MEMORY_IS_SITTING)
 				.build();
 	}
 }

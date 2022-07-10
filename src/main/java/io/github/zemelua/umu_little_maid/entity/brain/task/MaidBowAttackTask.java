@@ -12,6 +12,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,6 +93,7 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 			else if (distance < this.range * Math.sqrt(0.25D)) this.backward = true;
 
 			maid.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
+			maid.setYaw(MathHelper.clampAngle(maid.getYaw(), maid.getHeadYaw(), 0.0f));
 		}
 
 		maid.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target.get(), true));

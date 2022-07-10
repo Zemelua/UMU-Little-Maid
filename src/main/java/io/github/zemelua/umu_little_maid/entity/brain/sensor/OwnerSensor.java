@@ -19,13 +19,13 @@ public class OwnerSensor extends Sensor<LittleMaidEntity> {
 	protected void sense(ServerWorld world, LittleMaidEntity entity) {
 		Brain<?> brain = entity.getBrain();
 
-		brain.remember(ModEntities.OWNER, entity.getOwnerUuid());
+		brain.remember(ModEntities.MEMORY_OWNER, entity.getOwnerUuid());
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.<MemoryModuleType<?>>builder()
-				.add(ModEntities.OWNER)
+				.add(ModEntities.MEMORY_OWNER)
 				.build();
 	}
 }

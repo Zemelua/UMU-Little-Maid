@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class SitTask extends Task<PathAwareEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.<MemoryModuleType<?>, MemoryModuleState>builder()
-			.put(ModEntities.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+			.put(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 			.build();
 
 	public SitTask() {
@@ -22,7 +22,7 @@ public class SitTask extends Task<PathAwareEntity> {
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, PathAwareEntity entity, long time) {
-		return entity.getBrain().hasMemoryModule(ModEntities.IS_SITTING);
+		return entity.getBrain().hasMemoryModule(ModEntities.MEMORY_IS_SITTING);
 	}
 
 	@Override
