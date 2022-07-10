@@ -29,13 +29,6 @@ public class SitTask extends Task<PathAwareEntity> {
 	protected void run(ServerWorld world, PathAwareEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
 		brain.forget(MemoryModuleType.WALK_TARGET);
-	}
-
-	@Override
-	protected void keepRunning(ServerWorld world, PathAwareEntity entity, long time) {
-
-		// UMULittleMaid.LOGGER.info("owner ing");
-
-		super.keepRunning(world, entity, time);
+		brain.forget(MemoryModuleType.ATTACK_TARGET);
 	}
 }

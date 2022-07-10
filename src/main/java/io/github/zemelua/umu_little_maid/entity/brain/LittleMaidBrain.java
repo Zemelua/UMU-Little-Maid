@@ -33,7 +33,8 @@ public final class LittleMaidBrain {
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
-				// Pair.of(1, new WalkTask(1.0F)),
+				Pair.of(1, new MaidJobTask(
+						new WalkTask(1.0F), ModEntities.NONE)),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask())
 		));
@@ -65,7 +66,12 @@ public final class LittleMaidBrain {
 
 	private static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, new ForgetAttackTargetTask<>()),
+				Pair.of(0, new MaidJobTask(
+						new ForcedForgetMemoryTask<>(MemoryModuleType.ATTACK_TARGET),
+						ModEntities.GUARD, ModEntities.NONE)),
+				Pair.of(0, new MaidJobTask(
+						new ForgetAttackTargetTask<>(),
+						ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)),
 				Pair.of(1, new MaidJobTask(
 						new RangedApproachTask(1.0F), ModEntities.FENCER, ModEntities.CRACKER)),
 				Pair.of(2, new MaidJobTask(
