@@ -595,7 +595,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_OWNER,
 				ModEntities.MEMORY_IS_SITTING,
 				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
-				ModEntities.MEMORY_GUARDABLE_LIVING
+				ModEntities.MEMORY_GUARDABLE_LIVING,
+				ModEntities.MEMORY_ATTRACT_TARGETS,
+				ModEntities.MEMORY_GUARD_TARGET
 		);
 	}
 }

@@ -46,6 +46,8 @@ public final class ModEntities {
 	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
 	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
+	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACT_TARGETS;
+	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
 
 	public static final SensorType<OwnerSensor> SENSOR_OWNER;
 	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
@@ -85,6 +87,8 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attractable_livings"), ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attract_targets"), ModEntities.MEMORY_ATTRACT_TARGETS);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("owner"), ModEntities.SENSOR_OWNER);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.SENSOR_IS_SITTING);
@@ -124,6 +128,8 @@ public final class ModEntities {
 		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
+		MEMORY_ATTRACT_TARGETS = new MemoryModuleType<>(Optional.empty());
+		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
 		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);

@@ -56,6 +56,10 @@ public final class LittleMaidBrain {
 				Pair.of(2, new MaidJobTask(
 						new UpdateAttackTargetTask<>(maid -> maid.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE)),
 						ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)),
+				Pair.of(2, new MaidJobTask(
+						new UpdateGuardTargetTask(), ModEntities.GUARD)),
+				Pair.of(2, new MaidJobTask(
+						new UpdateAttractTargetsTask(), ModEntities.GUARD)),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.7F), 2),
 						Pair.of(new GoTowardsLookTarget(0.7F, 3), 2),
@@ -86,10 +90,18 @@ public final class LittleMaidBrain {
 	private static void addGuardTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_GUARD, ImmutableList.of(
 				Pair.of(0, new MaidJobTask(
+						new ForcedForgetMemoryTask<>(ModEntities.MEMORY_GUARD_TARGET),
+						ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.NONE)),
+				Pair.of(0, new MaidJobTask(
+						new ForcedForgetMemoryTask<>(ModEntities.MEMORY_ATTRACT_TARGETS),
+						ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.NONE)),
+				Pair.of(0, new MaidJobTask(
+						new ForgetGuardTargetTask(), ModEntities.GUARD)),
+				Pair.of(1, new MaidJobTask(
 						new MaidGuardTask(6.0D, 2.0D, 1.5F), ModEntities.GUARD))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_ATTRACTABLE_LIVINGS, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_GUARDABLE_LIVING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

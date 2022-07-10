@@ -24,8 +24,8 @@ import java.util.UUID;
 
 public class MaidGuardTask extends Task<LittleMaidEntity> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_ATTRACTABLE_LIVINGS, MemoryModuleState.VALUE_PRESENT,
-			ModEntities.MEMORY_GUARDABLE_LIVING, MemoryModuleState.VALUE_PRESENT
+			ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT,
+			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final double moveStartDistance;
@@ -46,8 +46,8 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 	protected boolean shouldRun(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		return brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).isPresent()
-				&& brain.getOptionalMemory(ModEntities.MEMORY_GUARDABLE_LIVING).isPresent()
+		return brain.getOptionalMemory(ModEntities.MEMORY_ATTRACT_TARGETS).isPresent()
+				&& brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET).isPresent()
 				&& this.shouldMove(world, maid);
 	}
 
@@ -60,7 +60,6 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
 		if (owner == null) return false;
 
-		// return this.shouldRun(world, maid) && maid.squaredDistanceTo(owner) <= 3.0D;
 		return this.shouldRun(world, maid);
 	}
 
@@ -73,15 +72,17 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
 		if (owner == null) return;
 
-		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).ifPresent(
-				list -> list.forEach(living -> {
-					if (living instanceof MobEntity mob) {
-						mob.setTarget(maid);
+		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACT_TARGETS).ifPresent(
+				list -> {
+					for (LivingEntity living : list) {
+						if (living instanceof MobEntity mob) {
+							mob.setTarget(maid);
+						}
 					}
-				})
+				}
 		);
 
-		Optional<LivingEntity> guardFrom = brain.getOptionalMemory(ModEntities.MEMORY_GUARDABLE_LIVING);
+		Optional<LivingEntity> guardFrom = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
 
 		if (guardFrom.isPresent()) {
 			boolean shouldGuard = maid.distanceTo(owner) <= this.guardStartDistance;
