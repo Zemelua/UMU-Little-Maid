@@ -6,8 +6,10 @@ import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
+import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -30,6 +32,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
@@ -196,6 +199,55 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	/**
+	 * 継承元との差異: 攻撃したときにアイテムの耐久値が減少するよ！
+	 */
+	@Override
+	public boolean tryAttack(Entity target) {
+		double damage = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		double knockback = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		int fireLevel = EnchantmentHelper.getFireAspect(this);
+
+		if (target instanceof LivingEntity living) {
+			damage += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), living.getGroup());
+			knockback += EnchantmentHelper.getKnockback(this);
+		}
+
+		if (fireLevel > 0) {
+			target.setOnFireFor(fireLevel * 4);
+		}
+
+		boolean damagePassed = target.damage(DamageSource.mob(this), (float) damage);
+
+		if (damagePassed) {
+			ItemStack itemStack = this.getMainHandStack();
+
+			if (knockback > 0.0f && target instanceof LivingEntity living) {
+				double xStrength = Math.sin(this.getYaw() * Math.PI / 180.0D);
+				double zStrength = -Math.cos(this.getYaw() * Math.PI / 180.0D);
+
+				living.takeKnockback(knockback * 0.5D, xStrength, zStrength);
+
+				this.setVelocity(this.getVelocity().multiply(0.6D, 1.0D, 0.6D));
+			}
+			if (target instanceof PlayerEntity player && player.isUsingItem()) {
+				((MobEntityAccessor) this).callDisablePlayerShield(player, itemStack, player.getActiveItem());
+			}
+
+			this.applyDamageEffects(this, target);
+			this.onAttacking(target);
+
+			if (target instanceof LivingEntity living) {
+				itemStack.getItem().postHit(itemStack, living, this);
+				if (itemStack.isEmpty()) {
+					this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+				}
+			}
+		}
+
+		return damagePassed;
+	}
+
+	/**
 	 * 弓で攻撃するとき呼ばれるよ！ {@code PersistentProjectileEntity} を生成して発射してるよ
 	 * @param target 攻撃対象の {@code LivingEntity}
 	 * @param pullProgress どれだけ弓を引いた状態で撃ったか
@@ -217,10 +269,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
 
 		this.world.spawnEntity(projectile);
-		itemStack.damage(1, this, entity -> {
-		});
+
 		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 
+		itemStack.damage(1, this, entity -> {});
 		if (!consumeArrow) {
 			arrow.decrement(1);
 		}
@@ -247,6 +299,29 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	protected void damageArmor(DamageSource source, float amount) {
+		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.FEET));
+		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.HEAD));
+	}
+
+	@Override
+	protected void damageHelmet(DamageSource source, float amount) {
+		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.HEAD));
+	}
+
+	private void damageArmor(DamageSource source, float amount, ItemStack itemStack) {
+		if (amount <= 0.0f) return;
+		if (!(itemStack.getItem() instanceof ArmorItem)) return;
+		if (source.isFire() && itemStack.getItem().isFireproof()) return;
+
+		if ((amount /= 4.0f) < 1.0f) {
+			amount = 1.0f;
+		}
+
+		itemStack.damage((int) amount, this, maid -> {});
+	}
+
+	@Override
 	protected void damageShield(float amount) {
 		if (!this.activeItemStack.isOf(Items.SHIELD)) return;
 
@@ -258,8 +333,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (amount >= 3.0f) {
 			int damage = 1 + MathHelper.floor(amount);
 			Hand hand = this.getActiveHand();
-			this.activeItemStack.damage(damage, this, entity -> {
-			});
+			this.activeItemStack.damage(damage, this, entity -> {});
 
 			if (this.activeItemStack.isEmpty()) {
 				if (hand == Hand.MAIN_HAND) {
