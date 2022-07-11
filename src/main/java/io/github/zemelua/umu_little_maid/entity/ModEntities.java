@@ -50,8 +50,6 @@ public final class ModEntities {
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 
-	public static final SensorType<OwnerSensor> SENSOR_OWNER;
-	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
@@ -65,11 +63,11 @@ public final class ModEntities {
 	public static final MaidPersonality TSUNDERE;
 	public static final MaidPersonality SHY;
 
-	public static final MaidJob NONE;
-	public static final MaidJob FENCER;
-	public static final MaidJob CRACKER;
-	public static final MaidJob ARCHER;
-	public static final MaidJob GUARD;
+	public static final MaidJob JOB_NONE;
+	public static final MaidJob JOB_FENCER;
+	public static final MaidJob JOB_CRACKER;
+	public static final MaidJob JOB_ARCHER;
+	public static final MaidJob JOB_GUARD;
 
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -94,8 +92,6 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("owner"), ModEntities.SENSOR_OWNER);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.SENSOR_IS_SITTING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
@@ -111,11 +107,11 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("tsundere"), ModEntities.TSUNDERE);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("shy"), ModEntities.SHY);
 
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("none"), ModEntities.NONE);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fencer"), ModEntities.FENCER);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("cracker"), ModEntities.CRACKER);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("archer"), ModEntities.ARCHER);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.GUARD);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("none"), ModEntities.JOB_NONE);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fencer"), ModEntities.JOB_FENCER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("cracker"), ModEntities.JOB_CRACKER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("archer"), ModEntities.JOB_ARCHER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
 
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
@@ -138,8 +134,6 @@ public final class ModEntities {
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
-		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
-		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);
 		SENSOR_MAID_ATTACKABLE = SensorTypeAccessor.constructor(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = SensorTypeAccessor.constructor(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = SensorTypeAccessor.constructor(MaidGuardableLivingSensor::new);
@@ -161,24 +155,10 @@ public final class ModEntities {
 				.setMinFollowDistance(8.0D)
 				.setMaxFollowDistance(5.0D));
 
-		NONE = new MaidJob.Builder()
-				.build();
-		FENCER = new MaidJob.Builder()
-				.setItemStackPredicate(itemStack -> itemStack.getItem() instanceof SwordItem)
-				.setActive()
-				.setPounce()
-				.build();
-		CRACKER = new MaidJob.Builder()
-				.setItemStackPredicate(itemStack -> itemStack.getItem() instanceof AxeItem)
-				.setActive()
-				.build();
-		ARCHER = new MaidJob.Builder()
-				.setItemStackPredicate(itemStack -> itemStack.getItem() instanceof BowItem)
-				.setActive()
-				.build();
-		GUARD = new MaidJob.Builder()
-				.setItemStackPredicate(itemStack -> itemStack.isOf(Items.SHIELD))
-				.setActive()
-				.build();
+		JOB_NONE = new MaidJob(itemStack -> false);
+		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem);
+		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem);
+		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem);
+		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD));
 	}
 }

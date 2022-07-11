@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -43,6 +44,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -52,22 +54,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
-	public static final Predicate<LivingEntity> IS_ENEMY = (living
-			-> ModUtils.isMonster(living) && living.getType() != EntityType.CREEPER);
+	public static final float LEFT_HAND_CHANCE = 0.15F;
 
 	private static final TrackedData<Optional<UUID>> OWNER;
-	private static final TrackedData<Boolean> IS_TAMED;
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<Integer> EATING_TICKS;
-	private static final TrackedData<OptionalInt> GUARD_FROM;
 
 	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
@@ -89,9 +87,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
 	                             @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
 		Random random = world.getRandom();
-		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE));
+		EntityAttributeInstance followRange = this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE);
 
+		if (followRange != null) {
+			followRange.addPersistentModifier(new EntityAttributeModifier(
+					"Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001),
+					EntityAttributeModifier.Operation.MULTIPLY_BASE
+			));
+		}
 
+		this.setLeftHanded(random.nextFloat() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
 		return entityData;
 	}
@@ -101,12 +106,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		super.initDataTracker();
 
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
-		this.dataTracker.startTracking(LittleMaidEntity.IS_TAMED, false);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
-		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.NONE);
+		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.EATING_TICKS, 0);
-		this.dataTracker.startTracking(LittleMaidEntity.GUARD_FROM, OptionalInt.empty());
 	}
 
 	@Override
@@ -119,48 +122,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
 	}
 
-//	@Override
-//	protected void initGoals() {
-//		this.goalSelector.add(0, new SwimGoal(this));
-//		this.goalSelector.add(1, new MaidSitGoal(this));
-//		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new EscapeDangerGoal(this, 1.0D))
-//				.addJob(ModEntities.NONE)
-//				.build());
-//		this.goalSelector.add(2, new MaidWrapperGoal.Builder(this, new AggressiveEscapeDangerGoal(this, 1.0D))
-//				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER, ModEntities.GUARD)
-//				.build());
-//		this.goalSelector.add(3, new MaidWrapperGoal.Builder(this, new FleeEntityGoal<>(
-//				this, MobEntity.class, 6.0F, 1.0D, 1.2D, LittleMaidEntity.IS_ENEMY))
-//				.addJob(ModEntities.NONE)
-//				.addPredicate(maid -> maid.getJob() == ModEntities.ARCHER && maid.getArrowType(maid.getMainHandStack()).isEmpty())
-//				.build());
-//		this.goalSelector.add(4, new MaidEatGoal(this));
-//		this.goalSelector.add(5, new MaidWrapperGoal.Builder(this, new PounceAtTargetGoal(this, 0.4F))
-//				.addJob(ModEntities.FENCER)
-//				.build());
-//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MeleeAttackGoal(this, 1.0D, true))
-//				.addJob(ModEntities.FENCER, ModEntities.CRACKER)
-//				.build());
-//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidBowAttackGoal(this))
-//				.addJob(ModEntities.ARCHER)
-//				.build());
-//		this.goalSelector.add(6, new MaidWrapperGoal.Builder(this, new MaidGuardGoal(this))
-//				.addJob(ModEntities.GUARD)
-//				.build());
-//		this.goalSelector.add(7, new MaidFollowGoal(this));
-//		this.goalSelector.add(8, new MaidWrapperGoal.Builder(this, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F))
-//				.addPredicate(maid -> maid.getPersonality() != ModEntities.TSUNDERE)
-//				.build());
-//		this.goalSelector.add(9, new LookAroundGoal(this));
-//
-//		this.targetSelector.add(0, new MaidWrapperGoal.Builder(this, new MaidWrapperGoal.Builder(this, new ActiveTargetGoal<>(
-//				this, MobEntity.class, false, LittleMaidEntity.IS_ENEMY))
-//				.addJob(ModEntities.FENCER, ModEntities.CRACKER, ModEntities.ARCHER)
-//				.build())
-//				.addPersonality(ModEntities.BRAVERY, ModEntities.TSUNDERE)
-//				.build());
-//	}
-
 	public static DefaultAttributeContainer.Builder createAttributes() {
 		return MobEntity.createMobAttributes()
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
@@ -172,28 +133,24 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public void tick() {
 		super.tick();
 
-		MaidJob lastJob = this.getJob();
 		boolean applied = false;
 
 		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
 			if (!applied && job.canApply(this)) {
 				this.setJob(job);
-				if (lastJob != job) {
-					this.setTarget(null);
-				}
+
 				applied = true;
 			}
 		}
 
 		if (!applied) {
-			this.setJob(ModEntities.NONE);
-			this.setTarget(null);
+			this.setJob(ModEntities.JOB_NONE);
 		}
 	}
 
 	@Override
 	protected void mobTick() {
-		this.getBrain().tick((ServerWorld)this.world, this);
+		this.getBrain().tick((ServerWorld) this.world, this);
 		LittleMaidBrain.updateActivities(this);
 
 		super.mobTick();
@@ -204,46 +161,35 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		super.tickMovement();
 
 		this.tickHandSwing();
-		if (this.getGuardFrom() != null) {
-			this.lookAtEntity(this.getGuardFrom(), 179.9F, 179.9F);
-		}
 	}
 
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack interactItem = player.getStackInHand(hand);
-		ActionResult defaultResult = super.interactMob(player, hand);
 
-		if (this.isTamed() && player == this.getOwner()) {
-			if (player.isSneaking()) {
-				if (!this.world.isClient()) {
-					player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
-				}
-			} else {
-				if (!defaultResult.isAccepted()) {
+		if (this.isTamed()) {
+			if (player == this.getOwner()) {
+				if (player.isSneaking()) {
 					if (!this.world.isClient()) {
-						this.navigation.stop();
-						this.setTarget(null);
+						player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
+					}
+				} else {
+					if (!this.world.isClient()) {
 						this.setSitting(!this.isSitting());
 					}
-
-					return ActionResult.success(this.world.isClient());
 				}
-			}
 
+				return ActionResult.success(this.world.isClient());
+			}
 		} else {
 			if (interactItem.isOf(Items.CAKE)) {
 				if (!this.world.isClient()) {
+					this.setOwner(player);
+					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+
 					if (!player.getAbilities().creativeMode) {
 						interactItem.decrement(1);
 					}
-
-					this.setOwner(player);
-					this.setTamed(true);
-					this.getNavigation().stop();
-					this.setTarget(null);
-
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 				}
 
 				return ActionResult.success(this.world.isClient());
@@ -253,6 +199,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return super.interactMob(player, hand);
 	}
 
+	/**
+	 * 弓で攻撃するとき呼ばれるよ！ {@code PersistentProjectileEntity} を生成して発射してるよ
+	 * @param target 攻撃対象の {@code LivingEntity}
+	 * @param pullProgress どれだけ弓を引いた状態で撃ったか
+	 */
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
 		ItemStack itemStack = this.getMainHandStack();
@@ -311,7 +262,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (amount >= 3.0f) {
 			int damage = 1 + MathHelper.floor(amount);
 			Hand hand = this.getActiveHand();
-			this.activeItemStack.damage(damage, this, entity -> {});
+			this.activeItemStack.damage(damage, this, entity -> {
+			});
 
 			if (this.activeItemStack.isEmpty()) {
 				if (hand == Hand.MAIN_HAND) {
@@ -414,9 +366,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.dataTracker.get(LittleMaidEntity.OWNER).orElse(null);
 	}
 
-	public void setOwnerUuid(@Nullable UUID uuid) {
+	private void setOwnerUuid(@Nullable UUID uuid) {
 		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
-		// this.getBrain().remember(ModEntities.OWNER, uuid);
+		this.getBrain().remember(ModEntities.MEMORY_OWNER, uuid);
 	}
 
 	@Nullable
@@ -429,34 +381,43 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.world.getPlayerByUuid(uuid);
 	}
 
-	public void setOwner(PlayerEntity player) {
+	private void setOwner(PlayerEntity player) {
 		this.setOwnerUuid(player.getUuid());
 	}
 
 	public boolean isTamed() {
-		return this.dataTracker.get(LittleMaidEntity.IS_TAMED);
-	}
-
-	public void setTamed(boolean tamed) {
-		this.dataTracker.set(LittleMaidEntity.IS_TAMED, tamed);
+		return this.getOwnerUuid() != null;
 	}
 
 	public boolean isSitting() {
 		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
 	}
 
-	public void setSitting(boolean sitting) {
+	private void setSitting(boolean sitting) {
 		this.dataTracker.set(LittleMaidEntity.IS_SITTING, sitting);
+
+		if (sitting) {
+			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
+		} else {
+			brain.forget(ModEntities.MEMORY_IS_SITTING);
+		}
 	}
 
 	public MaidJob getJob() {
-		return this.dataTracker.get(LittleMaidEntity.JOB);
+		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
+			if (job.canApply(this)) {
+				return job;
+			}
+		}
+
+		return ModEntities.JOB_NONE;
 	}
 
 	private void setJob(MaidJob job) {
 		this.dataTracker.set(LittleMaidEntity.JOB, job);
 	}
 
+	@SuppressWarnings("unused")
 	public MaidPersonality getPersonality() {
 		return this.dataTracker.get(LittleMaidEntity.PERSONALITY);
 	}
@@ -467,34 +428,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void setEatingTicks(int value) {
 		this.dataTracker.set(LittleMaidEntity.EATING_TICKS, value);
-	}
-
-	public OptionalInt getGuardFromId() {
-		return this.dataTracker.get(LittleMaidEntity.GUARD_FROM);
-	}
-
-	public void setGuardFromId(int id) {
-		this.dataTracker.set(LittleMaidEntity.GUARD_FROM, OptionalInt.of(id));
-	}
-
-	@Nullable
-	public Entity getGuardFrom() {
-		OptionalInt id = this.getGuardFromId();
-		if (id.isPresent()) return this.world.getEntityById(id.getAsInt());
-
-		return null;
-	}
-
-	public void setGuardFrom(LivingEntity guardFrom) {
-		if (guardFrom != null) {
-			this.setGuardFromId(guardFrom.getId());
-		} else {
-			this.setGuardFromNull();
-		}
-	}
-
-	public void setGuardFromNull() {
-		this.dataTracker.set(LittleMaidEntity.GUARD_FROM, OptionalInt.empty());
 	}
 
 	public double getIntimacy() {
@@ -548,29 +481,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			String string = nbt.getString(LittleMaidEntity.KEY_OWNER);
 			uuid = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
-		if (uuid != null) {
-			this.setOwnerUuid(uuid);
-			this.setTamed(true);
-		} else {
-			this.setTamed(false);
-		}
+		this.setOwnerUuid(uuid);
 
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
 	}
 
 	static {
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-		IS_TAMED = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
-		GUARD_FROM = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 
 		SENSORS = ImmutableList.of(
 				SensorType.HURT_BY,
-				ModEntities.SENSOR_OWNER,
-				ModEntities.SENSOR_IS_SITTING,
 				SensorType.NEAREST_LIVING_ENTITIES,
 				SensorType.NEAREST_PLAYERS,
 				ModEntities.SENSOR_MAID_ATTACKABLE,
