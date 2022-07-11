@@ -23,6 +23,7 @@ public final class LittleMaidBrain {
 		LittleMaidBrain.addIdleTasks(brain);
 		LittleMaidBrain.addFightTasks(brain);
 		LittleMaidBrain.addGuardTasks(brain);
+		LittleMaidBrain.addEatTasks(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
@@ -105,9 +106,18 @@ public final class LittleMaidBrain {
 		));
 	}
 
+	private static void addEatTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+				Pair.of(0, new MaidEatTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
 	public static void updateActivities(LittleMaidEntity littleMaid) {
 		Brain<?> brain = littleMaid.getBrain();
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, Activity.FIGHT, ModEntities.ACTIVITY_GUARD, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(
+				ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.FIGHT, ModEntities.ACTIVITY_GUARD, Activity.IDLE));
 
 		if (brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isPresent()) {
 			UMULittleMaid.LOGGER.info(littleMaid.isInAttackRange(brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get()));

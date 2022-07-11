@@ -48,15 +48,18 @@ public final class ModEntities {
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
 	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACT_TARGETS;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 
 	public static final SensorType<OwnerSensor> SENSOR_OWNER;
 	public static final SensorType<IsSittingSensor> SENSOR_IS_SITTING;
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
+	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
 
 	public static final Activity ACTIVITY_SIT;
 	public static final Activity ACTIVITY_GUARD;
+	public static final Activity ACTIVITY_EAT;
 
 	public static final MaidPersonality BRAVERY;
 	public static final MaidPersonality TSUNDERE;
@@ -89,15 +92,18 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attract_targets"), ModEntities.MEMORY_ATTRACT_TARGETS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("owner"), ModEntities.SENSOR_OWNER);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.SENSOR_IS_SITTING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
 
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.ACTIVITY_SIT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModEntities.ACTIVITY_GUARD);
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("eat"), ModEntities.ACTIVITY_EAT);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
@@ -130,15 +136,18 @@ public final class ModEntities {
 		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 		MEMORY_ATTRACT_TARGETS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
+		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_OWNER = SensorTypeAccessor.constructor(OwnerSensor::new);
 		SENSOR_IS_SITTING = SensorTypeAccessor.constructor(IsSittingSensor::new);
 		SENSOR_MAID_ATTACKABLE = SensorTypeAccessor.constructor(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = SensorTypeAccessor.constructor(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = SensorTypeAccessor.constructor(MaidGuardableLivingSensor::new);
+		SENSOR_SHOULD_EAT = SensorTypeAccessor.constructor(MaidShouldEatSensor::new);
 
 		ACTIVITY_SIT = ActivityAccessor.constructor("sit");
 		ACTIVITY_GUARD = ActivityAccessor.constructor("guard");
+		ACTIVITY_EAT = ActivityAccessor.constructor("eat");
 
 		BRAVERY = new MaidPersonality.Builder()
 				.setPounce()
