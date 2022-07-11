@@ -2,12 +2,13 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttackableSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttractableLivingsSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidGuardableLivingSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
-import io.github.zemelua.umu_little_maid.mixin.ActivityAccessor;
-import io.github.zemelua.umu_little_maid.mixin.SensorTypeAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -134,14 +135,14 @@ public final class ModEntities {
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
-		SENSOR_MAID_ATTACKABLE = SensorTypeAccessor.constructor(MaidAttackableSensor::new);
-		SENSOR_MAID_ATTRACTABLE_LIVINGS = SensorTypeAccessor.constructor(MaidAttractableLivingsSensor::new);
-		SENSOR_MAID_GUARDABLE_LIVING = SensorTypeAccessor.constructor(MaidGuardableLivingSensor::new);
-		SENSOR_SHOULD_EAT = SensorTypeAccessor.constructor(MaidShouldEatSensor::new);
+		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
+		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
+		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
+		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
 
-		ACTIVITY_SIT = ActivityAccessor.constructor("sit");
-		ACTIVITY_GUARD = ActivityAccessor.constructor("guard");
-		ACTIVITY_EAT = ActivityAccessor.constructor("eat");
+		ACTIVITY_SIT = new Activity("sit");
+		ACTIVITY_GUARD = new Activity("guard");
+		ACTIVITY_EAT = new Activity("eat");
 
 		BRAVERY = new MaidPersonality.Builder()
 				.setPounce()
