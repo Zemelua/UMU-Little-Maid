@@ -67,7 +67,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
-	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<Integer> EATING_TICKS;
 
 	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
@@ -107,7 +106,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
-		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.EATING_TICKS, 0);
 	}
 
@@ -126,25 +124,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
 				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0D);
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-
-		boolean applied = false;
-
-		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
-			if (!applied && job.canApply(this)) {
-				this.setJob(job);
-
-				applied = true;
-			}
-		}
-
-		if (!applied) {
-			this.setJob(ModEntities.JOB_NONE);
-		}
 	}
 
 	@Override
@@ -483,10 +462,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return ModEntities.JOB_NONE;
 	}
 
-	private void setJob(MaidJob job) {
-		this.dataTracker.set(LittleMaidEntity.JOB, job);
-	}
-
 	@SuppressWarnings("unused")
 	public MaidPersonality getPersonality() {
 		return this.dataTracker.get(LittleMaidEntity.PERSONALITY);
@@ -560,7 +535,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
-		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
 		SENSORS = ImmutableList.of(
