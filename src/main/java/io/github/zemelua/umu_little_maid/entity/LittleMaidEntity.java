@@ -76,10 +76,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	protected LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
-
-		if (this.getRandom().nextDouble() > 0.85D) {
-			this.setLeftHanded(true);
-		}
 	}
 
 	@Nullable
@@ -96,7 +92,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			));
 		}
 
-		this.setLeftHanded(random.nextFloat() < LittleMaidEntity.LEFT_HAND_CHANCE);
+		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
 		return entityData;
 	}
