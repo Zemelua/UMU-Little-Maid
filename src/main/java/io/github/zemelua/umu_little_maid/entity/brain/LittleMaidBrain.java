@@ -102,12 +102,14 @@ public final class LittleMaidBrain {
 						new ForgetAttackTargetTask<>(),
 						LittleMaidBrain.ATTACK_JOBS)),
 				Pair.of(1, new MaidJobTask(
+						new PounceAtTargetTask<>(), LittleMaidBrain.FENCER_JOBS)),
+				Pair.of(2, new MaidJobTask(
 						new RangedApproachTask(LittleMaidBrain.RUN_SPEED), LittleMaidBrain.MELEE_ATTACK_JOBS)),
-				Pair.of(2, new MaidJobTask(
+				Pair.of(3, new MaidJobTask(
 						new MeleeAttackTask(LittleMaidBrain.FENCER_ATTACK_INTERVAL), LittleMaidBrain.FENCER_JOBS)),
-				Pair.of(2, new MaidJobTask(
+				Pair.of(3, new MaidJobTask(
 						new MeleeAttackTask(LittleMaidBrain.CRACKER_ATTACK_INTERVAL), LittleMaidBrain.CRACKER_JOBS)),
-				Pair.of(2, new MaidJobTask(
+				Pair.of(3, new MaidJobTask(
 						new MaidBowAttackTask(LittleMaidBrain.BOW_ATTACK_RANGE, LittleMaidBrain.RUN_SPEED, LittleMaidBrain.BOW_ATTACK_INTERVAL),
 						ModEntities.JOB_ARCHER))
 		), ImmutableSet.of(
