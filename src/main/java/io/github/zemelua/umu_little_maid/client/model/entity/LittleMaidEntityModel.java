@@ -1,20 +1,25 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
+import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.animation.Animation;
+import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.AnimationState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
-public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> implements ModelWithArms {
+public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntity> implements ModelWithArms {
+	private final ModelPart base;
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart skirt;
@@ -29,6 +34,7 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	public float leaningPitch;
 
 	public LittleMaidEntityModel(ModelPart base) {
+		this.base = base;
 		this.head = base.getChild("head");
 		this.body = base.getChild("body");
 		this.skirt = base.getChild("skirt");
@@ -85,11 +91,11 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	}
 
 	@Override
-	public void setAngles(LittleMaidEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(LittleMaidEntity maid, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.head.pitch = (float) Math.toRadians(headPitch);
 		this.head.yaw = (float) Math.toRadians(headYaw);
 
-		if (entity.isSitting()) {
+		if (maid.isSitting()) {
 			this.head.roll = (float) Math.toRadians(13.7F);
 			this.rightArm.pitch = (float) Math.toRadians(-42.0);
 			this.rightArm.yaw = (float) Math.toRadians(0.0F);
@@ -111,22 +117,22 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
 
 		// 手のポーズ(弓とか)
-		boolean mainArm = entity.getMainArm() == Arm.RIGHT;
-		if (entity.isUsingItem()) {
-			boolean activeHand = entity.getActiveHand() == Hand.MAIN_HAND;
+		boolean mainArm = maid.getMainArm() == Arm.RIGHT;
+		if (maid.isUsingItem()) {
+			boolean activeHand = maid.getActiveHand() == Hand.MAIN_HAND;
 			if (mainArm == activeHand) {
-				this.positionRightArm(entity);
+				this.positionRightArm(maid);
 			} else {
-				this.positionLeftArm(entity);
+				this.positionLeftArm(maid);
 			}
 		} else {
 			boolean isTwoHanded = mainArm ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
 			if (mainArm != isTwoHanded) {
-				this.positionLeftArm(entity);
-				this.positionRightArm(entity);
+				this.positionLeftArm(maid);
+				this.positionRightArm(maid);
 			} else {
-				this.positionRightArm(entity);
-				this.positionLeftArm(entity);
+				this.positionRightArm(maid);
+				this.positionLeftArm(maid);
 			}
 		}
 
@@ -139,10 +145,10 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		}
 
 		// 攻撃時の手の動き
-		Arm arm = entity.getMainArm();
-		Hand hand = entity.preferredHand;
+		Arm arm = maid.getMainArm();
+		Hand hand = maid.preferredHand;
 		if (hand != Hand.MAIN_HAND) arm = arm.getOpposite();
-		ModelPart modelPart = this.getArm(arm);
+		ModelPart armPart = this.getArm(arm);
 
 		float progress = 1.0f - this.handSwingProgress;
 		progress *= progress;
@@ -150,9 +156,24 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		progress = 1.0f - progress;
 		float g = MathHelper.sin(progress * (float) Math.PI);
 		float h = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
-		modelPart.pitch -= g * 1.2f + h;
-		modelPart.yaw += this.body.yaw * 2.0f;
-		modelPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4f;
+		armPart.pitch -= g * 1.2f + h;
+		armPart.yaw += this.body.yaw * 2.0f;
+		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4f;
+
+		this.updateAnimation(maid.getEatAnimation(), UMULittleMaidClient.MAID_EAT_ANIMATION, animationProgress);
+	}
+
+	@Override
+	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
+		animationState.update(animationProgress, speedMultiplier);
+		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0f, Vec3f.ZERO));
+
+		if (animation == UMULittleMaidClient.MAID_EAT_ANIMATION && animationState.isRunning()) {
+			this.leftArm.yaw = 0.4F;
+			this.leftArm.pitch = -1.5707964F;
+			this.rightArm.yaw = -0.4F;
+			this.rightArm.pitch = -1.5707964F;
+		}
 	}
 
 	@Override
@@ -248,14 +269,8 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.head.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.body.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.skirt.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.rightArm.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.leftArm.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.rightLeg.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.leftLeg.render(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
+	public ModelPart getPart() {
+		return this.base;
 	}
 
 	@Override
@@ -266,11 +281,18 @@ public class LittleMaidEntityModel extends EntityModel<LittleMaidEntity> impleme
 		matrixStack.scale(0.68F, 0.68F, 0.68F);
 	}
 
-	protected ModelPart getArm(Arm arm) {
+	private ModelPart getArm(Arm arm) {
 		if (arm == Arm.LEFT) {
 			return this.leftArm;
 		}
 
 		return this.rightArm;
+	}
+
+	private ModelPart getArm(LittleMaidEntity maid) {
+		Arm arm = maid.getMainArm();
+		Hand hand = maid.preferredHand;
+		if (hand != Hand.MAIN_HAND) arm = arm.getOpposite();
+		return this.getArm(arm);
 	}
 }

@@ -6,6 +6,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttackableSenso
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttractableLivingsSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidGuardableLivingSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
@@ -42,6 +43,7 @@ public final class ModEntities {
 
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
+	public static final TrackedDataHandler<MaidPose> DATA_MAID_POSE;
 
 	public static final MemoryModuleType<UUID> MEMORY_OWNER;
 	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
@@ -84,6 +86,7 @@ public final class ModEntities {
 
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
+		TrackedDataHandlerRegistry.register(ModEntities.DATA_MAID_POSE);
 
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.MEMORY_OWNER);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
@@ -126,6 +129,7 @@ public final class ModEntities {
 
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
+		DATA_MAID_POSE = TrackedDataHandler.ofEnum(MaidPose.class);
 
 		MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));

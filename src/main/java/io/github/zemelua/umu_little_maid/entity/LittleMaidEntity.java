@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -68,11 +69,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Integer> EATING_TICKS;
+	private static final TrackedData<MaidPose> POSE;
 
 	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
+	private final AnimationState eatAnimation = new AnimationState();
 
 	private boolean blockedDamage;
 
@@ -107,6 +110,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.EATING_TICKS, 0);
+		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
 	}
 
 	@Override
@@ -399,6 +403,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (data.equals(LittleMaidEntity.POSE)) {
+			MaidPose pose = this.getAnimationPose();
+			if (pose == MaidPose.EAT) {
+				this.eatAnimation.start(this.age);
+			} else {
+				this.eatAnimation.stop();
+			}
+		}
+
+		super.onTrackedDataSet(data);
+	}
+
+	@Override
 	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
@@ -475,8 +493,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.EATING_TICKS, value);
 	}
 
+	public MaidPose getAnimationPose() {
+		return this.dataTracker.get(LittleMaidEntity.POSE);
+	}
+
+	public void setAnimationPose(MaidPose value) {
+		this.dataTracker.set(LittleMaidEntity.POSE, value);
+	}
+
 	public double getIntimacy() {
 		return 0;
+	}
+
+	public AnimationState getEatAnimation() {
+		return this.eatAnimation;
 	}
 
 	private static final String KEY_INVENTORY = "Inventory";
@@ -536,6 +566,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 
 		SENSORS = ImmutableList.of(
 				SensorType.HURT_BY,

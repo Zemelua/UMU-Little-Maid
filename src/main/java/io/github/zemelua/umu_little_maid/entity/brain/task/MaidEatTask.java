@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.ai.brain.Brain;
@@ -43,8 +44,10 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 		this.eatingStack = MaidEatTask.searchHealItems(maid);
 		maid.setStackInHand(Hand.OFF_HAND, this.eatingStack.copy().split(1));
 		maid.setEatingTicks(0);
+		maid.setAnimationPose(MaidPose.EAT);
 		brain.forget(MemoryModuleType.ATTACK_TARGET);
 		brain.forget(MemoryModuleType.WALK_TARGET);
+		brain.forget(MemoryModuleType.LOOK_TARGET);
 		brain.forget(MemoryModuleType.IS_PANICKING);
 	}
 
@@ -63,6 +66,7 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 			this.eatingStack.split(1);
 		}
 		maid.setEatingTicks(0);
+		maid.setAnimationPose(MaidPose.NONE);
 	}
 
 	public static ItemStack searchHealItems(LittleMaidEntity maid) {
