@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -17,6 +18,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -42,11 +44,15 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -75,7 +81,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private int eatingTicks;
 	private boolean blockedDamage;
 
-	protected LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
+	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
 
 		this.eatingTicks = 0;
@@ -85,8 +91,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
 	                             @Nullable EntityData entityData, @Nullable NbtCompound nbt) {
+		Random random = world.getRandom();
 
-		MaidPersonality personality = this.getPersonality();
+		MaidPersonality personality = MaidSpawnHandler.randomPersonality(random, world.getBiome(this.getBlockPos()));
+		this.setPersonality(personality);
+
 		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(personality.getMaxHealth());
 		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)).setBaseValue(personality.getMovementSpeed());
 		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).setBaseValue(personality.getAttackDamage());
@@ -96,7 +105,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(personality.getKnockbackResistance());
 		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_LUCK)).setBaseValue(personality.getLuck());
 
-		this.setLeftHanded(this.random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE))
+				.addPersistentModifier(new EntityAttributeModifier(
+						"Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001),
+						EntityAttributeModifier.Operation.MULTIPLY_BASE));
+
+		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
 		return entityData;
 	}
@@ -151,6 +165,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack interactItem = player.getStackInHand(hand);
+
+		UMULittleMaid.LOGGER.info(ModRegistries.MAID_PERSONALITY.getId(this.getPersonality()));
 
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
@@ -405,6 +421,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return !this.isSitting() && super.canTarget(living);
 	}
 
+	public static boolean canSpawn(EntityType<LittleMaidEntity> ignoredType, ServerWorldAccess world, SpawnReason ignoredReason, BlockPos pos, Random ignoredRandom) {
+		return world.getBlockState(pos.down()).isIn(BlockTags.RABBITS_SPAWNABLE_ON) && world.getBaseLightLevel(pos, 0) > 8;
+	}
+
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (data.equals(LittleMaidEntity.POSE)) {
@@ -488,6 +508,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.dataTracker.get(LittleMaidEntity.PERSONALITY);
 	}
 
+	public void setPersonality(MaidPersonality value) {
+		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
+	}
+
 	public int getEatingTicks() {
 		return this.eatingTicks;
 	}
@@ -517,6 +541,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
+	private static final String KEY_PERSONALITY = "Personality";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -541,6 +566,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_SITTING, this.isSitting());
+
+		@Nullable Identifier personality = ModRegistries.MAID_PERSONALITY.getId(this.getPersonality());
+		if (personality != null) {
+			nbt.putString(LittleMaidEntity.KEY_PERSONALITY, personality.toString());
+		}
 	}
 
 	@Override
@@ -563,6 +593,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.setOwnerUuid(uuid);
 
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
+
+		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
+			this.setPersonality(ModRegistries.MAID_PERSONALITY.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_PERSONALITY))));
+		}
 	}
 
 	static {

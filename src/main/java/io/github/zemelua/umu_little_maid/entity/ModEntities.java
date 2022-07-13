@@ -7,16 +7,16 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttractableLivi
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidGuardableLivingSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
+import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
@@ -29,6 +29,8 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.BiomeKeys;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -124,6 +126,20 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("cracker"), ModEntities.JOB_CRACKER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("archer"), ModEntities.JOB_ARCHER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
+
+		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
+				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
+				BiomeKeys.DESERT,
+				BiomeKeys.SWAMP,
+				BiomeKeys.FOREST, BiomeKeys.FLOWER_FOREST, BiomeKeys.BIRCH_FOREST, BiomeKeys.DARK_FOREST, BiomeKeys.OLD_GROWTH_BIRCH_FOREST,
+				BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, BiomeKeys.TAIGA, BiomeKeys.SNOWY_TAIGA,
+				BiomeKeys.SAVANNA, BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE, BiomeKeys.BAMBOO_JUNGLE,
+				BiomeKeys.GROVE, BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS,
+				BiomeKeys.LUSH_CAVES
+		), SpawnGroup.CREATURE, ModEntities.LITTLE_MAID, 100, 1, 1);
+
+		SpawnRestrictionAccessor.callRegister(ModEntities.LITTLE_MAID, SpawnRestriction.Location.ON_GROUND,
+				Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn);
 
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");

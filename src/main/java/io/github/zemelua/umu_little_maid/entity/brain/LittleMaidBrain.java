@@ -3,10 +3,9 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.*;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -149,8 +148,6 @@ public final class LittleMaidBrain {
 		Brain<?> brain = littleMaid.getBrain();
 		brain.resetPossibleActivities(ImmutableList.of(
 				ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.FIGHT, ModEntities.ACTIVITY_GUARD, Activity.IDLE));
-
-		UMULittleMaid.LOGGER.info(brain.getOptionalMemory(MemoryModuleType.IS_PANICKING).isPresent());
 	}
 
 	private LittleMaidBrain() throws IllegalAccessException {
