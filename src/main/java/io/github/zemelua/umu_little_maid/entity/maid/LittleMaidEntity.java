@@ -1,11 +1,9 @@
-package io.github.zemelua.umu_little_maid.entity;
+package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
+import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
-import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
-import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;

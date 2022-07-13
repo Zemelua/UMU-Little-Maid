@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;

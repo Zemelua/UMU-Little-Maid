@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.maid.job;
+package io.github.zemelua.umu_little_maid.entity.maid;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;

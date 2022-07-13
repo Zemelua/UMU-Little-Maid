@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.animation.Animation;
 import net.minecraft.client.render.entity.animation.AnimationHelper;

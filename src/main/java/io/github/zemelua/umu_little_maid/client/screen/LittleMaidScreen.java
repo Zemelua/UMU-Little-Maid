@@ -2,7 +2,7 @@ package io.github.zemelua.umu_little_maid.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandler;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;

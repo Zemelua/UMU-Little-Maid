@@ -6,9 +6,10 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttackableSenso
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttractableLivingsSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidGuardableLivingSensor;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
-import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
-import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;

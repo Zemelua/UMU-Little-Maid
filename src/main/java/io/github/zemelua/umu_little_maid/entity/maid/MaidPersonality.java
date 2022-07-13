@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.maid.personality;
+package io.github.zemelua.umu_little_maid.entity.maid;
 
 public class MaidPersonality {
 	private final double maxHealth;

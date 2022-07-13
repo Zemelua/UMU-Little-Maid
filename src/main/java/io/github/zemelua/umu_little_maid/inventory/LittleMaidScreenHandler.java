@@ -2,7 +2,7 @@ package io.github.zemelua.umu_little_maid.inventory;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;

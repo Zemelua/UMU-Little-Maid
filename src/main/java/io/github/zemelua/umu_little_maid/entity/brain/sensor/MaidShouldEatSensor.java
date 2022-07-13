@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.MaidEatTask;
 import net.minecraft.entity.ai.brain.Brain;
