@@ -4,7 +4,6 @@ plugins {
 }
 
 version = project.mod_version
-// version = 1.0
 group = project.maven_group
 
 repositories {

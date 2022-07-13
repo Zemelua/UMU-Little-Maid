@@ -2,11 +2,11 @@
 	"schemaVersion": 1,
 	"id": "umu_little_maid",
 	"version": "${version}",
-	"name": "Umu_little_maid",
+	"name": "UMU Little Maid",
 	"description": "",
 	"authors": [ "Zemelua" ],
 	"contact": { },
-	"license": "All-Rights-Reserved",
+	"license": "MIT",
 	"icon": "assets/umu_little_maid/icon.png",
 	"environment": "*",
 	"entrypoints": {
