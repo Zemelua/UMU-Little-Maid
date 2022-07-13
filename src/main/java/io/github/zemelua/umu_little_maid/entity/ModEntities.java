@@ -9,7 +9,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.personality.MaidPersonality;
-import io.github.zemelua.umu_little_maid.entity.maid.personality.ShyPersonality;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -62,9 +61,13 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_GUARD;
 	public static final Activity ACTIVITY_EAT;
 
-	public static final MaidPersonality BRAVERY;
-	public static final MaidPersonality TSUNDERE;
-	public static final MaidPersonality SHY;
+	public static final MaidPersonality PERSONALITY_BRAVERY;
+	public static final MaidPersonality PERSONALITY_DILIGENT;
+	public static final MaidPersonality PERSONALITY_AUDACIOUS;
+	public static final MaidPersonality PERSONALITY_GENTLE;
+	public static final MaidPersonality PERSONALITY_SHY;
+	public static final MaidPersonality PERSONALITY_LAZY;
+	public static final MaidPersonality PERSONALITY_TSUNDERE;
 
 	public static final MaidJob JOB_NONE;
 	public static final MaidJob JOB_FENCER;
@@ -107,9 +110,13 @@ public final class ModEntities {
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
-		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.BRAVERY);
-		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("tsundere"), ModEntities.TSUNDERE);
-		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("shy"), ModEntities.SHY);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("audacious"), ModEntities.PERSONALITY_AUDACIOUS);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("gentle"), ModEntities.PERSONALITY_GENTLE);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("shy"), ModEntities.PERSONALITY_SHY);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("lazy"), ModEntities.PERSONALITY_LAZY);
+		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("tsundere"), ModEntities.PERSONALITY_TSUNDERE);
 
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("none"), ModEntities.JOB_NONE);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fencer"), ModEntities.JOB_FENCER);
@@ -148,17 +155,13 @@ public final class ModEntities {
 		ACTIVITY_GUARD = new Activity("guard");
 		ACTIVITY_EAT = new Activity("eat");
 
-		BRAVERY = new MaidPersonality.Builder()
-				.setPounce()
-				.build();
-		TSUNDERE = new MaidPersonality.Builder()
-				.setCurt()
-				.setMinFollowDistance(10.0D)
-				.setMaxFollowDistance(5.0D)
-				.build();
-		SHY = new ShyPersonality(new MaidPersonality.Builder()
-				.setMinFollowDistance(8.0D)
-				.setMaxFollowDistance(5.0D));
+		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D).build();
+		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D).build();
+		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D).build();
+		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D).build();
+		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D).build();
+		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D).build();
+		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D).build();
 
 		JOB_NONE = new MaidJob(itemStack -> false);
 		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem);

@@ -1,62 +1,112 @@
 package io.github.zemelua.umu_little_maid.entity.maid.personality;
 
-import io.github.zemelua.umu_little_maid.entity.LittleMaidEntity;
-
 public class MaidPersonality {
-	protected final boolean pounce;
-	protected final boolean curt;
-	protected final double minFollowDistance;
-	protected final double maxFollowDistance;
+	private final double maxHealth;
+	private final double movementSpeed;
+	private final double attackDamage;
+	private final double attackKnockback;
+	private final double armor;
+	private final double armorToughness;
+	private final double knockbackResistance;
+	private final double luck;
 
-	public MaidPersonality(MaidPersonality.Builder builder) {
-		this.pounce = builder.pounce;
-		this.curt = builder.curt;
-		this.minFollowDistance = builder.minFollowDistance;
-		this.maxFollowDistance = builder.maxFollowDistance;
+	public MaidPersonality(Builder builder) {
+		this.maxHealth = builder.maxHealth;
+		this.movementSpeed = builder.movementSpeed;
+		this.attackDamage = builder.attackDamage;
+		this.attackKnockback = builder.attackKnockback;
+		this.armor = builder.armor;
+		this.armorToughness = builder.armorToughness;
+		this.knockbackResistance = builder.knockbackResistance;
+		this.luck = builder.luck;
 	}
 
-	public boolean canPounceAtTarget(LittleMaidEntity maid) {
-		return this.pounce;
+	public double getMaxHealth() {
+		return maxHealth;
 	}
 
-	public boolean isCurt(LittleMaidEntity maid) {
-		return this.curt;
+	public double getMovementSpeed() {
+		return movementSpeed;
 	}
 
-	public double getMinFollowDistance(LittleMaidEntity maid) {
-		return this.minFollowDistance;
+	public double getAttackDamage() {
+		return attackDamage;
 	}
 
-	public double getMaxFollowDistance(LittleMaidEntity maid) {
-		return this.maxFollowDistance;
+	public double getAttackKnockback() {
+		return attackKnockback;
+	}
+
+	public double getArmor() {
+		return armor;
+	}
+
+	public double getArmorToughness() {
+		return armorToughness;
+	}
+
+	public double getKnockbackResistance() {
+		return knockbackResistance;
+	}
+
+	public double getLuck() {
+		return luck;
 	}
 
 	public static class Builder {
-		private boolean pounce = false;
-		private boolean curt = false;
-		private double minFollowDistance = 10.0D;
-		private double maxFollowDistance = 2.3D;
+		private double maxHealth = 20.0D;
+		private double movementSpeed = 0.3D;
+		private double attackDamage = 1.0D;
+		private double attackKnockback = 0.0D;
+		private double armor = 0.0D;
+		private double armorToughness = 0.0D;
+		private double knockbackResistance = 0.0D;
+		private double luck = 0.0D;
 
-		public Builder setPounce() {
-			this.pounce = true;
-
-			return this;
-		}
-
-		public Builder setCurt() {
-			this.curt = true;
+		public Builder setMaxHealth(double maxHealth) {
+			this.maxHealth = maxHealth;
 
 			return this;
 		}
 
-		public Builder setMinFollowDistance(double minFollowDistance) {
-			this.minFollowDistance = minFollowDistance;
+		public Builder setMovementSpeed(double movementSpeed) {
+			this.movementSpeed = movementSpeed;
 
 			return this;
 		}
 
-		public Builder setMaxFollowDistance(double maxFollowDistance) {
-			this.maxFollowDistance = maxFollowDistance;
+		public Builder setAttackDamage(double attackDamage) {
+			this.attackDamage = attackDamage;
+
+			return this;
+		}
+
+		public Builder setAttackKnockback(double attackKnockback) {
+			this.attackKnockback = attackKnockback;
+
+			return this;
+		}
+
+		public Builder setArmor(double armor) {
+			this.armor = armor;
+
+			return this;
+		}
+
+		public Builder setArmorToughness(double armorToughness) {
+			this.armorToughness = armorToughness;
+
+			return this;
+		}
+
+		public Builder setKnockbackResistance(double knockbackResistance) {
+			this.knockbackResistance = knockbackResistance;
+
+			return this;
+		}
+
+		public Builder setLuck(double luck) {
+			this.luck = luck;
 
 			return this;
 		}

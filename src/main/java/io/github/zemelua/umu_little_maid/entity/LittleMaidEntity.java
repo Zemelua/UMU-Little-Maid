@@ -19,8 +19,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -51,12 +49,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -68,7 +66,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
-	private static final TrackedData<Integer> EATING_TICKS;
 	private static final TrackedData<MaidPose> POSE;
 
 	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
@@ -77,27 +74,31 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
 
+	private int eatingTicks;
 	private boolean blockedDamage;
 
 	protected LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
+
+		this.eatingTicks = 0;
 	}
 
 	@Nullable
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-	                             @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-		Random random = world.getRandom();
-		EntityAttributeInstance followRange = this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE);
+	                             @Nullable EntityData entityData, @Nullable NbtCompound nbt) {
 
-		if (followRange != null) {
-			followRange.addPersistentModifier(new EntityAttributeModifier(
-					"Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001),
-					EntityAttributeModifier.Operation.MULTIPLY_BASE
-			));
-		}
+		MaidPersonality personality = this.getPersonality();
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(personality.getMaxHealth());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)).setBaseValue(personality.getMovementSpeed());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).setBaseValue(personality.getAttackDamage());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK)).setBaseValue(personality.getAttackKnockback());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(personality.getArmor());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)).setBaseValue(personality.getArmorToughness());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(personality.getKnockbackResistance());
+		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_LUCK)).setBaseValue(personality.getLuck());
 
-		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
+		this.setLeftHanded(this.random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
 		return entityData;
 	}
@@ -108,8 +109,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
-		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.BRAVERY);
-		this.dataTracker.startTracking(LittleMaidEntity.EATING_TICKS, 0);
+		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
 	}
 
@@ -127,7 +127,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return MobEntity.createMobAttributes()
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0D);
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0D)
+				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.0D)
+				.add(EntityAttributes.GENERIC_ARMOR, 0.0D)
+				.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 0.0D)
+				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0D)
+				.add(EntityAttributes.GENERIC_LUCK, 0.0D);
 	}
 
 	@Override
@@ -486,11 +491,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public int getEatingTicks() {
-		return this.dataTracker.get(LittleMaidEntity.EATING_TICKS);
+		return this.eatingTicks;
 	}
 
 	public void setEatingTicks(int value) {
-		this.dataTracker.set(LittleMaidEntity.EATING_TICKS, value);
+		this.eatingTicks = value;
 	}
 
 	public MaidPose getAnimationPose() {
@@ -501,6 +506,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.POSE, value);
 	}
 
+	@SuppressWarnings("unused")
 	public double getIntimacy() {
 		return 0;
 	}
@@ -565,7 +571,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
-		EATING_TICKS = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 
 		SENSORS = ImmutableList.of(
