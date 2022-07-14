@@ -187,6 +187,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				if (!this.world.isClient()) {
 					this.setOwner(player);
 					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+					this.playContractSound();
 
 					if (!player.getAbilities().creativeMode) {
 						interactItem.decrement(1);
@@ -535,6 +536,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public AnimationState getEatAnimation() {
 		return this.eatAnimation;
+	}
+
+	public void playContractSound() {
+		this.playSound(this.getPersonality().getContractSound(), 1.0F, 1.0F);
 	}
 
 	private static final String KEY_INVENTORY = "Inventory";

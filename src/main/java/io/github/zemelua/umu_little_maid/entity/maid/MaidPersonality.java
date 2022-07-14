@@ -1,5 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
+import io.github.zemelua.umu_little_maid.sound.ModSounds;
+import net.minecraft.sound.SoundEvent;
+
 public class MaidPersonality {
 	private final double maxHealth;
 	private final double movementSpeed;
@@ -9,6 +12,7 @@ public class MaidPersonality {
 	private final double armorToughness;
 	private final double knockbackResistance;
 	private final double luck;
+	private final SoundEvent contractSound;
 
 	public MaidPersonality(Builder builder) {
 		this.maxHealth = builder.maxHealth;
@@ -19,38 +23,43 @@ public class MaidPersonality {
 		this.armorToughness = builder.armorToughness;
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
+		this.contractSound = builder.contractSound;
 	}
 
 	public double getMaxHealth() {
-		return maxHealth;
+		return this.maxHealth;
 	}
 
 	public double getMovementSpeed() {
-		return movementSpeed;
+		return this.movementSpeed;
 	}
 
 	public double getAttackDamage() {
-		return attackDamage;
+		return this.attackDamage;
 	}
 
 	public double getAttackKnockback() {
-		return attackKnockback;
+		return this.attackKnockback;
 	}
 
 	public double getArmor() {
-		return armor;
+		return this.armor;
 	}
 
 	public double getArmorToughness() {
-		return armorToughness;
+		return this.armorToughness;
 	}
 
 	public double getKnockbackResistance() {
-		return knockbackResistance;
+		return this.knockbackResistance;
 	}
 
 	public double getLuck() {
-		return luck;
+		return this.luck;
+	}
+
+	public SoundEvent getContractSound() {
+		return this.contractSound;
 	}
 
 	public static class Builder {
@@ -62,6 +71,7 @@ public class MaidPersonality {
 		private double armorToughness = 0.0D;
 		private double knockbackResistance = 0.0D;
 		private double luck = 0.0D;
+		private SoundEvent contractSound = ModSounds.ENTITY_MAID_GENERAL_CONTRACT;
 
 		public Builder setMaxHealth(double maxHealth) {
 			this.maxHealth = maxHealth;
@@ -107,6 +117,12 @@ public class MaidPersonality {
 
 		public Builder setLuck(double luck) {
 			this.luck = luck;
+
+			return this;
+		}
+
+		public Builder setContractSound(SoundEvent contractSound) {
+			this.contractSound = contractSound;
 
 			return this;
 		}

@@ -1,0 +1,69 @@
+{
+	"entity.maid.general.contract": {
+		"subtitle": "subtitles.entity.maid.general.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/general_contract"
+			}
+		]
+	},
+	"entity.maid.bravery.contract": {
+		"subtitle": "subtitles.entity.maid.bravery.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/bravery_contract"
+			}
+		]
+	},
+	"entity.maid.diligent.contract": {
+		"subtitle": "subtitles.entity.maid.diligent.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/diligent_contract"
+			}
+		]
+	},
+	"entity.maid.audacious.contract": {
+		"subtitle": "subtitles.entity.maid.audacious.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/audacious_contract"
+			}
+		]
+	},
+	"entity.maid.gentle.contract": {
+		"subtitle": "subtitles.entity.maid.gentle.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/gentle_contract"
+			}
+		]
+	},
+	"entity.maid.shy.contract": {
+		"subtitle": "subtitles.entity.maid.shy.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/shy_contract"
+			}
+		]
+	},
+	"entity.maid.lazy.contract": {
+		"subtitle": "subtitles.entity.maid.lazy.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/lazy_contract"
+			}
+		]
+	},
+	"entity.maid.tsundere.contract": {
+		"subtitle": "subtitles.entity.maid.tsundere.contract",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/tsundere_contract1"
+			},
+			{
+				"name": "umu_little_maid:entity/maid/tsundere_contract2"
+			}
+		]
+	}
+}

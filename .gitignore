@@ -5,6 +5,8 @@
 *.ipr
 *.iws
 
+src/main/resources/assets/umu_little_maid/sounds/
+
 # IntelliJ
 out/
 # mpeltonen/sbt-idea plugin

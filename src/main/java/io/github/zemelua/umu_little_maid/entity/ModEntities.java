@@ -12,6 +12,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -172,13 +173,27 @@ public final class ModEntities {
 		ACTIVITY_GUARD = new Activity("guard");
 		ACTIVITY_EAT = new Activity("eat");
 
-		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D).build();
-		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D).build();
-		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D).build();
-		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D).build();
-		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D).build();
-		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D).build();
-		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D).build();
+		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
+				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
+				.build();
+		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D)
+				.setContractSound(ModSounds.ENTITY_MAID_DILIGENT_CONTRACT)
+				.build();
+		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D)
+				.setContractSound(ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT)
+				.build();
+		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D)
+				.setContractSound(ModSounds.ENTITY_MAID_GENTLE_CONTRACT)
+				.build();
+		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D)
+				.setContractSound(ModSounds.ENTITY_MAID_SHY_CONTRACT)
+				.build();
+		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
+				.setContractSound(ModSounds.ENTITY_MAID_LAZY_CONTRACT)
+				.build();
+		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D)
+				.setContractSound(ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT)
+				.build();
 
 		JOB_NONE = new MaidJob(itemStack -> false);
 		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem);
