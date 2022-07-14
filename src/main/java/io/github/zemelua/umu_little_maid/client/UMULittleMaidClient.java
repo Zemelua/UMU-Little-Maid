@@ -18,6 +18,7 @@ import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.animation.Keyframe;
 import net.minecraft.client.render.entity.animation.Transformation;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.screen.PlayerScreenHandler;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -29,10 +30,15 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	public static final EntityModelLayer LAYER_LITTLE_MAID = new EntityModelLayer(UMULittleMaid.identifier("little_maid"), "main");
 
 	public static final Animation MAID_EAT_ANIMATION = Animation.Builder.create(0.5F).looping()
-			.addBoneAnimation("head", new Transformation(Transformation.Targets.ROTATE,
-					new Keyframe(0.0F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-					new Keyframe(0.25F, AnimationHelper.method_41829(35.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-					new Keyframe(0.5F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)))
+			.addBoneAnimation(EntityModelPartNames.HEAD, new Transformation(Transformation.Targets.ROTATE,
+					new Keyframe(0.0F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
+					new Keyframe(0.2F, AnimationHelper.method_41829(30.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
+					new Keyframe(0.3F, AnimationHelper.method_41829(30.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
+					new Keyframe(0.5F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
+			.addBoneAnimation("left_arm", new Transformation(Transformation.Targets.ROTATE,
+					new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, 22.9F, 0.0F), Transformation.Interpolations.field_37884)))
+			.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
+					new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, -22.9F, 0.0F), Transformation.Interpolations.field_37884)))
 			.build();
 
 	public static final Animation FROG_WALK_ANIMATION = Animation.Builder.create(1.25f).looping()

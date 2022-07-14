@@ -96,25 +96,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.head.yaw = (float) Math.toRadians(headYaw);
 
 		if (maid.isSitting()) {
-			this.head.roll = (float) Math.toRadians(13.7F);
-			this.rightArm.pitch = (float) Math.toRadians(-42.0);
-			this.rightArm.yaw = (float) Math.toRadians(0.0F);
-			this.rightArm.roll = (float) Math.toRadians(-25.0F);
-			this.leftArm.pitch = (float) Math.toRadians(-42.0F);
-			this.leftArm.yaw = (float) Math.toRadians(0.0F);
-			this.leftArm.roll = (float) Math.toRadians(25.0F);
+			this.setSittingAngle();
 		} else {
-			this.head.roll = 0.0F;
-			this.rightArm.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
-			this.rightArm.yaw = 0.0F;
-			this.rightArm.roll = (float) Math.toRadians(15.0F);
-			this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
-			this.leftArm.yaw = 0.0F;
-			this.leftArm.roll = (float) Math.toRadians(-15.0F);
+			this.setStandingAngle(limbAngle, limbDistance);
 		}
-
-		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
-		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
 
 		// 手のポーズ(弓とか)
 		boolean mainArm = maid.getMainArm() == Arm.RIGHT;
@@ -145,35 +130,48 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 
 		// 攻撃時の手の動き
-		Arm arm = maid.getMainArm();
-		Hand hand = maid.preferredHand;
-		if (hand != Hand.MAIN_HAND) arm = arm.getOpposite();
-		ModelPart armPart = this.getArm(arm);
-
-		float progress = 1.0f - this.handSwingProgress;
-		progress *= progress;
-		progress *= progress;
-		progress = 1.0f - progress;
-		float g = MathHelper.sin(progress * (float) Math.PI);
-		float h = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
-		armPart.pitch -= g * 1.2f + h;
-		armPart.yaw += this.body.yaw * 2.0f;
-		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4f;
+		this.adaptAttackingAngel(maid.getMainArm());
 
 		this.updateAnimation(maid.getEatAnimation(), UMULittleMaidClient.MAID_EAT_ANIMATION, animationProgress);
+	}
+
+	private void setStandingAngle(float limbAngle, float limbDistance) {
+		this.head.roll = (float) Math.toRadians(0.0F);
+		this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
+		this.leftArm.yaw = (float) Math.toRadians(0.0F);
+		this.leftArm.roll = (float) Math.toRadians(-15.0F);
+		this.rightArm.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
+		this.rightArm.yaw = (float) Math.toRadians(0.0F);
+		this.rightArm.roll = (float) Math.toRadians(15.0F);
+		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+	}
+
+	private void setSittingAngle() {
+		this.head.roll = (float) Math.toRadians(13.7F);
+		this.leftArm.pitch = (float) Math.toRadians(-42.0F);
+		this.leftArm.yaw = (float) Math.toRadians(0.0F);
+		this.leftArm.roll = (float) Math.toRadians(25.0F);
+		this.rightArm.pitch = (float) Math.toRadians(-42.0);
+		this.rightArm.yaw = (float) Math.toRadians(0.0F);
+		this.rightArm.roll = (float) Math.toRadians(-25.0F);
+	}
+
+	private void adaptAttackingAngel(Arm attackingArm) {
+		ModelPart armPart = this.getArm(attackingArm);
+
+		float progress = 1.0F - (float) Math.pow(1.0D - this.handSwingProgress, 3.0D);
+		float g = MathHelper.sin(progress * (float) Math.PI);
+		float h = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
+		armPart.pitch -= g * 1.2F + h;
+		armPart.yaw += this.body.yaw * 2.0F;
+		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
 	}
 
 	@Override
 	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
 		animationState.update(animationProgress, speedMultiplier);
 		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0f, Vec3f.ZERO));
-
-		if (animation == UMULittleMaidClient.MAID_EAT_ANIMATION && animationState.isRunning()) {
-			this.leftArm.yaw = 0.4F;
-			this.leftArm.pitch = -1.5707964F;
-			this.rightArm.yaw = -0.4F;
-			this.rightArm.pitch = -1.5707964F;
-		}
 	}
 
 	@Override
