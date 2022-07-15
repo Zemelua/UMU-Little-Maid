@@ -65,6 +65,10 @@ jar {
     from("LICENSE.md") {
         rename { "${it}_${project.archivesBaseName}" }
     }
+
+    from("Readme.txt") {
+        rename { "${it}" }
+    }
 }
 
 // configure the maven publication
