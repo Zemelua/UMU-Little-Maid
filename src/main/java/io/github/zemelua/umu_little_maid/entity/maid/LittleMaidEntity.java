@@ -112,6 +112,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						EntityAttributeModifier.Operation.MULTIPLY_BASE));
 
 		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
+		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 2.0F);
+		this.setEquipmentDropChance(EquipmentSlot.OFFHAND, 2.0F);
+		this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
+		this.setEquipmentDropChance(EquipmentSlot.FEET, 2.0F);
 
 		return entityData;
 	}
@@ -424,6 +428,17 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				delta = delta.rotateY(-this.getYaw() * ((float) Math.PI / 180));
 
 				((ServerWorld) this.world).spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND)), pos.x, pos.y, pos.z, 0, delta.x, delta.y + 0.05, delta.z, 1.0);
+			}
+		}
+	}
+
+	@Override
+	protected void dropInventory() {
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
+
+			if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
+				this.dropStack(itemStack);
 			}
 		}
 	}
