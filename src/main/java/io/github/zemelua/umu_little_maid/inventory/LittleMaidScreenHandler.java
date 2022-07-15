@@ -40,12 +40,12 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		// index : 0
 		this.addSlot(this.new MaidHeldItemSlot(8, 18));
 
-		// index : 1-2
+		// index : 1~2
 		for (int i = 0; i < LittleMaidEntity.ARMORS.length; i++) {
 			this.addSlot(new MaidArmorSlot(LittleMaidEntity.ARMORS[i], 8, 36 + i * 18));
 		}
 
-		// index : 3-17
+		// index : 3~(2 + size)
 		Inventory maidInventory = this.maid.getInventory();
 		int size = maidInventory.size(); // 15
 		for (int i = 0; i < 3 && (i + 1) * 5 <= size; i++) {
@@ -54,14 +54,14 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 			}
 		}
 
-		// index : 18-44
+		// index : (3 + size)~(29 + size)
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
 				this.addSlot(new Slot(inventory, 9 + i * 9 + j, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
-		// index : 45-53
+		// index : (30 + size)~(38 + size)
 		for (int i = 0; i < 9; i++) {
 			this.addSlot(new Slot(inventory, i, 8 + i * 18, 142));
 		}
@@ -89,11 +89,16 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		if (slot.hasStack()) {
 			ItemStack clickedStack = slot.getStack();
 			itemStack = clickedStack.copy();
+			int size = this.maid.getInventory().size();
 
-			if (index >= 0 && index < 18) {
-				if (!this.insertItem(clickedStack, 18, 54, false)) return ItemStack.EMPTY;
-			} else if (index >= 18 && index < 54) {
-				if (!this.insertItem(clickedStack, 3, 18, false)) return ItemStack.EMPTY;
+			if (index >= 0 && index < 3 + size) {
+				if (!this.insertItem(clickedStack, 3 + size, 39 + size, false)) return ItemStack.EMPTY;
+			} else if (index >= 3 + size && index < 39 + size) {
+				if (!this.insertItem(clickedStack, 1, 2, false)) {
+					if (!this.insertItem(clickedStack, 2, 3, false)) {
+						if (!this.insertItem(clickedStack, 3, 3 + size, false)) return ItemStack.EMPTY;
+					}
+				}
 			}
 
 			if (clickedStack.isEmpty()) {
