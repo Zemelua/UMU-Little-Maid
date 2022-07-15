@@ -80,7 +80,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState eatAnimation = new AnimationState();
 
 	private int eatingTicks;
-	private boolean blockedDamage;
+	private boolean damageBlocked;
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
@@ -318,7 +318,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public boolean damage(DamageSource source, float amount) {
 		boolean result = super.damage(source, amount);
 
-		this.blockedDamage = false;
+		this.damageBlocked = false;
+
+		if (!this.world.isClient() && this.isSitting()) {
+			this.setSitting(false);
+		}
 
 		return result;
 	}
@@ -350,7 +354,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	protected void damageShield(float amount) {
 		if (!this.activeItemStack.isOf(Items.SHIELD)) return;
 
-		this.blockedDamage = true;
+		this.damageBlocked = true;
 
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 0.8F + this.world.getRandom().nextFloat() * 0.4F);
@@ -375,7 +379,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected void playHurtSound(DamageSource source) {
-		if (!blockedDamage) {
+		if (!this.damageBlocked) {
 			super.playHurtSound(source);
 		}
 	}
