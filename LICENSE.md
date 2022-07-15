@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2022 Zemelua
+Copyright (c) 2022 MMM, あみたろ, Zemelua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-This license is governed by the following license.
+This license is governed by the following license:
 
 - LittleMaidMob use conditions by MMM (The original page has been closed)
 
@@ -43,7 +43,9 @@ I won't be responsible for any losses or damages using the MODs. Use them at own
 It is necessary to understand these to use.
 ```
 
-Files in `src/main/resources/assets/umu_little_maid/sounds/entity/maid` are governed by the following license.
+Files in `src/main/resources/assets/umu_little_maid/sounds/entity/maid` are governed by the following license:
 
 - Free voice materials use conditions by あみたろ
   https://amitaro.net/voice/voice_rule/
+
+Voice material by “Amitaro’s Voice Material Studio” <https://amitaro.net/>
