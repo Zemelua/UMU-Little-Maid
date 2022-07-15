@@ -175,11 +175,14 @@ public final class ModEntities {
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
+				.setFencerAttackSound(ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK)
+				.setHurtSound(ModSounds.ENTITY_MAID_BRAVERY_HURT)
 				.build();
 		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D)
 				.setContractSound(ModSounds.ENTITY_MAID_DILIGENT_CONTRACT)
 				.build();
 		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D)
+				.setDeathSound(ModSounds.ENTITY_MAID_AUDACIOUS_DEATH)
 				.setContractSound(ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT)
 				.build();
 		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D)
@@ -189,6 +192,8 @@ public final class ModEntities {
 				.setContractSound(ModSounds.ENTITY_MAID_SHY_CONTRACT)
 				.build();
 		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
+				.setAmbientSound(ModSounds.ENTITY_MAID_LAZY_AMBIENT)
+				.setDeathSound(ModSounds.ENTITY_MAID_LAZY_DEATH)
 				.setContractSound(ModSounds.ENTITY_MAID_LAZY_CONTRACT)
 				.build();
 		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D)

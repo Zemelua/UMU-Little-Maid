@@ -12,6 +12,15 @@ public class MaidPersonality {
 	private final double armorToughness;
 	private final double knockbackResistance;
 	private final double luck;
+	private final SoundEvent ambientSound;
+	private final SoundEvent fencerAttackSound;
+	private final SoundEvent crackerAttackSound;
+	private final SoundEvent archerAttackSound;
+	private final SoundEvent killedSound;
+	private final SoundEvent killedBarelySound;
+	private final SoundEvent hurtSound;
+	private final SoundEvent deathSound;
+	private final SoundEvent eatSound;
 	private final SoundEvent contractSound;
 
 	public MaidPersonality(Builder builder) {
@@ -23,6 +32,15 @@ public class MaidPersonality {
 		this.armorToughness = builder.armorToughness;
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
+		this.ambientSound = builder.ambientSound;
+		this.fencerAttackSound = builder.fencerAttackSound;
+		this.crackerAttackSound = builder.crackerAttackSound;
+		this.archerAttackSound = builder.archerAttackSound;
+		this.killedSound = builder.killedSound;
+		this.killedBarelySound = builder.killedBarelySound;
+		this.hurtSound = builder.hurtSound;
+		this.deathSound = builder.deathSound;
+		this.eatSound = builder.eatSound;
 		this.contractSound = builder.contractSound;
 	}
 
@@ -58,6 +76,42 @@ public class MaidPersonality {
 		return this.luck;
 	}
 
+	public SoundEvent getAmbientSound() {
+		return this.ambientSound;
+	}
+
+	public SoundEvent getFencerAttackSound() {
+		return this.fencerAttackSound;
+	}
+
+	public SoundEvent getCrackerAttackSound() {
+		return this.crackerAttackSound;
+	}
+
+	public SoundEvent getArcherAttackSound() {
+		return this.archerAttackSound;
+	}
+
+	public SoundEvent getKilledSound() {
+		return this.killedSound;
+	}
+
+	public SoundEvent getKilledBarelySound() {
+		return this.killedBarelySound;
+	}
+
+	public SoundEvent getHurtSound() {
+		return this.hurtSound;
+	}
+
+	public SoundEvent getDeathSound() {
+		return this.deathSound;
+	}
+
+	public SoundEvent getEatSound() {
+		return this.eatSound;
+	}
+
 	public SoundEvent getContractSound() {
 		return this.contractSound;
 	}
@@ -71,6 +125,15 @@ public class MaidPersonality {
 		private double armorToughness = 0.0D;
 		private double knockbackResistance = 0.0D;
 		private double luck = 0.0D;
+		private SoundEvent ambientSound = ModSounds.ENTITY_MAID_GENERAL_AMBIENT;
+		private SoundEvent fencerAttackSound = ModSounds.ENTITY_MAID_GENERAL_FENCER_ATTACK;
+		private SoundEvent crackerAttackSound = ModSounds.ENTITY_MAID_GENERAL_CRACKER_ATTACK;
+		private SoundEvent archerAttackSound = ModSounds.ENTITY_MAID_GENERAL_ARCHER_ATTACK;
+		private SoundEvent killedSound = ModSounds.ENTITY_MAID_GENERAL_KILLED;
+		private SoundEvent killedBarelySound = ModSounds.ENTITY_MAID_GENERAL_KILLED_BARELY;
+		private SoundEvent hurtSound = ModSounds.ENTITY_MAID_GENERAL_HURT;
+		private SoundEvent deathSound = ModSounds.ENTITY_MAID_GENERAL_DEATH;
+		private SoundEvent eatSound = ModSounds.ENTITY_MAID_GENERAL_EAT;
 		private SoundEvent contractSound = ModSounds.ENTITY_MAID_GENERAL_CONTRACT;
 
 		public Builder setMaxHealth(double maxHealth) {
@@ -117,6 +180,65 @@ public class MaidPersonality {
 
 		public Builder setLuck(double luck) {
 			this.luck = luck;
+
+			return this;
+		}
+
+		public Builder setAmbientSound(SoundEvent ambientSound) {
+			this.ambientSound = ambientSound;
+
+			return this;
+		}
+
+		public Builder setFencerAttackSound(SoundEvent fencerAttackSound) {
+			this.fencerAttackSound = fencerAttackSound;
+
+			return this;
+		}
+
+		@SuppressWarnings("unused")
+		public Builder setCrackerAttackSound(SoundEvent crackerAttackSound) {
+			this.crackerAttackSound = crackerAttackSound;
+
+			return this;
+		}
+
+		@SuppressWarnings("unused")
+		public Builder setArcherAttackSound(SoundEvent archerAttackSound) {
+			this.archerAttackSound = archerAttackSound;
+
+			return this;
+		}
+
+		@SuppressWarnings("unused")
+		public Builder setKilledSound(SoundEvent killedSound) {
+			this.killedSound = killedSound;
+
+			return this;
+		}
+
+		@SuppressWarnings("unused")
+		public Builder setKilledBarelySound(SoundEvent killedBarelySound) {
+			this.killedBarelySound = killedBarelySound;
+
+			return this;
+		}
+
+		public Builder setHurtSound(SoundEvent hurtSound) {
+			this.hurtSound = hurtSound;
+
+			return this;
+		}
+
+		public Builder setDeathSound(SoundEvent deathSound) {
+			this.deathSound = deathSound;
+
+			return this;
+		}
+
+		@SuppressWarnings("unused")
+		public Builder setEatSound(SoundEvent eatSound) {
+			this.eatSound = eatSound;
 
 			return this;
 		}

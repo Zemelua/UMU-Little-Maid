@@ -44,6 +44,7 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 		this.eatingStack = MaidEatTask.searchHealItems(maid);
 		maid.setStackInHand(Hand.OFF_HAND, this.eatingStack.copy().split(1));
 		maid.setEatingTicks(0);
+		maid.playEatSound(this.eatingStack);
 		maid.setAnimationPose(MaidPose.EAT);
 		brain.forget(MemoryModuleType.ATTACK_TARGET);
 		brain.forget(MemoryModuleType.WALK_TARGET);

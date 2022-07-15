@@ -3,7 +3,10 @@
 	"minVersion": "0.8",
 	"package": "io.github.zemelua.umu_little_maid.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"mixins": [ "MobEntityAccessor", "MoveControlAccessor", "SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TaskAccessor" ],
+	"mixins": [
+		"MobEntityAccessor", "MoveControlAccessor", "SpawnEggItemAccessor",
+		"SpawnRestrictionAccessor", "TaskAccessor"
+	],
 	"client": [
 	],
 	"injectors": {

@@ -43,6 +43,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
@@ -206,8 +207,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	 */
 	@Override
 	public boolean tryAttack(Entity target) {
-		double damage = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		double knockback = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		MaidJob job = this.getJob();
+		if (job == ModEntities.JOB_FENCER) {
+			this.playFencerAttackSound();
+		} else if (job == ModEntities.JOB_CRACKER) {
+			this.playCrackerAttackSound();
+		}
+
+		double damage = (float) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		double knockback = (float) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		int fireLevel = EnchantmentHelper.getFireAspect(this);
 
 		if (target instanceof LivingEntity living) {
@@ -244,6 +252,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				if (itemStack.isEmpty()) {
 					this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
 				}
+
+				if (living.isDead()) {
+					if (this.getHealth() <= this.getMaxHealth() * 0.3F) {
+						this.playKilledBarelySound();
+					} else {
+						this.playKilledSound();
+					}
+				}
 			}
 		}
 
@@ -252,7 +268,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	/**
 	 * 弓で攻撃するとき呼ばれるよ！ {@code PersistentProjectileEntity} を生成して発射してるよ
-	 * @param target 攻撃対象の {@code LivingEntity}
+	 *
+	 * @param target       攻撃対象の {@code LivingEntity}
 	 * @param pullProgress どれだけ弓を引いた状態で撃ったか
 	 */
 	@Override
@@ -274,6 +291,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.world.spawnEntity(projectile);
 
 		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		this.playArcherAttackSound();
 
 		itemStack.damage(1, this, entity -> {});
 		if (!consumeArrow) {
@@ -394,8 +412,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void playEatingAnimation() {
 		if (!this.world.isClient() && this.getEatingTicks() % 5 == 0) {
-			this.playSound(SoundEvents.ENTITY_CAT_EAT, 0.5F + 0.5F * (float) this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-
 			for (int i = 0; i < 6; i++) {
 				double d = -this.random.nextDouble() * 0.6D - 0.3D;
 				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, d, 0.6D);
@@ -521,6 +537,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.eatingTicks = value;
 	}
 
+	public boolean hasAttackTarget() {
+		return this.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET);
+	}
+
+	public boolean hasGuardTarget() {
+		return this.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET);
+	}
+
+	public boolean isPanicking() {
+		return this.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
+	}
+
 	public MaidPose getAnimationPose() {
 		return this.dataTracker.get(LittleMaidEntity.POSE);
 	}
@@ -538,8 +566,67 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.eatAnimation;
 	}
 
+	@Override
+	public float getSoundPitch() {
+		return 1.0F;
+	}
+
+	@Nullable
+	@Override
+	protected SoundEvent getAmbientSound() {
+		return this.getPersonality().getAmbientSound();
+	}
+
+	@Nullable
+	@Override
+	protected SoundEvent getHurtSound(DamageSource source) {
+		return this.getPersonality().getHurtSound();
+	}
+
+	@Nullable
+	@Override
+	protected SoundEvent getDeathSound() {
+		return this.getPersonality().getDeathSound();
+	}
+
+	@Override
+	public SoundEvent getEatSound(ItemStack stack) {
+		return this.getPersonality().getEatSound();
+	}
+
+	@Override
+	public void playAmbientSound() {
+		if (!this.hasAttackTarget() && !this.hasGuardTarget() && !this.isPanicking()) {
+			this.playSound(this.getAmbientSound(), this.getSoundVolume(), this.getSoundPitch());
+		}
+	}
+
+	public void playFencerAttackSound() {
+		this.playSound(this.getPersonality().getFencerAttackSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playCrackerAttackSound() {
+		this.playSound(this.getPersonality().getCrackerAttackSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playArcherAttackSound() {
+		this.playSound(this.getPersonality().getArcherAttackSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playKilledSound() {
+		this.playSound(this.getPersonality().getKilledSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playKilledBarelySound() {
+		this.playSound(this.getPersonality().getKilledBarelySound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playEatSound(ItemStack itemStack) {
+		this.playSound(this.getEatSound(itemStack), this.getSoundVolume(), this.getSoundPitch());
+	}
+
 	public void playContractSound() {
-		this.playSound(this.getPersonality().getContractSound(), 1.0F, 1.0F);
+		this.playSound(this.getPersonality().getContractSound(), this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	private static final String KEY_INVENTORY = "Inventory";

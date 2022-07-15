@@ -1,69 +1,159 @@
 {
-	"entity.maid.general.contract": {
-		"subtitle": "subtitles.entity.maid.general.contract",
+	"entity.maid.general.ambient": {
+		"subtitle": "subtitles.entity.maid.general.ambient",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_ambient1" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient2" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient3" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient4" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient5" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient6" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient7" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient8" }
+		]
+	},
+	"entity.maid.general.fencer_attack": {
+		"subtitle": "subtitles.entity.maid.general.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack3" }
+		]
+	},
+	"entity.maid.general.cracker_attack": {
+		"subtitle": "subtitles.entity.maid.general.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/general_cracker_attack2" },
+			{ "name": "umu_little_maid:entity/maid/general_cracker_attack3" }
+		]
+	},
+	"entity.maid.general.archer_attack": {
+		"subtitle": "subtitles.entity.maid.general.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/general_archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/general_archer_attack3" },
+			{ "name": "umu_little_maid:entity/maid/general_archer_attack4" }
+		]
+	},
+	"entity.maid.general.killed": {
+		"subtitle": "subtitles.entity.maid.general.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_killed1" },
+			{ "name": "umu_little_maid:entity/maid/general_killed2" },
+			{ "name": "umu_little_maid:entity/maid/general_killed3" },
+			{ "name": "umu_little_maid:entity/maid/general_killed4" }
+		]
+	},
+	"entity.maid.general.killed_barely": {
+		"subtitle": "subtitles.entity.maid.general.killed_barely",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_killed_barely1" },
+			{ "name": "umu_little_maid:entity/maid/general_killed_barely2" }
+		]
+	},
+	"entity.maid.general.hurt": {
+		"subtitle": "subtitles.entity.maid.general.hurt",
 		"sounds": [
 			{
-				"name": "umu_little_maid:entity/maid/general_contract"
-			}
+				"name": "umu_little_maid:entity/maid/general_hurt1",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/general_hurt2" },
+			{ "name": "umu_little_maid:entity/maid/general_hurt3" }
+		]
+	},
+	"entity.maid.general.death": {
+		"subtitle": "subtitles.entity.maid.general.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/general_death" } ]
+	},
+	"entity.maid.general.eat": {
+		"subtitle": "subtitles.entity.maid.general.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_eat1" },
+			{ "name": "umu_little_maid:entity/maid/general_eat2" }
+		]
+	},
+	"entity.maid.general.contract": {
+		"subtitle": "subtitles.entity.maid.general.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/general_contract" } ]
+	},
+	"entity.maid.bravery.fencer_attack": {
+		"subtitle": "subtitles.entity.maid.bravery.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/general_fencer_attack3" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack3" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack4" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack5" },
+			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack6" }
+		]
+	},
+	"entity.maid.bravery.hurt": {
+		"subtitle": "subtitles.entity.maid.bravery.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity.maid.general.hurt",
+				"type": "event"
+			},
+			{ "name": "umu_little_maid:entity/maid/bravery_hurt" }
 		]
 	},
 	"entity.maid.bravery.contract": {
 		"subtitle": "subtitles.entity.maid.bravery.contract",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/bravery_contract"
-			}
-		]
+		"sounds": [ { "name": "umu_little_maid:entity/maid/bravery_contract" } ]
 	},
 	"entity.maid.diligent.contract": {
 		"subtitle": "subtitles.entity.maid.diligent.contract",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/diligent_contract"
-			}
-		]
+		"sounds": [ { "name": "umu_little_maid:entity/maid/diligent_contract" } ]
+	},
+	"entity.maid.audacious.death": {
+		"subtitle": "subtitles.entity.maid.audacious.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/audacious_death" } ]
 	},
 	"entity.maid.audacious.contract": {
 		"subtitle": "subtitles.entity.maid.audacious.contract",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/audacious_contract"
-			}
-		]
+		"sounds": [ { "name": "umu_little_maid:entity/maid/audacious_contract" } ]
 	},
 	"entity.maid.gentle.contract": {
 		"subtitle": "subtitles.entity.maid.gentle.contract",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/gentle_contract"
-			}
-		]
+		"sounds": [ { "name": "umu_little_maid:entity/maid/gentle_contract" } ]
 	},
 	"entity.maid.shy.contract": {
 		"subtitle": "subtitles.entity.maid.shy.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/shy_contract" } ]
+	},
+	"entity.maid.lazy.ambient": {
+		"subtitle": "subtitles.entity.maid.lazy.ambient",
 		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/shy_contract"
-			}
+			{ "name": "umu_little_maid:entity/maid/general_ambient1" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient2" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient3" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient4" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient5" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient6" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient7" },
+			{ "name": "umu_little_maid:entity/maid/general_ambient8" },
+			{ "name": "umu_little_maid:entity/maid/lazy_ambient" }
 		]
+	},
+	"entity.maid.lazy.death": {
+		"subtitle": "subtitles.entity.maid.lazy.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/lazy_death" } ]
 	},
 	"entity.maid.lazy.contract": {
 		"subtitle": "subtitles.entity.maid.lazy.contract",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/lazy_contract"
-			}
-		]
+		"sounds": [ { "name": "umu_little_maid:entity/maid/lazy_contract" } ]
 	},
 	"entity.maid.tsundere.contract": {
 		"subtitle": "subtitles.entity.maid.tsundere.contract",
 		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/tsundere_contract1"
-			},
-			{
-				"name": "umu_little_maid:entity/maid/tsundere_contract2"
-			}
+			{ "name": "umu_little_maid:entity/maid/tsundere_contract1" },
+			{ "name": "umu_little_maid:entity/maid/tsundere_contract2" }
 		]
 	}
 }
