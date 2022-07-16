@@ -65,6 +65,7 @@ import java.util.function.Predicate;
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
 	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
+	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 
 	private static final TrackedData<Optional<UUID>> OWNER;
@@ -111,10 +112,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						EntityAttributeModifier.Operation.MULTIPLY_BASE));
 
 		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
+
 		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 2.0F);
 		this.setEquipmentDropChance(EquipmentSlot.OFFHAND, 2.0F);
 		this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 		this.setEquipmentDropChance(EquipmentSlot.FEET, 2.0F);
+
+		this.setCanPickUpLoot(true);
 
 		return entityData;
 	}
@@ -470,6 +474,21 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public boolean canTarget(LivingEntity living) {
 		return !this.isSitting() && super.canTarget(living);
+	}
+
+	@Override
+	protected void loot(ItemEntity item) {
+		InventoryOwner.pickUpItem(this, this, item);
+	}
+
+	@Override
+	public boolean canPickupItem(ItemStack itemStack) {
+		if (this.getJob() == ModEntities.JOB_FARMER) {
+			return Arrays.stream(LittleMaidEntity.CROPS).anyMatch(itemStack::isOf)
+					|| Arrays.stream(LittleMaidEntity.PRODUCTS).anyMatch(itemStack::isOf);
+		}
+
+		return false;
 	}
 
 	public static boolean canSpawn(EntityType<LittleMaidEntity> ignoredType, ServerWorldAccess world, SpawnReason ignoredReason, BlockPos pos, Random ignoredRandom) {
