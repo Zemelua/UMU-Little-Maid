@@ -130,7 +130,8 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 
 		// 攻撃時の手の動き
-		this.adaptAttackingAngel(maid.getMainArm());
+		Arm arm = maid.preferredHand == Hand.MAIN_HAND ? maid.getMainArm() : maid.getMainArm().getOpposite();
+		this.adaptAttackingAngel(arm);
 
 		this.updateAnimation(maid.getEatAnimation(), UMULittleMaidClient.MAID_EAT_ANIMATION, animationProgress);
 	}

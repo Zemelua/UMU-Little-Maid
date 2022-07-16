@@ -13,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.GameEvent;
 
@@ -65,6 +66,7 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 
 			if (MaidFarmTask.isHarvestable(pos.get(), world)) {
 				world.breakBlock(pos.get(), true, maid);
+				maid.swingHand(Hand.MAIN_HAND);
 				brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, 20);
 				brain.forget(ModEntities.MEMORY_FARM_POS);
 				brain.forget(MemoryModuleType.WALK_TARGET);
@@ -78,6 +80,7 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		world.emitGameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Emitter.of(maid, farmland));
 		world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		crop.decrement(1);
+		maid.swingHand(Hand.OFF_HAND);
 
 		Brain<?> brain = maid.getBrain();
 		brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, 20);
