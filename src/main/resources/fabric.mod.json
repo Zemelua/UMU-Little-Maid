@@ -3,10 +3,19 @@
 	"id": "umu_little_maid",
 	"version": "${version}",
 	"name": "UMU Little Maid",
-	"description": "",
-	"authors": [ "Zemelua" ],
-	"contact": { },
-	"license": "MIT",
+	"description": "UMU Little Maid is a new little maid mod based on LittleMaidMob.\nUMU Little MaidはLittleMaidMobをもとにした新しいリトルメイドmodです。",
+	"authors": [ {
+		"name": "Zemelua",
+		"contact": {
+			"discord": "discordapp.com/users/553421324589072394"
+		}
+	} ],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/umu-little-maid",
+		"sources": "https://github.com/Zemelua/UMU-Little-Maid",
+		"issues": "https://github.com/Zemelua/UMU-Little-Maid/issues"
+	},
+	"license": "See https://github.com/Zemelua/UMU-Little-Maid/blob/main/LICENSE.md",
 	"icon": "assets/umu_little_maid/icon.png",
 	"environment": "*",
 	"entrypoints": {
