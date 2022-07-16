@@ -31,10 +31,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -59,6 +56,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,6 +64,7 @@ import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
+	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 
 	private static final TrackedData<Optional<UUID>> OWNER;
@@ -403,6 +402,22 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return ItemStack.EMPTY;
 	}
 
+	public ItemStack getHasCrop() {
+		if (Arrays.stream(LittleMaidEntity.CROPS).anyMatch(this.getOffHandStack()::isOf)) {
+			return this.getOffHandStack();
+		}
+
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
+
+			if (Arrays.stream(LittleMaidEntity.CROPS).anyMatch(itemStack::isOf)) {
+				return itemStack;
+			}
+		}
+
+		return ItemStack.EMPTY;
+	}
+
 	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
@@ -723,6 +738,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.SENSOR_MAID_ATTACKABLE,
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
+				ModEntities.SENSOR_MAID_FARMABLE_POSES,
 				ModEntities.SENSOR_SHOULD_EAT
 		);
 
@@ -745,7 +761,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
 				ModEntities.MEMORY_GUARDABLE_LIVING,
 				ModEntities.MEMORY_ATTRACT_TARGETS,
-				ModEntities.MEMORY_GUARD_TARGET
+				ModEntities.MEMORY_GUARD_TARGET,
+				ModEntities.MEMORY_FARMABLE_POSES,
+				ModEntities.MEMORY_FARM_POS,
+				ModEntities.MEMORY_FARM_COOLDOWN
 		);
 	}
 }

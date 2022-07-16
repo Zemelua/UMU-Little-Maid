@@ -6,7 +6,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class ModUtils {
@@ -31,5 +36,10 @@ public final class ModUtils {
 		}
 
 		return ItemStack.EMPTY;
+	}
+
+	public static Optional<BlockPos> getNearestPos(Collection<BlockPos> poses, Entity entity) {
+		return poses.stream()
+				.min(Comparator.comparingDouble(pos -> entity.squaredDistanceTo(Vec3d.of(pos))));
 	}
 }

@@ -2,10 +2,7 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttackableSensor;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidAttractableLivingsSensor;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidGuardableLivingSensor;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidShouldEatSensor;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
@@ -23,18 +20,17 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.Items;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.*;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,16 +50,21 @@ public final class ModEntities {
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
 	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACT_TARGETS;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
+	public static final MemoryModuleType<Collection<BlockPos>> MEMORY_FARMABLE_POSES;
+	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
+	public static final MemoryModuleType<Integer> MEMORY_FARM_COOLDOWN;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
+	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES;
 	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
 
 	public static final Activity ACTIVITY_SIT;
 	public static final Activity ACTIVITY_GUARD;
 	public static final Activity ACTIVITY_EAT;
+	public static final Activity ACTIVITY_FARM;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -78,6 +79,7 @@ public final class ModEntities {
 	public static final MaidJob JOB_CRACKER;
 	public static final MaidJob JOB_ARCHER;
 	public static final MaidJob JOB_GUARD;
+	public static final MaidJob JOB_FARMER;
 
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -101,16 +103,21 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attract_targets"), ModEntities.MEMORY_ATTRACT_TARGETS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
 
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.ACTIVITY_SIT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModEntities.ACTIVITY_GUARD);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("eat"), ModEntities.ACTIVITY_EAT);
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("farm"), ModEntities.ACTIVITY_FARM);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
@@ -127,6 +134,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("cracker"), ModEntities.JOB_CRACKER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("archer"), ModEntities.JOB_ARCHER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), ModEntities.JOB_FARMER);
 
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
@@ -162,16 +170,21 @@ public final class ModEntities {
 		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 		MEMORY_ATTRACT_TARGETS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
+		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
+		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
+		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.INT));
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
+		SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
 		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
 
 		ACTIVITY_SIT = new Activity("sit");
 		ACTIVITY_GUARD = new Activity("guard");
 		ACTIVITY_EAT = new Activity("eat");
+		ACTIVITY_FARM = new Activity("farm");
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
@@ -205,5 +218,6 @@ public final class ModEntities {
 		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem);
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD));
+		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem);
 	}
 }
