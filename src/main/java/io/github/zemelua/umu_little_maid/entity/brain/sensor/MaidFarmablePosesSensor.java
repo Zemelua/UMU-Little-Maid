@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.MaidFarmTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -36,7 +35,6 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 
 		if (!list.isEmpty()) {
 			brain.remember(ModEntities.MEMORY_FARMABLE_POSES, list);
-			UMULittleMaid.LOGGER.info("farrrr");
 		} else {
 			brain.forget(ModEntities.MEMORY_FARMABLE_POSES);
 		}

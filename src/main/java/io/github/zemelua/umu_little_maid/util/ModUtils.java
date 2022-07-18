@@ -7,7 +7,9 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,5 +43,16 @@ public final class ModUtils {
 	public static Optional<BlockPos> getNearestPos(Collection<BlockPos> poses, Entity entity) {
 		return poses.stream()
 				.min(Comparator.comparingDouble(pos -> entity.squaredDistanceTo(Vec3d.of(pos))));
+	}
+
+	public static int getHeightFromGround(World world, Entity entity) {
+		BlockPos.Mutable pos = entity.getBlockPos().down().mutableCopy();
+
+		int height;
+		for (height = 0; world.getBlockState(pos).isAir(); pos.move(Direction.DOWN, 1)) {
+			height++;
+		}
+
+		return height;
 	}
 }

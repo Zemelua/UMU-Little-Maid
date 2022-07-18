@@ -72,12 +72,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidPose> POSE;
+	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 
 	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
+	private final AnimationState useDripleafAnimation = new AnimationState();
 
 	private int eatingTicks;
 	private boolean damageBlocked;
@@ -131,6 +133,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
+		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
 	}
 
 	@Override
@@ -164,8 +167,30 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public boolean isLeftHanded() {
+		return true;
+	}
+
+	@Override
 	public void tickMovement() {
 		super.tickMovement();
+
+		if (!this.onGround) {
+			if (!this.isUsingDripleaf() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 2) {
+				this.setUsingDripleaf(true);
+				this.setAnimationPose(MaidPose.USE_DRIPLEAF);
+			}
+		} else {
+			if (this.isUsingDripleaf()) {
+				this.setUsingDripleaf(false);
+				this.setAnimationPose(MaidPose.NONE);
+			}
+		}
+
+		Vec3d velocity = this.getVelocity();
+		if (this.isUsingDripleaf() && velocity.getY() < 0.0D) {
+			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
+		}
 
 		this.tickHandSwing();
 	}
@@ -331,6 +356,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource source) {
+		if (this.isUsingDripleaf()) {
+			return false;
+		} else {
+			return super.handleFallDamage(fallDistance, damageMultiplier, source);
+		}
+	}
+
+	@Override
 	protected void damageArmor(DamageSource source, float amount) {
 		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.FEET));
 		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.HEAD));
@@ -422,6 +456,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return ItemStack.EMPTY;
 	}
 
+	public boolean hasDripleaf() {
+		for (int i = 0; i < this.inventory.size(); i++) {
+			if (this.inventory.getStack(i).isOf(Items.BIG_DRIPLEAF)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
@@ -503,6 +547,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				this.eatAnimation.start(this.age);
 			} else {
 				this.eatAnimation.stop();
+			}
+
+			if (pose == MaidPose.USE_DRIPLEAF) {
+				this.useDripleafAnimation.start(this.age);
+			} else {
+				this.useDripleafAnimation.stop();
 			}
 		}
 
@@ -610,6 +660,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.POSE, value);
 	}
 
+	public boolean isUsingDripleaf() {
+		return this.dataTracker.get(LittleMaidEntity.IS_USING_DRIPLEAF);
+	}
+
+	public void setUsingDripleaf(boolean value) {
+		this.dataTracker.set(LittleMaidEntity.IS_USING_DRIPLEAF, value);
+	}
+
 	@SuppressWarnings("unused")
 	public double getIntimacy() {
 		return 0;
@@ -617,6 +675,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public AnimationState getEatAnimation() {
 		return this.eatAnimation;
+	}
+
+	public AnimationState getUseDripleafAnimation() {
+		return this.useDripleafAnimation;
 	}
 
 	@Override
@@ -749,6 +811,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
+		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
 		SENSORS = ImmutableList.of(
 				SensorType.HURT_BY,
