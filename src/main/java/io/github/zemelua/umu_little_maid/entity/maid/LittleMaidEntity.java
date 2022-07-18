@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -167,11 +166,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
-	public boolean isLeftHanded() {
-		return true;
-	}
-
-	@Override
 	public void tickMovement() {
 		super.tickMovement();
 
@@ -198,8 +192,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack interactItem = player.getStackInHand(hand);
-
-		UMULittleMaid.LOGGER.info(ModRegistries.MAID_PERSONALITY.getId(this.getPersonality()));
 
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
