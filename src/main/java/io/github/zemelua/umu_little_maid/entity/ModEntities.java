@@ -53,6 +53,7 @@ public final class ModEntities {
 	public static final MemoryModuleType<Collection<BlockPos>> MEMORY_FARMABLE_POSES;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
 	public static final MemoryModuleType<Integer> MEMORY_FARM_COOLDOWN;
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
@@ -106,6 +107,7 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), ModEntities.MEMORY_SHOULD_HEAL);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
@@ -173,6 +175,7 @@ public final class ModEntities {
 		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.INT));
+		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
