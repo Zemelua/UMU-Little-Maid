@@ -30,6 +30,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	public static final EntityModelLayer LAYER_LITTLE_MAID = new EntityModelLayer(UMULittleMaid.identifier("little_maid"), "main");
 
 	public static final Animation ANIMATION_MAID_EAT;
+	public static final Animation ANIMATION_MAID_HEAL;
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_LEFT;
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_RIGHT;
 
@@ -62,6 +63,12 @@ public class UMULittleMaidClient implements ClientModInitializer {
 						new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, 22.9F, 0.0F), Transformation.Interpolations.field_37884)))
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
 						new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, -22.9F, 0.0F), Transformation.Interpolations.field_37884)))
+				.build();
+		ANIMATION_MAID_HEAL = Animation.Builder.create(1.0F).looping()
+				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
+						new Keyframe(0.0F, AnimationHelper.method_41829(-90.0F, 5.7F, -45.0F), Transformation.Interpolations.field_37884)))
+				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
+						new Keyframe(0.0F, AnimationHelper.method_41829(-90.0F, -5.7F, 45.0F), Transformation.Interpolations.field_37884)))
 				.build();
 		ANIMATION_MAID_USE_DRIPLEAF_LEFT = Animation.Builder.create(2.0F).looping()
 				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,

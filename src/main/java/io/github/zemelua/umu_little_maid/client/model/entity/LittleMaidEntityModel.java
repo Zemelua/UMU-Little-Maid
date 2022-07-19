@@ -167,6 +167,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		} else {
 			this.updateAnimation(maid.getUseDripleafAnimation(), UMULittleMaidClient.ANIMATION_MAID_USE_DRIPLEAF_LEFT, animationProgress);
 		}
+		this.updateAnimation(maid.getHealAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEAL, animationProgress);
 	}
 
 	@Override

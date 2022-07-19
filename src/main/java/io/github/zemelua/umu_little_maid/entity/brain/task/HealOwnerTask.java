@@ -14,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -82,6 +83,17 @@ public class HealOwnerTask<E extends LivingEntity & Tameable> extends Task<E> {
 		if (this.cooldown >= 30) {
 			ownerLiving.heal(5.0F);
 			tameable.damage(DamageSource.MAGIC, 3.0F);
+
+			for (int i = 0; i < 5; i++) {
+				double posX = tameable.getParticleX(1.0);
+				double posY = tameable.getRandomBodyY() + 1.0;
+				double posZ = tameable.getParticleZ(1.0);
+				double deltaX = tameable.getRandom().nextGaussian() * 0.02;
+				double deltaY = tameable.getRandom().nextGaussian() * 0.02;
+				double deltaZ = tameable.getRandom().nextGaussian() * 0.02;
+
+				((ServerWorld) tameable.getWorld()).spawnParticles(ParticleTypes.HAPPY_VILLAGER, posX, posY, posZ, 0, deltaX, deltaY, deltaZ, 1.0D);
+			}
 
 			this.cooldown = 0;
 		}

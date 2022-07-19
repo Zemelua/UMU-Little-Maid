@@ -78,6 +78,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
+	private final AnimationState healAnimation = new AnimationState();
 	private final AnimationState useDripleafAnimation = new AnimationState();
 
 	private int eatingTicks;
@@ -541,6 +542,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				this.eatAnimation.stop();
 			}
 
+			if (pose == MaidPose.HEAL) {
+				this.healAnimation.start(this.age);
+			} else {
+				this.healAnimation.stop();
+			}
+
 			if (pose == MaidPose.USE_DRIPLEAF) {
 				this.useDripleafAnimation.start(this.age);
 			} else {
@@ -667,6 +674,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public AnimationState getEatAnimation() {
 		return this.eatAnimation;
+	}
+
+	public AnimationState getHealAnimation() {
+		return this.healAnimation;
 	}
 
 	public AnimationState getUseDripleafAnimation() {
