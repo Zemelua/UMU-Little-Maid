@@ -838,7 +838,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_GUARD_TARGET,
 				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,
-				ModEntities.MEMORY_FARM_COOLDOWN
+				ModEntities.MEMORY_FARM_COOLDOWN,
+				ModEntities.MEMORY_SHOULD_HEAL
 		);
 	}
 }

@@ -3,7 +3,9 @@ package io.github.zemelua.umu_little_maid.util;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -54,5 +56,10 @@ public final class ModUtils {
 		}
 
 		return height;
+	}
+
+	public static boolean hasHarmfulEffect(LivingEntity entity) {
+		return entity.getStatusEffects().stream()
+				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
 }

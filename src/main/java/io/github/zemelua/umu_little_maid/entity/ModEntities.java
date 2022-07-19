@@ -66,6 +66,7 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_GUARD;
 	public static final Activity ACTIVITY_EAT;
 	public static final Activity ACTIVITY_FARM;
+	public static final Activity ACTIVITY_HEAL;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -81,6 +82,7 @@ public final class ModEntities {
 	public static final MaidJob JOB_ARCHER;
 	public static final MaidJob JOB_GUARD;
 	public static final MaidJob JOB_FARMER;
+	public static final MaidJob JOB_HEALER;
 
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -120,6 +122,7 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModEntities.ACTIVITY_GUARD);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("eat"), ModEntities.ACTIVITY_EAT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("farm"), ModEntities.ACTIVITY_FARM);
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModEntities.ACTIVITY_HEAL);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
@@ -137,6 +140,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("archer"), ModEntities.JOB_ARCHER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), ModEntities.JOB_FARMER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("heal"), ModEntities.JOB_HEALER);
 
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
@@ -188,6 +192,7 @@ public final class ModEntities {
 		ACTIVITY_GUARD = new Activity("guard");
 		ACTIVITY_EAT = new Activity("eat");
 		ACTIVITY_FARM = new Activity("farm");
+		ACTIVITY_HEAL = new Activity("heal");
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
@@ -222,5 +227,6 @@ public final class ModEntities {
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD));
 		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem);
+		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD));
 	}
 }

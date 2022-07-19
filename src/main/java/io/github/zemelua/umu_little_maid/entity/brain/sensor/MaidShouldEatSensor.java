@@ -29,7 +29,8 @@ public class MaidShouldEatSensor extends Sensor<LittleMaidEntity> {
 		}
 
 		if (brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET)
-				|| brain.hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET)) {
+				|| brain.hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET)
+				|| brain.hasMemoryModule(ModEntities.MEMORY_SHOULD_HEAL)) {
 			if (maid.getHealth() < maid.getMaxHealth() * 0.4D) {
 				brain.remember(ModEntities.MEMORY_SHOULD_EAT, Unit.INSTANCE);
 

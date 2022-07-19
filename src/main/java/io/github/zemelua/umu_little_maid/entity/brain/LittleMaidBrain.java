@@ -18,6 +18,7 @@ import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import org.apache.commons.lang3.ArrayUtils;
 
 public final class LittleMaidBrain {
 	private static final float RUN_SPEED = 1.0F;
@@ -33,6 +34,10 @@ public final class LittleMaidBrain {
 	private static final int CRACKER_ATTACK_INTERVAL = 30;
 	private static final double BOW_ATTACK_RANGE = 15.0D;
 	private static final int BOW_ATTACK_INTERVAL = 20;
+	private static final MaidJob[] ALL_JOBS = new MaidJob[]{
+			ModEntities.JOB_NONE, ModEntities.JOB_FENCER, ModEntities.JOB_CRACKER, ModEntities.JOB_ARCHER,
+			ModEntities.JOB_GUARD, ModEntities.JOB_FARMER, ModEntities.JOB_HEALER
+	};
 	private static final MaidJob[] PASSIVE_JOBS = new MaidJob[]{ModEntities.JOB_FARMER, ModEntities.JOB_NONE};
 	private static final MaidJob[] ATTACK_JOBS = new MaidJob[]{ModEntities.JOB_FENCER, ModEntities.JOB_CRACKER, ModEntities.JOB_ARCHER};
 	private static final MaidJob[] NOT_ATTACK_JOBS = new MaidJob[]{ModEntities.JOB_GUARD, ModEntities.JOB_FARMER, ModEntities.JOB_NONE};
@@ -45,6 +50,8 @@ public final class LittleMaidBrain {
 	private static final MaidJob[] FARMER_JOBS = new MaidJob[]{ModEntities.JOB_FARMER};
 	private static final MaidJob[] NOT_FARMER_JOBS = new MaidJob[]{
 			ModEntities.JOB_FENCER, ModEntities.JOB_CRACKER, ModEntities.JOB_ARCHER, ModEntities.JOB_GUARD, ModEntities.JOB_NONE};
+	private static final MaidJob[] HEAL_JOBS = new MaidJob[]{ModEntities.JOB_HEALER};
+	private static final MaidJob[] NOT_HEAL_JOBS = ArrayUtils.removeElements(LittleMaidBrain.ALL_JOBS, LittleMaidBrain.HEAL_JOBS);
 
 	public static Brain<LittleMaidEntity> create(Brain<LittleMaidEntity> brain) {
 		LittleMaidBrain.addCoreTasks(brain);
@@ -54,6 +61,7 @@ public final class LittleMaidBrain {
 		LittleMaidBrain.addGuardTasks(brain);
 		LittleMaidBrain.addFarmTasks(brain);
 		LittleMaidBrain.addEatTasks(brain);
+		LittleMaidBrain.addHealTasks(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
@@ -67,7 +75,9 @@ public final class LittleMaidBrain {
 				Pair.of(1, new MaidJobTask(new WalkTask(LittleMaidBrain.RUN_SPEED), LittleMaidBrain.PASSIVE_JOBS)),
 				Pair.of(2, new LookAroundTask(LittleMaidBrain.LOOK_TIME.getMin(), LittleMaidBrain.LOOK_TIME.getMax())),
 				Pair.of(3, new WanderAroundTask()),
-				Pair.of(4, new TemptationCooldownTask(ModEntities.MEMORY_FARM_COOLDOWN))
+				Pair.of(4, new MaidJobTask(new UpdateShouldHealTask<>(), LittleMaidBrain.HEAL_JOBS)),
+				Pair.of(4, new MaidJobTask(new ForcedForgetMemoryTask<>(ModEntities.MEMORY_SHOULD_HEAL), LittleMaidBrain.NOT_HEAL_JOBS)),
+				Pair.of(5, new TemptationCooldownTask(ModEntities.MEMORY_FARM_COOLDOWN))
 		));
 	}
 
@@ -92,7 +102,7 @@ public final class LittleMaidBrain {
 				Pair.of(2, new MaidJobTask(
 						new UpdateAttractTargetsTask(), LittleMaidBrain.GUARD_JOBS)),
 				Pair.of(2, new MaidJobTask(
-						new UpdateFarmPosTask(), LittleMaidBrain.FARMER_JOBS)),
+						new UpdateFarmPosTask<LivingEntity>(), LittleMaidBrain.FARMER_JOBS)),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(LittleMaidBrain.WALK_SPEED), 2),
 						Pair.of(new GoTowardsLookTarget(LittleMaidBrain.WALK_SPEED, LittleMaidBrain.COMPLETION_RANGE), 2),
@@ -169,18 +179,27 @@ public final class LittleMaidBrain {
 		));
 	}
 
+	private static void addHealTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_HEAL, ImmutableList.of(
+				Pair.of(0, new MaidJobTask(new ApproachToHealTask<>(LittleMaidBrain.RUN_SPEED), LittleMaidBrain.HEAL_JOBS)),
+				Pair.of(1, new MaidJobTask(new MaidHealOwnerTask(), LittleMaidBrain.HEAL_JOBS))
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+		));
+	}
+
 	public static void updateActivities(LittleMaidEntity littleMaid) {
 		Brain<?> brain = littleMaid.getBrain();
 		brain.resetPossibleActivities(ImmutableList.of(
 				ModEntities.ACTIVITY_SIT,
 				ModEntities.ACTIVITY_EAT,
+				ModEntities.ACTIVITY_HEAL,
 				Activity.FIGHT,
 				ModEntities.ACTIVITY_GUARD,
 				ModEntities.ACTIVITY_FARM,
 				Activity.IDLE
 		));
-
-		// UMULittleMaid.LOGGER.info(brain.hasMemoryModule(ModEntities.MEMORY_FARMABLE_POSES));
 	}
 
 	private LittleMaidBrain() throws IllegalAccessException {
