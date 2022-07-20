@@ -1,11 +1,12 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -70,8 +71,8 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 		maid.setAnimationPose(MaidPose.NONE);
 	}
 
-	public static ItemStack searchHealItems(LittleMaidEntity maid) {
-		return ModUtils.searchInInventory(maid.getInventory(), itemStackArg
+	public static <E extends InventoryOwner> ItemStack searchHealItems(E inventoryOwner) {
+		return ModUtils.searchInInventory(inventoryOwner.getInventory(), itemStackArg
 				-> Arrays.stream(MaidEatTask.EAT_ITEMS).anyMatch(itemStackArg::isOf));
 	}
 }

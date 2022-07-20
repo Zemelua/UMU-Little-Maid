@@ -106,9 +106,9 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 			} else if (canSeeTarget && itemUseTime >= 20) {
 				maid.clearActiveItem();
 				maid.attack(target.get(), BowItem.getPullProgress(itemUseTime));
-				this.coolDown = this.interval;
+				maid.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, this.interval);
 			}
-		} else if (--this.coolDown <= 0 && this.targetSeeingTicker >= -60) {
+		} else if (!maid.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_COOLING_DOWN) && this.targetSeeingTicker >= -60) {
 			maid.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(maid, Items.BOW));
 		}
 	}

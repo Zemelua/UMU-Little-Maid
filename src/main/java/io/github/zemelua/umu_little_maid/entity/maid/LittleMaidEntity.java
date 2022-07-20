@@ -1,9 +1,10 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Dynamic;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.LittleMaidBrain;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
@@ -34,6 +35,7 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -69,6 +71,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
+	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidPose> POSE;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
@@ -81,6 +84,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState healAnimation = new AnimationState();
 	private final AnimationState useDripleafAnimation = new AnimationState();
 
+	private MaidJob lastJob;
 	private int eatingTicks;
 	private boolean damageBlocked;
 
@@ -122,6 +126,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.setCanPickUpLoot(true);
 
+		this.lastJob = ModEntities.JOB_NONE;
+
 		return entityData;
 	}
 
@@ -131,6 +137,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
+		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
@@ -138,12 +145,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+		// return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+		return this.getJob().createProfile();
 	}
 
 	@Override
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
-		return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
+		// return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
+		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
+		this.getJob().initializeBrain(brain);
+		if(this.isSitting()) {
+			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
+		}
+
+		return brain;
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -160,10 +175,40 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected void mobTick() {
+		this.updateJob();
+		if (!this.getJob().equals(this.lastJob) && !this.world.isClient()) {
+			this.onJobChanged((ServerWorld) this.world);
+		}
+
 		this.getBrain().tick((ServerWorld) this.world, this);
-		LittleMaidBrain.updateActivities(this);
+		this.getJob().tickBrain(this.getBrain());
+
+		UMULittleMaid.LOGGER.info(this.getBrain().getFirstPossibleNonCoreActivity());
+
+		this.lastJob = this.getJob();
 
 		super.mobTick();
+	}
+
+	private void updateJob() {
+		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
+			if (job.canApply(this)) {
+				this.setJob(job);
+
+				return;
+			}
+		}
+
+		this.setJob(ModEntities.JOB_NONE);
+	}
+
+	private void onJobChanged(ServerWorld world) {
+		Brain<LittleMaidEntity> brain = this.getBrain();
+		brain.stopAllTasks(world, this);
+		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(
+										NbtOps.INSTANCE.createString("memories"),
+										NbtOps.INSTANCE.emptyMap()
+		))));
 	}
 
 	@Override
@@ -613,13 +658,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public MaidJob getJob() {
-		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
-			if (job.canApply(this)) {
-				return job;
-			}
-		}
+		return this.dataTracker.get(LittleMaidEntity.JOB);
+	}
 
-		return ModEntities.JOB_NONE;
+	public void setJob(MaidJob value) {
+		this.dataTracker.set(LittleMaidEntity.JOB, value);
 	}
 
 	@SuppressWarnings("unused")
@@ -812,6 +855,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	static {
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);

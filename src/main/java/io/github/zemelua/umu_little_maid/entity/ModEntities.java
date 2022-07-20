@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
@@ -247,12 +248,33 @@ public final class ModEntities {
 				.setContractSound(ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT)
 				.build();
 
-		JOB_NONE = new MaidJob(itemStack -> false);
-		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem);
-		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem);
-		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem);
-		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD));
-		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem);
-		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD));
+		JOB_NONE = new MaidJob(itemStack -> false,
+				MaidNoneBrainManager::createProfile,
+				MaidNoneBrainManager::initializeBrain,
+				MaidNoneBrainManager::tickBrain);
+		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem,
+				MaidFencerBrainManager::createProfile,
+				MaidFencerBrainManager::initializeBrain,
+				MaidFencerBrainManager::tickBrain);
+		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem,
+				MaidCrackerBrainManager::createProfile,
+				MaidCrackerBrainManager::initializeBrain,
+				MaidCrackerBrainManager::tickBrain);
+		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem,
+				MaidArcherBrainManager::createProfile,
+				MaidArcherBrainManager::initializeBrain,
+				MaidArcherBrainManager::tickBrain);
+		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD),
+				MaidGuardBrainManager::createProfile,
+				MaidGuardBrainManager::initializeBrain,
+				MaidGuardBrainManager::tickBrain);
+		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem,
+				MaidFarmerBrainManager::createProfile,
+				MaidFarmerBrainManager::initializeBrain,
+				MaidFarmerBrainManager::tickBrain);
+		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD),
+				MaidHealerBrainManager::createProfile,
+				MaidHealerBrainManager::initializeBrain,
+				MaidHealerBrainManager::tickBrain);
 	}
 }
