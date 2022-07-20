@@ -4,3 +4,6 @@ accessible field net/minecraft/entity/ai/goal/FleeEntityGoal withinRangePredicat
 accessible method net/minecraft/entity/ai/brain/Activity <init> (Ljava/lang/String;)V
 accessible method net/minecraft/entity/ai/brain/sensor/SensorType <init> (Ljava/util/function/Supplier;)V
 accessible method net/minecraft/entity/projectile/ProjectileEntity <init> (Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V
+accessible method net/minecraft/world/poi/PointOfInterestTypes of (Ljava/lang/String;)Lnet/minecraft/util/registry/RegistryKey;
+accessible method net/minecraft/world/poi/PointOfInterestTypes register (Lnet/minecraft/util/registry/Registry;Lnet/minecraft/util/registry/RegistryKey;Ljava/util/Set;II)Lnet/minecraft/world/poi/PointOfInterestType;
+accessible method net/minecraft/world/poi/PointOfInterestTypes getStatesOfBlock (Lnet/minecraft/block/Block;)Ljava/util/Set;

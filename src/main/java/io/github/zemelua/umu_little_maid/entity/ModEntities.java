@@ -21,12 +21,17 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.*;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -34,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
@@ -53,6 +59,8 @@ public final class ModEntities {
 	public static final MemoryModuleType<Collection<BlockPos>> MEMORY_FARMABLE_POSES;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
 	public static final MemoryModuleType<Integer> MEMORY_FARM_COOLDOWN;
+	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE;
+	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE_CANDIDATE;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 
@@ -60,6 +68,7 @@ public final class ModEntities {
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
 	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES;
+	public static final SensorType<FarmSiteCandidateSensor> SENSOR_FARM_SITE_CANDIDATE;
 	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
 
 	public static final Activity ACTIVITY_SIT;
@@ -67,6 +76,8 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_EAT;
 	public static final Activity ACTIVITY_FARM;
 	public static final Activity ACTIVITY_HEAL;
+
+	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -109,6 +120,8 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_site"), ModEntities.MEMORY_FARM_SITE);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.MEMORY_FARM_SITE_CANDIDATE);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), ModEntities.MEMORY_SHOULD_HEAL);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 
@@ -116,6 +129,7 @@ public final class ModEntities {
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.SENSOR_FARM_SITE_CANDIDATE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
 
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.ACTIVITY_SIT);
@@ -125,6 +139,13 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModEntities.ACTIVITY_HEAL);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
+
+		//noinspection deprecation
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_SCARECROW,
+				Registry.BLOCK.stream()
+						.filter(block -> block.getRegistryEntry().isIn(BlockTags.WOODEN_FENCES))
+						.flatMap(block -> block.getStateManager().getStates().stream())
+						.collect(Collectors.toSet()), 1, 1);
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
@@ -179,6 +200,8 @@ public final class ModEntities {
 		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.INT));
+		MEMORY_FARM_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
+		MEMORY_FARM_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 
@@ -186,6 +209,7 @@ public final class ModEntities {
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
 		SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
+		SENSOR_FARM_SITE_CANDIDATE = new SensorType<>(FarmSiteCandidateSensor::new);
 		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
 
 		ACTIVITY_SIT = new Activity("sit");
@@ -193,6 +217,8 @@ public final class ModEntities {
 		ACTIVITY_EAT = new Activity("eat");
 		ACTIVITY_FARM = new Activity("farm");
 		ACTIVITY_HEAL = new Activity("heal");
+
+		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)

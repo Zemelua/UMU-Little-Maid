@@ -824,6 +824,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
 				ModEntities.SENSOR_MAID_FARMABLE_POSES,
+				ModEntities.SENSOR_FARM_SITE_CANDIDATE,
 				ModEntities.SENSOR_SHOULD_EAT
 		);
 
@@ -850,6 +851,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
+				ModEntities.MEMORY_FARM_SITE,
+				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
 				ModEntities.MEMORY_SHOULD_HEAL
 		);
 	}
