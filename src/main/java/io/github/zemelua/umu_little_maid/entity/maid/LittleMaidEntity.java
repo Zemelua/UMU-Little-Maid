@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Dynamic;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
@@ -63,6 +62,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+@SuppressWarnings("CommentedOutCode")
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
 	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
@@ -205,6 +205,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 										NbtOps.INSTANCE.createString("memories"),
 										NbtOps.INSTANCE.emptyMap()
 		))));
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
 	}
 
 	@Override
@@ -574,6 +579,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public boolean cannotDespawn() {
+		return this.isTamed();
+	}
+
+	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (data.equals(LittleMaidEntity.POSE)) {
 			MaidPose pose = this.getAnimationPose();
@@ -619,6 +629,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private void setOwnerUuid(@Nullable UUID uuid) {
 		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
 		this.getBrain().remember(ModEntities.MEMORY_OWNER, uuid);
+
+//		if (this.getOwner() instanceof ServerPlayerEntity ownerPlayer) {
+//			MaidContracts.addMaid(ownerPlayer, this);
+//		}
 	}
 
 	@Nullable
@@ -631,7 +645,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.world.getPlayerByUuid(uuid);
 	}
 
-	private void setOwner(PlayerEntity player) {
+	public void setOwner(PlayerEntity player) {
 		this.setOwnerUuid(player.getUuid());
 	}
 
