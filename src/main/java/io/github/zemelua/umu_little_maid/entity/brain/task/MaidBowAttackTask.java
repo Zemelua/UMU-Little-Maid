@@ -27,7 +27,6 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 	private final int interval;
 
 	private int targetSeeingTicker;
-	private int coolDown = -1;
 	private int combatTicks = -1;
 	private boolean movingToLeft;
 	private boolean backward;
@@ -48,6 +47,11 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		return MaidBowAttackTask.hasTarget(maid) && MaidBowAttackTask.hasArrows(maid);
+	}
+
+	@Override
+	protected boolean isTimeLimitExceeded(long time) {
+		return false;
 	}
 
 	@Override
@@ -117,7 +121,6 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		maid.setAttacking(false);
 		this.targetSeeingTicker = 0;
-		this.coolDown = -1;
 		maid.clearActiveItem();
 	}
 
