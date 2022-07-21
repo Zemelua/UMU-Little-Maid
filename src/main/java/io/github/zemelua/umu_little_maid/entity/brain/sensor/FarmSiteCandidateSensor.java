@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -15,7 +16,6 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
-import net.minecraft.world.poi.PointOfInterestTypes;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -26,9 +26,10 @@ public class FarmSiteCandidateSensor extends Sensor<MobEntity> {
 	@Override
 	protected void sense(ServerWorld world, MobEntity mob) {
 		PointOfInterestStorage poiStorage = world.getPointOfInterestStorage();
-		Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> pois = poiStorage.getTypesAndPositions(registryEntry
-						-> registryEntry.matchesKey(PointOfInterestTypes.HOME), pos
-						-> true, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY)
+		Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> pois = poiStorage.getTypesAndPositions(
+						registryEntry -> registryEntry.isIn(ModTags.POI_FARMER),
+						pos -> true,
+						mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY)
 				.collect(Collectors.toSet());
 
 		@Nullable Path path = FindPointOfInterestTask.findPathToPoi(mob, pois);

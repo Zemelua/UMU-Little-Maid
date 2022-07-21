@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.GameEvent;
 
@@ -40,11 +41,6 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 	}
 
 	@Override
-	protected boolean shouldKeepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		return this.shouldRun(world, maid);
-	}
-
-	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		Optional<BlockPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_POS);
@@ -67,10 +63,8 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 			if (MaidFarmTask.isHarvestable(pos.get(), world)) {
 				world.breakBlock(pos.get(), true, maid);
 				maid.swingHand(Hand.MAIN_HAND);
-				brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, 20);
-				brain.forget(ModEntities.MEMORY_FARM_POS);
-				brain.forget(MemoryModuleType.WALK_TARGET);
-				brain.forget(MemoryModuleType.LOOK_TARGET);
+
+				MaidFarmTask.resetMemories(brain);
 			}
 		}
 	}
@@ -82,9 +76,14 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		crop.decrement(1);
 		maid.swingHand(Hand.OFF_HAND);
 
-		Brain<?> brain = maid.getBrain();
-		brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, 20);
+		Brain<LittleMaidEntity> brain = maid.getBrain();
+		MaidFarmTask.resetMemories(brain);
+	}
+
+	private static void resetMemories(Brain<LittleMaidEntity> brain) {
+		brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, Unit.INSTANCE, 20L);
 		brain.forget(ModEntities.MEMORY_FARM_POS);
+		brain.forget(ModEntities.MEMORY_FARMABLE_POS);
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		brain.forget(MemoryModuleType.LOOK_TARGET);
 	}

@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -13,10 +14,8 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
-import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
+import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 import java.util.Set;
 
@@ -30,9 +29,9 @@ public final class MaidFarmerBrainManager {
 
 	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
 		MaidFarmerBrainManager.addCoreTasks(brain);
-		MaidNoneBrainManager.addIdleTasks(brain);
-		MaidNoneBrainManager.addSitTasks(brain);
-		MaidNoneBrainManager.addEatTasks(brain);
+		MaidFarmerBrainManager.addIdleTasks(brain);
+		MaidFarmerBrainManager.addSitTasks(brain);
+		MaidFarmerBrainManager.addEatTasks(brain);
 		MaidFarmerBrainManager.addFarmTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -44,19 +43,49 @@ public final class MaidFarmerBrainManager {
 		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, ModEntities.ACTIVITY_FARM, Activity.IDLE));
 	}
 
-	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
+	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new UpdateShouldEatTask<>(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
-				Pair.of(4, new UpdateFarmPosTask<LivingEntity>()),
-				Pair.of(4, new MaidForgetFarmPosTask()),
-				Pair.of(4, new TemptationCooldownTask(ModEntities.MEMORY_FARM_COOLDOWN))
+				Pair.of(3, new UpdateShouldEatTask<>()),
+				Pair.of(4, new UpdateFarmPosTask<>()),
+				Pair.of(5, new UpdateFarmSiteTask<>()),
+				Pair.of(6, new UpdateFarmSiteTask<>()),
+				Pair.of(7, new KeepAroundFarmSiteTask<>())
 		));
 	}
 
-	public static void addFarmTasks(Brain<LittleMaidEntity> brain) {
+	private static void addIdleTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(Activity.IDLE, ImmutableList.of(
+				Pair.of(0, new FarmerFollowOwnerTask<>(10.0F, 2.0F)),
+				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(2, new RandomTask<>(ImmutableList.of(
+						Pair.of(new StrollTask(0.8F), 2),
+						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
+						Pair.of(new WaitTask(30, 60), 1)
+				)))
+		));
+	}
+
+	private static void addSitTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+				Pair.of(0, new SitTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
+	private static void addEatTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+				Pair.of(0, new MaidEatTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+	}
+
+	private static void addFarmTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_FARM, ImmutableList.of(
 				Pair.of(0, new MaidFarmTask()),
 				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
@@ -79,11 +108,14 @@ public final class MaidFarmerBrainManager {
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleType.MOBS,
 				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleType.IS_PANICKING,
 				ModEntities.MEMORY_IS_SITTING,
 				ModEntities.MEMORY_SHOULD_EAT,
-				ModEntities.MEMORY_FARMABLE_POSES,
+				ModEntities.MEMORY_FARMABLE_POS,
 				ModEntities.MEMORY_FARM_POS,
-				ModEntities.MEMORY_FARM_COOLDOWN
+				ModEntities.MEMORY_FARM_COOLDOWN,
+				ModEntities.MEMORY_FARM_SITE,
+				ModEntities.MEMORY_FARM_SITE_CANDIDATE
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

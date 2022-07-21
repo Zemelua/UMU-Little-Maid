@@ -20,6 +20,10 @@ public class UpdateShouldEatTask<E extends LivingEntity> extends Task<E> {
 
 	private final Predicate<E> postpone;
 
+	public UpdateShouldEatTask() {
+		this(living -> false);
+	}
+
 	public UpdateShouldEatTask(Predicate<E> postpone) {
 		super(UpdateShouldEatTask.REQUIRED_MEMORIES);
 

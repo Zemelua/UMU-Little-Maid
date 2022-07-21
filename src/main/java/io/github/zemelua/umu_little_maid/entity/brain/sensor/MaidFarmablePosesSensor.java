@@ -5,13 +5,16 @@ import com.google.common.collect.Lists;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.MaidFarmTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
@@ -19,29 +22,43 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	protected void sense(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		List<BlockPos> list = Lists.newArrayList();
+		Optional<GlobalPos> sitePos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_SITE);
 
-		for (int x = -5; x < 6; x++) {
-			for (int y = -2; y < 3; y++) {
-				for (int z = -5; z < 6; z++) {
-					BlockPos.Mutable mutable = maid.getBlockPos().mutableCopy();
-					BlockPos pos = mutable.add(x, y, z);
+		if (sitePos.isEmpty()) {
+			for (int x = -5; x < 6; x++) {
+				for (int y = -2; y < 3; y++) {
+					for (int z = -5; z < 6; z++) {
+						BlockPos pos = maid.getBlockPos().add(x, y, z);
 
-					if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {
-						list.add(pos);
+						if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {
+							list.add(pos);
+						}
+					}
+				}
+			}
+		} else {
+			for (int x = -10; x < 11; x++) {
+				for (int y = -3; y < 4; y++) {
+					for (int z = -10; z < 11; z++) {
+						BlockPos pos = sitePos.get().getPos().add(x, y, z);
+
+						if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {
+							list.add(pos);
+						}
 					}
 				}
 			}
 		}
 
 		if (!list.isEmpty()) {
-			brain.remember(ModEntities.MEMORY_FARMABLE_POSES, list);
+			brain.remember(ModEntities.MEMORY_FARMABLE_POS, ModUtils.getNearestPos(list, maid));
 		} else {
-			brain.forget(ModEntities.MEMORY_FARMABLE_POSES);
+			brain.forget(ModEntities.MEMORY_FARMABLE_POS);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(ModEntities.MEMORY_FARMABLE_POSES);
+		return ImmutableSet.of(ModEntities.MEMORY_FARMABLE_POS);
 	}
 }

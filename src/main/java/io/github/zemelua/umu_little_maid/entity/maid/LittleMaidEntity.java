@@ -145,13 +145,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-		// return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
 		return this.getJob().createProfile();
 	}
 
 	@Override
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
-		// return LittleMaidBrain.create(this.createBrainProfile().deserialize(dynamic));
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.getJob().initializeBrain(brain);
 		if(this.isSitting()) {
@@ -182,8 +180,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.getBrain().tick((ServerWorld) this.world, this);
 		this.getJob().tickBrain(this.getBrain());
-
-		UMULittleMaid.LOGGER.info(this.getBrain().getFirstPossibleNonCoreActivity());
 
 		this.lastJob = this.getJob();
 
@@ -892,7 +888,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_GUARDABLE_LIVING,
 				ModEntities.MEMORY_ATTRACT_TARGETS,
 				ModEntities.MEMORY_GUARD_TARGET,
-				ModEntities.MEMORY_FARMABLE_POSES,
+				ModEntities.MEMORY_FARMABLE_POS,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
 				ModEntities.MEMORY_FARM_SITE,

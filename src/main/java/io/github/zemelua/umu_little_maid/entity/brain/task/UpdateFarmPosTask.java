@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 public class UpdateFarmPosTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_FARMABLE_POSES, MemoryModuleState.VALUE_PRESENT,
+			ModEntities.MEMORY_FARMABLE_POS, MemoryModuleState.VALUE_PRESENT,
 			ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_ABSENT
 	);
 
@@ -26,7 +25,7 @@ public class UpdateFarmPosTask<E extends LivingEntity> extends Task<E> {
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POSES)
-				.ifPresent(poses -> brain.remember(ModEntities.MEMORY_FARM_POS, ModUtils.getNearestPos(poses, living)));
+		brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POS)
+				.ifPresent(nearestPos -> brain.remember(ModEntities.MEMORY_FARM_POS, nearestPos, 200L));
 	}
 }

@@ -76,8 +76,7 @@ public final class LittleMaidBrain {
 				Pair.of(2, new LookAroundTask(LittleMaidBrain.LOOK_TIME.getMin(), LittleMaidBrain.LOOK_TIME.getMax())),
 				Pair.of(3, new WanderAroundTask()),
 				Pair.of(4, new MaidJobTask(new UpdateShouldHealTask<>(), LittleMaidBrain.HEAL_JOBS)),
-				Pair.of(4, new MaidJobTask(new ForcedForgetMemoryTask<>(ModEntities.MEMORY_SHOULD_HEAL), LittleMaidBrain.NOT_HEAL_JOBS)),
-				Pair.of(5, new TemptationCooldownTask(ModEntities.MEMORY_FARM_COOLDOWN))
+				Pair.of(4, new MaidJobTask(new ForcedForgetMemoryTask<>(ModEntities.MEMORY_SHOULD_HEAL), LittleMaidBrain.NOT_HEAL_JOBS))
 		));
 	}
 

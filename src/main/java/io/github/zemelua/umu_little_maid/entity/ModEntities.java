@@ -15,6 +15,8 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -22,7 +24,6 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.*;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +37,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,9 +58,9 @@ public final class ModEntities {
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
 	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACT_TARGETS;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
-	public static final MemoryModuleType<Collection<BlockPos>> MEMORY_FARMABLE_POSES;
+	public static final MemoryModuleType<BlockPos> MEMORY_FARMABLE_POS;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
-	public static final MemoryModuleType<Integer> MEMORY_FARM_COOLDOWN;
+	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN;
 	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE;
 	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE_CANDIDATE;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
@@ -96,6 +97,11 @@ public final class ModEntities {
 	public static final MaidJob JOB_FARMER;
 	public static final MaidJob JOB_HEALER;
 
+	private static final Block[] WOODEN_FENCES = new Block[]{
+			Blocks.OAK_FENCE, Blocks.ACACIA_FENCE, Blocks.DARK_OAK_FENCE, Blocks.SPRUCE_FENCE, Blocks.BIRCH_FENCE,
+			Blocks.JUNGLE_FENCE, Blocks.CRIMSON_FENCE, Blocks.WARPED_FENCE, Blocks.MANGROVE_FENCE
+	};
+
 	private ModEntities() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -118,7 +124,7 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attract_targets"), ModEntities.MEMORY_ATTRACT_TARGETS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_site"), ModEntities.MEMORY_FARM_SITE);
@@ -141,10 +147,8 @@ public final class ModEntities {
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
-		//noinspection deprecation
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_SCARECROW,
-				Registry.BLOCK.stream()
-						.filter(block -> block.getRegistryEntry().isIn(BlockTags.WOODEN_FENCES))
+				Arrays.stream(ModEntities.WOODEN_FENCES)
 						.flatMap(block -> block.getStateManager().getStates().stream())
 						.collect(Collectors.toSet()), 1, 1);
 
@@ -198,9 +202,9 @@ public final class ModEntities {
 		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 		MEMORY_ATTRACT_TARGETS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
+		MEMORY_FARMABLE_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.INT));
+		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_FARM_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_FARM_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());

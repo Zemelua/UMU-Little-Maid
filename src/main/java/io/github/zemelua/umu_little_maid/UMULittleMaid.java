@@ -5,6 +5,7 @@ import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.item.ModItems;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +27,7 @@ public class UMULittleMaid implements ModInitializer {
 		ModEntities.initialize();
 		ModInventories.initialize();
 		ModSounds.initialize();
+		ModTags.initialize();
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}
