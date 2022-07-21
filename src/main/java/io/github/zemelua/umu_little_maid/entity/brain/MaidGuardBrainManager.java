@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.MaidGuardTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.UpdateAttractTargetsTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.UpdateGuardTargetTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.UpdateShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -12,7 +15,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
+import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 
 import java.util.Set;
 
@@ -47,8 +52,8 @@ public final class MaidGuardBrainManager {
 				Pair.of(2, new WanderAroundTask()),
 				Pair.of(3, new UpdateShouldEatTask<>(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(4, new UpdateAttractTargetsTask()),
-				Pair.of(4, new UpdateGuardTargetTask()),
-				Pair.of(4, new ForgetGuardTargetTask())
+				Pair.of(4, new UpdateGuardTargetTask())
+				// Pair.of(4, new ForgetGuardTargetTask())
 		));
 	}
 
@@ -80,7 +85,8 @@ public final class MaidGuardBrainManager {
 				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
 				ModEntities.MEMORY_GUARDABLE_LIVING,
 				ModEntities.MEMORY_ATTRACT_TARGETS,
-				ModEntities.MEMORY_GUARD_TARGET
+				ModEntities.MEMORY_GUARD_TARGET,
+				ModEntities.MEMORY_OWNER
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

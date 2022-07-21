@@ -1,16 +1,16 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -19,10 +19,10 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.UUID;
 
-public class MaidGuardTask extends Task<LittleMaidEntity> {
+public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT,
 			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT
@@ -43,40 +43,46 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, LittleMaidEntity maid) {
-		Brain<LittleMaidEntity> brain = maid.getBrain();
+	protected boolean shouldRun(ServerWorld world, E tameable) {
+		@Nullable Entity owner = tameable.getOwner();
 
-		return brain.getOptionalMemory(ModEntities.MEMORY_ATTRACT_TARGETS).isPresent()
-				&& brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET).isPresent()
-				&& this.shouldMove(world, maid);
+		if (owner != null) {
+			return !owner.isSpectator() && tameable.distanceTo(owner) <= this.moveStartDistance;
+		}
+
+		return false;
 	}
 
 	@Override
-	protected boolean shouldKeepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		Brain<LittleMaidEntity> brain = maid.getBrain();
-
-		Optional<UUID> ownerUUID = brain.getOptionalMemory(ModEntities.MEMORY_OWNER);
-		if (ownerUUID.isEmpty()) return false;
-		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
-		if (owner == null) return false;
-
-		return this.shouldRun(world, maid);
+	protected boolean isTimeLimitExceeded(long time) {
+		return false;
 	}
 
 	@Override
-	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		Brain<LittleMaidEntity> brain = maid.getBrain();
+	protected boolean shouldKeepRunning(ServerWorld world, E tameable, long time) {
+		return this.shouldRun(world, tameable);
+	}
 
-		Optional<UUID> ownerUUID = brain.getOptionalMemory(ModEntities.MEMORY_OWNER);
-		if (ownerUUID.isEmpty()) return;
-		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
+	@Override
+	protected void run(ServerWorld world, E tameable, long time) {
+		Brain<?> brain = tameable.getBrain();
+
+		brain.forget(MemoryModuleType.WALK_TARGET);
+		brain.forget(MemoryModuleType.LOOK_TARGET);
+	}
+
+	@Override
+	protected void keepRunning(ServerWorld world, E tameable, long time) {
+		Brain<?> brain = tameable.getBrain();
+
+		@Nullable Entity owner = tameable.getOwner();
 		if (owner == null) return;
 
 		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACT_TARGETS).ifPresent(
 				list -> {
 					for (LivingEntity living : list) {
 						if (living instanceof MobEntity mob) {
-							mob.setTarget(maid);
+							mob.setTarget(tameable);
 						}
 					}
 				}
@@ -85,16 +91,16 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 		Optional<LivingEntity> guardFrom = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
 
 		if (guardFrom.isPresent()) {
-			boolean shouldGuard = maid.distanceTo(owner) <= this.guardStartDistance;
+			boolean shouldGuard = tameable.distanceTo(owner) <= this.guardStartDistance;
 			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(guardFrom.get(), true));
 
 			// ご主人様の近くにいるとき
-			if (maid.getMainHandStack().isOf(Items.SHIELD) && shouldGuard) {
-				if (!maid.isBlocking()) {
-					maid.setCurrentHand(Hand.MAIN_HAND);
+			if (tameable.getMainHandStack().isOf(Items.SHIELD) && shouldGuard) {
+				if (!tameable.isBlocking()) {
+					tameable.setCurrentHand(Hand.MAIN_HAND);
 				}
 			} else {
-				maid.clearActiveItem();
+				tameable.clearActiveItem();
 			}
 
 			Vec3d guardFromPos = guardFrom.get().getPos();
@@ -104,9 +110,9 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 			guardPos = ownerPos.add(guardFromPos.subtract(ownerPos).normalize());
 
 			// ご主人様の正面に移動する
-			Vec3d maidPos = maid.getPos();
+			Vec3d maidPos = tameable.getPos();
 			Vec3f moveVec = new Vec3f(maidPos.subtract(guardPos));
-			Vec3f lookVec = new Vec3f(maid.getRotationVector().multiply(1.0D, 0.0D, 1.0D));
+			Vec3f lookVec = new Vec3f(tameable.getRotationVector().multiply(1.0D, 0.0D, 1.0D));
 
 			Vec3f forwardVec = lookVec.copy();
 
@@ -115,31 +121,17 @@ public class MaidGuardTask extends Task<LittleMaidEntity> {
 			Vec3f sidewaysVec = lookVec.copy();
 
 			moveVec.normalize();
-			float speed = maid.isBlocking() ? this.guardSpeed : this.normalSpeed;
+			float speed = tameable.isBlocking() ? this.guardSpeed : this.normalSpeed;
 			float forwardSpeed = moveVec.dot(forwardVec) * speed;
 			float sidewaysSpeed = moveVec.dot(sidewaysVec) * speed;
 
-			maid.getMoveControl().strafeTo(-forwardSpeed, sidewaysSpeed);
-			maid.setYaw(MathHelper.clampAngle(maid.getYaw(), maid.getHeadYaw(), 0.0f));
+			tameable.getMoveControl().strafeTo(-forwardSpeed, sidewaysSpeed);
+			tameable.setYaw(MathHelper.clampAngle(tameable.getYaw(), tameable.getHeadYaw(), 0.0f));
 		}
 	}
 
 	@Override
-	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.clearActiveItem();
-	}
-
-	private boolean shouldMove(ServerWorld world, LittleMaidEntity maid) {
-		Brain<LittleMaidEntity> brain = maid.getBrain();
-		Optional<UUID> ownerUUID = brain.getOptionalMemory(ModEntities.MEMORY_OWNER);
-		if (ownerUUID.isEmpty()) return false;
-
-		PlayerEntity owner = world.getPlayerByUuid(ownerUUID.get());
-
-		if (owner != null) {
-			return !owner.isSpectator() && maid.distanceTo(owner) <= this.moveStartDistance;
-		}
-
-		return false;
+	protected void finishRunning(ServerWorld world, E tameable, long time) {
+		tameable.clearActiveItem();
 	}
 }
