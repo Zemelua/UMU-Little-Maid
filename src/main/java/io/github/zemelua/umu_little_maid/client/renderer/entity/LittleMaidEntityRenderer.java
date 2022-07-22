@@ -16,7 +16,7 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 		super(context, new LittleMaidEntityModel(context.getPart(UMULittleMaidClient.LAYER_LITTLE_MAID)), 0.5F);
 
 		this.addFeature(new MaidHeldItemRenderer<>(this, context.getHeldItemRenderer()));
-		this.addFeature(new MaidDripleafRenderer<>(this, context.getBlockRenderManager(), this.model.getBoneUsingDripleaf()));
+		this.addFeature(new MaidDripleafRenderer<>(this, context.getBlockRenderManager()));
 	}
 
 	@Override

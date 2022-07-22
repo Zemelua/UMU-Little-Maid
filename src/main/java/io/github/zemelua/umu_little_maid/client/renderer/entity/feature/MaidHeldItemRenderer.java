@@ -10,7 +10,6 @@ import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Quaternion;
 
 import java.util.Optional;
 
@@ -20,16 +19,17 @@ public class MaidHeldItemRenderer<T extends LittleMaidEntity, M extends SinglePa
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i, T maid,
+	                   float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
 		Optional<ModelPart> bone = this.getContextModel().getChild(LittleMaidEntityModel.KEY_BONE_USING_DRIPLEAF);
 
-		if (bone.isPresent()) {
+		bone.ifPresentOrElse(boneObject -> {
 			matrices.push();
-			matrices.multiply(new Quaternion(bone.get().pitch, bone.get().yaw, bone.get().roll, false));
-			super.render(matrices, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
+			boneObject.rotate(matrices);
+
+			super.render(matrices, vertexConsumerProvider, i, maid, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+
 			matrices.pop();
-		} else {
-			super.render(matrices, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
-		}
+		}, () -> super.render(matrices, vertexConsumerProvider, i, maid, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch));
 	}
 }
