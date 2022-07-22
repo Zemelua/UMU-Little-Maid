@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
@@ -15,8 +14,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -70,12 +67,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_ARCHER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_archer.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
-	@SuppressWarnings("unused") public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_ARCHER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_archer.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
+	@SuppressWarnings("unused")
+	public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
@@ -83,9 +86,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidPose> POSE;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
-
-	private static final ImmutableList<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
-	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
@@ -100,6 +100,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		super(type, world);
 
 		this.eatingTicks = 0;
+		this.damageBlocked = false;
 	}
 
 	@Nullable
@@ -160,7 +161,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.getJob().initializeBrain(brain);
-		if(this.isSitting()) {
+		if (this.isSitting()) {
 			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		}
 
@@ -182,16 +183,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	protected void mobTick() {
 		this.updateJob();
-		if (!this.getJob().equals(this.lastJob) && !this.world.isClient()) {
+		if (!this.getJob().equals(this.lastJob)) {
 			this.onJobChanged((ServerWorld) this.world);
 		}
+		this.lastJob = this.getJob();
 
 		this.getBrain().tick((ServerWorld) this.world, this);
 		this.getJob().tickBrain(this.getBrain());
-
-		this.lastJob = this.getJob();
-
-		super.mobTick();
 	}
 
 	private void updateJob() {
@@ -209,15 +207,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private void onJobChanged(ServerWorld world) {
 		Brain<LittleMaidEntity> brain = this.getBrain();
 		brain.stopAllTasks(world, this);
-		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(
-										NbtOps.INSTANCE.createString("memories"),
-										NbtOps.INSTANCE.emptyMap()
-		))));
-	}
 
-	@Override
-	public void tick() {
-		super.tick();
+		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(
+				NbtOps.INSTANCE.createString("memories"),
+				NbtOps.INSTANCE.emptyMap()
+		))));
 	}
 
 	@Override
@@ -881,45 +875,5 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-
-		SENSORS = ImmutableList.of(
-				SensorType.HURT_BY,
-				SensorType.NEAREST_LIVING_ENTITIES,
-				SensorType.NEAREST_PLAYERS,
-				ModEntities.SENSOR_MAID_ATTACKABLE,
-				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
-				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
-				ModEntities.SENSOR_MAID_FARMABLE_POSES,
-				ModEntities.SENSOR_FARM_SITE_CANDIDATE,
-				ModEntities.SENSOR_SHOULD_EAT
-		);
-
-		MEMORY_MODULES = ImmutableList.of(
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleType.HURT_BY,
-				MemoryModuleType.HURT_BY_ENTITY,
-				MemoryModuleType.IS_PANICKING,
-				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-				MemoryModuleType.PATH,
-				MemoryModuleType.ATTACK_TARGET,
-				MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
-				MemoryModuleType.ATTACK_COOLING_DOWN,
-				MemoryModuleType.NEAREST_ATTACKABLE,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleType.MOBS,
-				ModEntities.MEMORY_OWNER,
-				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
-				ModEntities.MEMORY_GUARDABLE_LIVING,
-				ModEntities.MEMORY_ATTRACT_TARGETS,
-				ModEntities.MEMORY_GUARD_TARGET,
-				ModEntities.MEMORY_FARMABLE_POS,
-				ModEntities.MEMORY_FARM_POS,
-				ModEntities.MEMORY_FARM_COOLDOWN,
-				ModEntities.MEMORY_FARM_SITE,
-				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
-				ModEntities.MEMORY_SHOULD_HEAL
-		);
 	}
 }

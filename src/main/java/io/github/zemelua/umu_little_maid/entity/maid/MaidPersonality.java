@@ -116,6 +116,7 @@ public class MaidPersonality {
 		return this.contractSound;
 	}
 
+	@SuppressWarnings("unused")
 	public static class Builder {
 		private double maxHealth = 20.0D;
 		private double movementSpeed = 0.3D;
@@ -196,28 +197,24 @@ public class MaidPersonality {
 			return this;
 		}
 
-		@SuppressWarnings("unused")
 		public Builder setCrackerAttackSound(SoundEvent crackerAttackSound) {
 			this.crackerAttackSound = crackerAttackSound;
 
 			return this;
 		}
 
-		@SuppressWarnings("unused")
 		public Builder setArcherAttackSound(SoundEvent archerAttackSound) {
 			this.archerAttackSound = archerAttackSound;
 
 			return this;
 		}
 
-		@SuppressWarnings("unused")
 		public Builder setKilledSound(SoundEvent killedSound) {
 			this.killedSound = killedSound;
 
 			return this;
 		}
 
-		@SuppressWarnings("unused")
 		public Builder setKilledBarelySound(SoundEvent killedBarelySound) {
 			this.killedBarelySound = killedBarelySound;
 
@@ -236,7 +233,6 @@ public class MaidPersonality {
 			return this;
 		}
 
-		@SuppressWarnings("unused")
 		public Builder setEatSound(SoundEvent eatSound) {
 			this.eatSound = eatSound;
 
