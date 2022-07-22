@@ -15,6 +15,6 @@ public class MaidJobTask extends ConditionalTask<LittleMaidEntity> {
 
 	@Override
 	protected boolean isTimeLimitExceeded(long time) {
-		return time > ((TaskAccessor) this).getEndTime();
+		return time > ((TaskAccessor<?>) this).getEndTime();
 	}
 }

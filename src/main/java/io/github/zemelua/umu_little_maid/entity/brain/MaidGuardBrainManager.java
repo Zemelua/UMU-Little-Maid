@@ -59,7 +59,7 @@ public final class MaidGuardBrainManager {
 
 	public static void addGuardTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_GUARD, ImmutableList.of(
-				Pair.of(0, new MaidGuardTask(6.0D, 2.0D, 1.5F))
+				Pair.of(0, new MaidGuardTask<>(6.0D, 2.0D, 1.5F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT)

@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
@@ -59,8 +60,9 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected boolean shouldKeepRunning(ServerWorld world, E tameable, long time) {
-		return this.shouldRun(world, tameable);
+		return this.shouldRun(world, tameable) && ((TaskAccessor<E>) this).callHasRequiredMemoryState(tameable);
 	}
 
 	@Override

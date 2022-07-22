@@ -63,7 +63,7 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		maid.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
 
-		if (time > ((TaskAccessor) this).getEndTime()) {
+		if (time > ((TaskAccessor<?>) this).getEndTime()) {
 			maid.heal(5.0F);
 			this.eatingStack.split(1);
 		}
