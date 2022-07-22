@@ -4,18 +4,14 @@ import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.animation.Animation;
-import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.AnimationState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 
 public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntity> implements ModelWithArms {
 	public static final String KEY_SKIRT = "skirt";
@@ -162,6 +158,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.adaptAttackingAngel(arm);
 
 		this.updateAnimation(maid.getEatAnimation(), UMULittleMaidClient.ANIMATION_MAID_EAT, animationProgress);
+		if (maid.getUseDripleafAnimation().isRunning()) {
+			this.setStandingAngle(limbAngle, limbDistance);
+		}
 		if (maid.isLeftHanded()) {
 			this.updateAnimation(maid.getUseDripleafAnimation(), UMULittleMaidClient.ANIMATION_MAID_USE_DRIPLEAF_RIGHT, animationProgress);
 		} else {
@@ -225,12 +224,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		armPart.pitch -= g * 1.2F + h;
 		armPart.yaw += this.body.yaw * 2.0F;
 		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
-	}
-
-	@Override
-	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
-		animationState.update(animationProgress, speedMultiplier);
-		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0f, Vec3f.ZERO));
 	}
 
 	@Override
