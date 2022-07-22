@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.client.renderer.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidDripleafRenderer;
@@ -29,6 +28,6 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 
 	@Override
 	public Identifier getTexture(LittleMaidEntity entity) {
-		return UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
+		return entity.getTexture();
 	}
 }

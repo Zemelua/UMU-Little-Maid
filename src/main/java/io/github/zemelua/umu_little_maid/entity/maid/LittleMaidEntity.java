@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Dynamic;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
@@ -68,6 +69,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
+	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_ARCHER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_archer.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
+	@SuppressWarnings("unused") public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
@@ -798,6 +806,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void playContractSound() {
 		this.playSound(this.getPersonality().getContractSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public Identifier getTexture() {
+		return this.getJob().getTexture();
 	}
 
 	private static final String KEY_INVENTORY = "Inventory";

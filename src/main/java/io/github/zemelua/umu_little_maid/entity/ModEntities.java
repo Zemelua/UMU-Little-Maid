@@ -255,30 +255,37 @@ public final class ModEntities {
 		JOB_NONE = new MaidJob(itemStack -> false,
 				MaidNoneBrainManager::createProfile,
 				MaidNoneBrainManager::initializeBrain,
-				MaidNoneBrainManager::tickBrain);
+				MaidNoneBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem,
 				MaidFencerBrainManager::createProfile,
 				MaidFencerBrainManager::initializeBrain,
-				MaidFencerBrainManager::tickBrain);
+				MaidFencerBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem,
 				MaidCrackerBrainManager::createProfile,
 				MaidCrackerBrainManager::initializeBrain,
-				MaidCrackerBrainManager::tickBrain);
+				MaidCrackerBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem,
 				MaidArcherBrainManager::createProfile,
 				MaidArcherBrainManager::initializeBrain,
-				MaidArcherBrainManager::tickBrain);
+				MaidArcherBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD),
 				MaidGuardBrainManager::createProfile,
 				MaidGuardBrainManager::initializeBrain,
-				MaidGuardBrainManager::tickBrain);
+				MaidGuardBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem,
 				MaidFarmerBrainManager::createProfile,
 				MaidFarmerBrainManager::initializeBrain,
-				MaidFarmerBrainManager::tickBrain);
+				MaidFarmerBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD),
 				MaidHealerBrainManager::createProfile,
 				MaidHealerBrainManager::initializeBrain,
-				MaidHealerBrainManager::tickBrain);
+				MaidHealerBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 	}
 }
