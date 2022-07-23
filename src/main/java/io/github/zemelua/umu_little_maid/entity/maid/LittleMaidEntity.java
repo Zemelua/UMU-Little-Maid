@@ -833,6 +833,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
 	private static final String KEY_PERSONALITY = "Personality";
+	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -862,6 +863,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (personality != null) {
 			nbt.putString(LittleMaidEntity.KEY_PERSONALITY, personality.toString());
 		}
+
+		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
 	}
 
 	@Override
@@ -888,6 +891,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
 			this.setPersonality(ModRegistries.MAID_PERSONALITY.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_PERSONALITY))));
 		}
+
+		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
 	}
 
 	static {
