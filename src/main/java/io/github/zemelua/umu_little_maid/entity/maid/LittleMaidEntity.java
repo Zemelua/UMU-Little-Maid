@@ -67,17 +67,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_ARCHER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_archer.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
-	@SuppressWarnings("unused")
 	public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
 
 	private static final TrackedData<Optional<UUID>> OWNER;

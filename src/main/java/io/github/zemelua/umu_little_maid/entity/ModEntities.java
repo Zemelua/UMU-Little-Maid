@@ -261,31 +261,31 @@ public final class ModEntities {
 				MaidFencerBrainManager::createProfile,
 				MaidFencerBrainManager::initializeBrain,
 				MaidFencerBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_FENCER);
 		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem,
 				MaidCrackerBrainManager::createProfile,
 				MaidCrackerBrainManager::initializeBrain,
 				MaidCrackerBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_CRACKER);
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem,
 				MaidArcherBrainManager::createProfile,
 				MaidArcherBrainManager::initializeBrain,
 				MaidArcherBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_ARCHER);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD),
 				MaidGuardBrainManager::createProfile,
 				MaidGuardBrainManager::initializeBrain,
 				MaidGuardBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_GUARD);
 		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem,
 				MaidFarmerBrainManager::createProfile,
 				MaidFarmerBrainManager::initializeBrain,
 				MaidFarmerBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_FARMER);
 		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD),
 				MaidHealerBrainManager::createProfile,
 				MaidHealerBrainManager::initializeBrain,
 				MaidHealerBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_HEALER);
 	}
 }
