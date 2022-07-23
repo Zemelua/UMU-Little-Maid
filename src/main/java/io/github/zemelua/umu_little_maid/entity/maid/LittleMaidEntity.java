@@ -41,6 +41,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -66,6 +67,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
+	public static final Predicate<ItemStack> CHANGE_COSTUME = itemStack -> itemStack.isIn(ItemTags.WOOL);
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
 	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
@@ -80,6 +82,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<MaidPose> POSE;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
+	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
@@ -144,6 +147,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
+		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
 	}
 
 	@Override
@@ -238,17 +242,29 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
-				if (player.isSneaking()) {
+				if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem)) {
+					if (!this.world.isClient()) {
+						this.setVariableCostume(!this.isVariableCostume());
+
+						if (!player.getAbilities().creativeMode) {
+							interactItem.decrement(1);
+						}
+					}
+
+					return ActionResult.success(this.world.isClient());
+				} else if (player.isSneaking()) {
 					if (!this.world.isClient()) {
 						player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
 					}
+
+					return ActionResult.success(this.world.isClient());
 				} else {
 					if (!this.world.isClient()) {
 						this.setSitting(!this.isSitting());
 					}
-				}
 
-				return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.world.isClient());
+				}
 			}
 		} else {
 			if (interactItem.isOf(Items.CAKE)) {
@@ -716,6 +732,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.IS_USING_DRIPLEAF, value);
 	}
 
+	public boolean isVariableCostume() {
+		return this.dataTracker.get(LittleMaidEntity.IS_VARIABLE_COSTUME);
+	}
+
+	public void setVariableCostume(boolean value) {
+		this.dataTracker.set(LittleMaidEntity.IS_VARIABLE_COSTUME, value);
+	}
+
 	@SuppressWarnings("unused")
 	public double getIntimacy() {
 		return 0;
@@ -797,7 +821,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public Identifier getTexture() {
-		return this.getJob().getTexture();
+		if (this.isVariableCostume()) {
+			return this.getJob().getTexture();
+		}
+
+		return LittleMaidEntity.TEXTURE_NONE;
 	}
 
 	private static final String KEY_INVENTORY = "Inventory";
@@ -869,5 +897,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	}
 }
