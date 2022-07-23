@@ -167,6 +167,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.updateAnimation(maid.getUseDripleafAnimation(), UMULittleMaidClient.ANIMATION_MAID_USE_DRIPLEAF_LEFT, animationProgress);
 		}
 		this.updateAnimation(maid.getHealAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEAL, animationProgress);
+		if (maid.getChangeCostumeAnimation().isRunning()) {
+			this.twistRoot(maid.getChangeCostumeAnimation().getTimeRunning());
+		}
+		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
 	}
 
 	@Override
@@ -224,6 +228,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		armPart.pitch -= g * 1.2F + h;
 		armPart.yaw += this.body.yaw * 2.0F;
 		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
+	}
+
+	private void twistRoot(float progress) {
+		this.root.yaw = progress * 0.5F / 360.0F;
 	}
 
 	@Override

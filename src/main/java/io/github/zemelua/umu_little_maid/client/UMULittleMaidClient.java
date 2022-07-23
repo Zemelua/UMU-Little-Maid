@@ -33,6 +33,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	public static final Animation ANIMATION_MAID_HEAL;
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_LEFT;
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_RIGHT;
+	public static final Animation ANIMATION_MAID_CHANGE_COSTUME;
 
 	@Override
 	public void onInitializeClient() {
@@ -97,6 +98,20 @@ public class UMULittleMaidClient implements ClientModInitializer {
 						new Keyframe(1.5F, AnimationHelper.method_41829(0.0F, 0.0F, 20.0F), Transformation.Interpolations.field_37884),
 						new Keyframe(1.75F, AnimationHelper.method_41829(0.0F, 0.0F, 15.0F), Transformation.Interpolations.field_37884),
 						new Keyframe(2.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)))
+				.build();
+		ANIMATION_MAID_CHANGE_COSTUME = Animation.Builder.create(0.5F)
+				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
+						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, -52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, -105.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, -52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
+				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
+						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, 52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, 105.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, 52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
 				.build();
 	}
 }

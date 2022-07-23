@@ -88,6 +88,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState eatAnimation = new AnimationState();
 	private final AnimationState healAnimation = new AnimationState();
 	private final AnimationState useDripleafAnimation = new AnimationState();
+	private final AnimationState changeCostumeAnimation = new AnimationState();
 
 	private MaidJob lastJob;
 	private int eatingTicks;
@@ -138,6 +139,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public double getJumpBoostVelocityModifier() {
+		return super.getJumpBoostVelocityModifier();
+	}
+
+	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 
@@ -159,7 +165,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.getJob().initializeBrain(brain);
-		if (this.isSitting()) {
+
+		UMULittleMaid.LOGGER.info("Sitting on loaded is: " + this.isSitting());
+
+		if (this.isSitting() && !this.world.isClient()) {
 			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		}
 
@@ -185,6 +194,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.onJobChanged((ServerWorld) this.world);
 		}
 		this.lastJob = this.getJob();
+
+		// this.world.isChunkLoaded()
 
 		this.getBrain().tick((ServerWorld) this.world, this);
 		this.getJob().tickBrain(this.getBrain());
@@ -669,13 +680,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
 	}
 
-	private void setSitting(boolean sitting) {
-		this.dataTracker.set(LittleMaidEntity.IS_SITTING, sitting);
+	private void setSitting(boolean value) {
+		this.dataTracker.set(LittleMaidEntity.IS_SITTING, value);
 
-		if (sitting) {
-			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
+		if (value) {
+			this.brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		} else {
-			brain.forget(ModEntities.MEMORY_IS_SITTING);
+			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
 	}
 
@@ -755,6 +766,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public AnimationState getUseDripleafAnimation() {
 		return this.useDripleafAnimation;
+	}
+
+	public AnimationState getChangeCostumeAnimation() {
+		return this.changeCostumeAnimation;
 	}
 
 	@Override
