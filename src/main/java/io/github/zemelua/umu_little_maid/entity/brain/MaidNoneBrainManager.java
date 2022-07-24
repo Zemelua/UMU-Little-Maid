@@ -32,6 +32,7 @@ public final class MaidNoneBrainManager {
 		MaidNoneBrainManager.addIdleTasks(brain);
 		MaidNoneBrainManager.addSitTasks(brain);
 		MaidNoneBrainManager.addEatTasks(brain);
+		MaidNoneBrainManager.addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -39,7 +40,7 @@ public final class MaidNoneBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, Activity.IDLE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -48,7 +49,10 @@ public final class MaidNoneBrainManager {
 				Pair.of(1, new WalkTask(1.0F)),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
-				Pair.of(4, new UpdateShouldEatTask<>((living -> false)))
+				Pair.of(4, new UpdateShouldEatTask((living -> false))),
+				Pair.of(5, new UpdateShouldSleepTask<>()),
+				Pair.of(5, new RememberHomeTask<>()),
+				Pair.of(6, new ForgetHomeTask<>())
 		));
 	}
 
@@ -81,6 +85,16 @@ public final class MaidNoneBrainManager {
 		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
 	}
 
+	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(Activity.REST, ImmutableList.of(
+				Pair.of(0, new WalkToHomeTask<>(0.8F)),
+				Pair.of(1, new SleepTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
 	private MaidNoneBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -97,12 +111,17 @@ public final class MaidNoneBrainManager {
 				MemoryModuleType.HURT_BY_ENTITY,
 				MemoryModuleType.IS_PANICKING,
 				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_SHOULD_EAT
+				ModEntities.MEMORY_SHOULD_EAT,
+				ModEntities.MEMORY_SHOULD_SLEEP,
+				MemoryModuleType.NEAREST_BED,
+				MemoryModuleType.HOME,
+				MemoryModuleType.LAST_WOKEN,
+				MemoryModuleType.LAST_SLEPT
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
 				SensorType.HURT_BY,
-				ModEntities.SENSOR_SHOULD_EAT
+				ModEntities.SENSOR_HOME_CANDIDATE
 		);
 	}
 }

@@ -490,6 +490,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public void wakeUp() {
+		super.wakeUp();
+
+		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
+	}
+
+	@Override
 	protected void playHurtSound(DamageSource source) {
 		if (!this.damageBlocked) {
 			super.playHurtSound(source);

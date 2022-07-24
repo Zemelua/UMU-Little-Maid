@@ -33,6 +33,7 @@ public final class MaidFarmerBrainManager {
 		MaidFarmerBrainManager.addSitTasks(brain);
 		MaidFarmerBrainManager.addEatTasks(brain);
 		MaidFarmerBrainManager.addFarmTasks(brain);
+		MaidNoneBrainManager.addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -40,7 +41,7 @@ public final class MaidFarmerBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, ModEntities.ACTIVITY_FARM, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, ModEntities.ACTIVITY_FARM, Activity.IDLE));
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -48,11 +49,14 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new UpdateShouldEatTask<>()),
+				Pair.of(3, new UpdateShouldEatTask()),
 				Pair.of(4, new UpdateFarmPosTask<>()),
 				Pair.of(5, new UpdateFarmSiteTask<>()),
 				Pair.of(6, new UpdateFarmSiteTask<>()),
-				Pair.of(7, new KeepAroundFarmSiteTask<>())
+				Pair.of(7, new KeepAroundFarmSiteTask<>()),
+				Pair.of(5, new UpdateShouldSleepTask<>()),
+				Pair.of(5, new RememberHomeTask<>()),
+				Pair.of(6, new ForgetHomeTask<>())
 		));
 	}
 
@@ -96,6 +100,16 @@ public final class MaidFarmerBrainManager {
 		), ImmutableSet.of(ModEntities.MEMORY_FARM_POS, ModEntities.MEMORY_FARM_COOLDOWN));
 	}
 
+	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(Activity.REST, ImmutableList.of(
+				Pair.of(0, new WalkToHomeTask<>(0.8F)),
+				Pair.of(1, new SleepTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
 	private MaidFarmerBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -115,13 +129,19 @@ public final class MaidFarmerBrainManager {
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
 				ModEntities.MEMORY_FARM_SITE,
-				ModEntities.MEMORY_FARM_SITE_CANDIDATE
+				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
+				ModEntities.MEMORY_SHOULD_SLEEP,
+				MemoryModuleType.NEAREST_BED,
+				MemoryModuleType.HOME,
+				MemoryModuleType.LAST_WOKEN,
+				MemoryModuleType.LAST_SLEPT
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
 				ModEntities.SENSOR_SHOULD_EAT,
 				ModEntities.SENSOR_MAID_FARMABLE_POSES,
-				ModEntities.SENSOR_FARM_SITE_CANDIDATE
+				ModEntities.SENSOR_FARM_SITE_CANDIDATE,
+				ModEntities.SENSOR_HOME_CANDIDATE
 		);
 	}
 }

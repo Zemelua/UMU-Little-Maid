@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.MaidEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.PounceAtTargetTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.UpdateShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -32,6 +30,7 @@ public final class MaidFencerBrainManager {
 		MaidNoneBrainManager.addSitTasks(brain);
 		MaidFencerBrainManager.addEatTasks(brain);
 		MaidFencerBrainManager.addFightTasks(brain);
+		MaidNoneBrainManager.addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -39,7 +38,7 @@ public final class MaidFencerBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.FIGHT, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, Activity.FIGHT, Activity.IDLE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -47,9 +46,12 @@ public final class MaidFencerBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new UpdateShouldEatTask<>(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
+				Pair.of(3, new UpdateShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(4, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(4, new ForgetAttackTargetTask<>())
+				Pair.of(4, new ForgetAttackTargetTask<>()),
+				Pair.of(5, new UpdateShouldSleepTask<>()),
+				Pair.of(5, new RememberHomeTask<>()),
+				Pair.of(6, new ForgetHomeTask<>())
 		));
 	}
 
@@ -73,6 +75,16 @@ public final class MaidFencerBrainManager {
 		));
 	}
 
+	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(Activity.REST, ImmutableList.of(
+				Pair.of(0, new WalkToHomeTask<>(0.8F)),
+				Pair.of(1, new SleepTask())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
 	private MaidFencerBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -89,12 +101,18 @@ public final class MaidFencerBrainManager {
 				ModEntities.MEMORY_SHOULD_EAT,
 				MemoryModuleType.NEAREST_ATTACKABLE,
 				MemoryModuleType.ATTACK_TARGET,
-				MemoryModuleType.ATTACK_COOLING_DOWN
+				MemoryModuleType.ATTACK_COOLING_DOWN,
+				ModEntities.MEMORY_SHOULD_SLEEP,
+				MemoryModuleType.NEAREST_BED,
+				MemoryModuleType.HOME,
+				MemoryModuleType.LAST_WOKEN,
+				MemoryModuleType.LAST_SLEPT
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
 				ModEntities.SENSOR_SHOULD_EAT,
-				ModEntities.SENSOR_MAID_ATTACKABLE
+				ModEntities.SENSOR_MAID_ATTACKABLE,
+				ModEntities.SENSOR_HOME_CANDIDATE
 		);
 	}
 }
