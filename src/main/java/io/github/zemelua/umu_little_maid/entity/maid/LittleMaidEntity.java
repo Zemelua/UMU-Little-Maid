@@ -264,7 +264,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
-				if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem) && this.isOnGround()) {
+				if (player.isSneaking()) {
+					if (!this.world.isClient()) {
+						player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
+					}
+
+					return ActionResult.success(this.world.isClient());
+				} else if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem) && this.isOnGround()) {
 					if (!this.world.isClient()) {
 						this.setVariableCostume(!this.isVariableCostume());
 						this.setAnimationPose(MaidPose.CHANGE_COSTUME);
@@ -274,12 +280,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
 						}
-					}
-
-					return ActionResult.success(this.world.isClient());
-				} else if (player.isSneaking()) {
-					if (!this.world.isClient()) {
-						player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -589,6 +589,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, posRight.x, posRight.y, posRight.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
 		}
 	}
+
 	@Override
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
