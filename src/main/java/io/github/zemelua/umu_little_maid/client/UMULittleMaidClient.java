@@ -102,15 +102,15 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		ANIMATION_MAID_CHANGE_COSTUME = Animation.Builder.create(0.5F)
 				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
 						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, -52.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, -105.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, -52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, -32.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, -65.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, -32.5F), Transformation.Interpolations.field_37885),
 						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
 						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, 52.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, 105.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, 52.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, 32.5F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, 65.0F), Transformation.Interpolations.field_37885),
+						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, 32.5F), Transformation.Interpolations.field_37885),
 						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
 				.build();
 	}

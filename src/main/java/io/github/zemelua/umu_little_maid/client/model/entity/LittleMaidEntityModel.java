@@ -6,6 +6,7 @@ import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.AnimationState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.Quaternion;
 public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntity> implements ModelWithArms {
 	public static final String KEY_SKIRT = "skirt";
 	public static final String KEY_BONE_USING_DRIPLEAF = "using_dripleaf_bone";
+	public static final String KEY_BONE_CHANGING_COSTUME = "changing_costume_bone";
 
 	private final ModelPart root;
 	private final ModelPart head;
@@ -26,6 +28,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	private final ModelPart leftLeg;
 	private final ModelPart rightLeg;
 	private final ModelPart boneUsingDripleaf;
+	private final ModelPart boneChangingCostume;
 
 	private BipedEntityModel.ArmPose leftArmPose;
 	private BipedEntityModel.ArmPose rightArmPose;
@@ -43,7 +46,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
 		this.rightLeg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
 		this.boneUsingDripleaf = this.root.getChild(LittleMaidEntityModel.KEY_BONE_USING_DRIPLEAF);
+		this.boneChangingCostume = this.root.getChild(LittleMaidEntityModel.KEY_BONE_CHANGING_COSTUME);
 
+		this.root.setDefaultTransform(ModelTransform.NONE);
 		this.head.setDefaultTransform(ModelTransform.pivot(0.0F, 8.0F, 0.0F));
 		this.body.setDefaultTransform(ModelTransform.pivot(0.0F, 8.0F, 0.0F));
 		this.skirt.setDefaultTransform(ModelTransform.pivot(0.0F, 14.0F, 0.0F));
@@ -52,6 +57,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.leftLeg.setDefaultTransform(ModelTransform.pivot(1.5F, 17.0F, 0.0F));
 		this.rightLeg.setDefaultTransform(ModelTransform.pivot(-1.5F, 17.0F, 0.0F));
 		this.boneUsingDripleaf.setDefaultTransform(ModelTransform.NONE);
+		this.boneChangingCostume.setDefaultTransform(ModelTransform.NONE);
 
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
@@ -101,12 +107,14 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		);
 
 		root.addChild("using_dripleaf_bone", ModelPartBuilder.create(), ModelTransform.NONE);
+		root.addChild(LittleMaidEntityModel.KEY_BONE_CHANGING_COSTUME, ModelPartBuilder.create(), ModelTransform.NONE);
 
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	@Override
 	public void setAngles(LittleMaidEntity maid, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		this.root.resetTransform();
 		this.head.resetTransform();
 		this.body.resetTransform();
 		this.skirt.resetTransform();
@@ -115,6 +123,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.leftLeg.resetTransform();
 		this.rightLeg.resetTransform();
 		this.boneUsingDripleaf.resetTransform();
+		this.boneChangingCostume.resetTransform();
 
 		this.head.pitch = (float) Math.toRadians(headPitch);
 		this.head.yaw = (float) Math.toRadians(headYaw);
@@ -168,13 +177,15 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 		this.updateAnimation(maid.getHealAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEAL, animationProgress);
 		if (maid.getChangeCostumeAnimation().isRunning()) {
-			this.twistRoot(maid.getChangeCostumeAnimation().getTimeRunning());
+			this.preChangeCostumeAnimation(maid.getChangeCostumeAnimation(), limbAngle, limbDistance);
 		}
 		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+		matrices.multiply(new Quaternion(this.boneChangingCostume.pitch, this.boneChangingCostume.yaw, this.boneChangingCostume.roll, false));
+
 		if (this.isUsingDripleaf) {
 			matrices.push();
 			matrices.translate(0.0F / 16.0F, 0.5F / 16.0F, 0.0F / 16.0F);
@@ -230,8 +241,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		armPart.roll += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
 	}
 
-	private void twistRoot(float progress) {
-		this.root.yaw = progress * 0.5F / 360.0F;
+	private void preChangeCostumeAnimation(AnimationState animation, float limbAngle, float limbDistance) {
+		this.setStandingAngle(limbAngle, limbDistance);
+		this.boneChangingCostume.yaw = (float) Math.toRadians(animation.getTimeRunning() / 1000.0F * 360.0F / 0.5F);
 	}
 
 	@Override
@@ -345,10 +357,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 
 		return this.rightArm;
-	}
-
-	public ModelPart getBoneUsingDripleaf() {
-		return this.boneUsingDripleaf;
 	}
 
 	public void setUsingDripleaf(boolean value) {

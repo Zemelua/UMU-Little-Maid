@@ -92,12 +92,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private MaidJob lastJob;
 	private int eatingTicks;
+	private int changingCostumeTicks;
 	private boolean damageBlocked;
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
 
 		this.eatingTicks = 0;
+		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
 	}
 
@@ -199,6 +201,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.getBrain().tick((ServerWorld) this.world, this);
 		this.getJob().tickBrain(this.getBrain());
+
+		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
+			this.changingCostumeTicks++;
+			this.playChangingCostumeParticles();
+		}
+		if (this.changingCostumeTicks >= 10) {
+			this.setAnimationPose(MaidPose.NONE);
+			this.changingCostumeTicks = 0;
+		}
 	}
 
 	private void updateJob() {
@@ -253,9 +264,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
-				if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem)) {
+				if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem) && this.isOnGround()) {
 					if (!this.world.isClient()) {
 						this.setVariableCostume(!this.isVariableCostume());
+						this.setAnimationPose(MaidPose.CHANGE_COSTUME);
+						this.navigation.stop();
+						this.jump();
 
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
@@ -561,6 +575,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
+	public void playChangingCostumeParticles() {
+		if (!this.world.isClient()) {
+			Vec3d posLeft = new Vec3d(0.0D, 0.0D, -0.5D);
+			Vec3d posRight = new Vec3d(0.0D, 0.0D, 0.5D);
+			double xRotate = this.changingCostumeTicks * 360.0D / 10;
+			posLeft = posLeft.rotateY((float) Math.toRadians(this.getYaw() + xRotate));
+			posRight = posRight.rotateY((float) Math.toRadians(this.getYaw() + xRotate));
+			posLeft = posLeft.add(this.getX(), this.getY() + 0.7D, this.getZ());
+			posRight = posRight.add(this.getX(), this.getY() + 0.7D, this.getZ());
+
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, posLeft.x, posLeft.y, posLeft.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, posRight.x, posRight.y, posRight.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
+		}
+	}
 	@Override
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
@@ -626,6 +654,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				this.useDripleafAnimation.start(this.age);
 			} else {
 				this.useDripleafAnimation.stop();
+			}
+
+			if (pose == MaidPose.CHANGE_COSTUME) {
+				this.changeCostumeAnimation.start(this.age);
+			} else {
+				this.changeCostumeAnimation.stop();
 			}
 		}
 

@@ -4,5 +4,6 @@ public enum MaidPose {
 	NONE,
 	EAT,
 	HEAL,
-	USE_DRIPLEAF
+	USE_DRIPLEAF,
+	CHANGE_COSTUME
 }
