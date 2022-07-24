@@ -168,9 +168,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.getJob().initializeBrain(brain);
 
-		UMULittleMaid.LOGGER.info("Sitting on loaded is: " + this.isSitting());
-
 		if (this.isSitting() && !this.world.isClient()) {
+			UMULittleMaid.LOGGER.info("Sitting on loaded is: " + this.isSitting());
 			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		}
 
@@ -199,8 +198,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		// this.world.isChunkLoaded()
 
-		this.getBrain().tick((ServerWorld) this.world, this);
 		this.getJob().tickBrain(this.getBrain());
+		this.getBrain().tick((ServerWorld) this.world, this);
 
 		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
 			this.changingCostumeTicks++;
