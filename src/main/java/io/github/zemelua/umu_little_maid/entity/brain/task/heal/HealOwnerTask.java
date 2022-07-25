@@ -97,6 +97,7 @@ public class HealOwnerTask<E extends LivingEntity & Tameable> extends Task<E> {
 			this.cooldown = 0;
 		}
 
+		tameable.setBodyYaw(tameable.getHeadYaw());
 		this.cooldown++;
 
 		Brain<?> brain = tameable.getBrain();
