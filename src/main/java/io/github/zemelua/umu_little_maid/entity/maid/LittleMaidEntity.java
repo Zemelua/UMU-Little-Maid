@@ -14,6 +14,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -101,6 +102,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.eatingTicks = 0;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
+		((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
 	}
 
 	@Nullable

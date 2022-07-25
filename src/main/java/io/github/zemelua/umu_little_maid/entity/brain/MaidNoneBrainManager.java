@@ -55,6 +55,7 @@ public final class MaidNoneBrainManager {
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
+				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(1, new WalkTask(1.0F)),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
@@ -114,6 +115,7 @@ public final class MaidNoneBrainManager {
 		MEMORY_MODULES = ImmutableSet.of(
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleType.PATH,
+				MemoryModuleType.DOORS_TO_CLOSE,
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleType.MOBS,

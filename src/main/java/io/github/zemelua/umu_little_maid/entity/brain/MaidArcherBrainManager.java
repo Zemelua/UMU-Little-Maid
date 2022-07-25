@@ -61,6 +61,7 @@ public final class MaidArcherBrainManager {
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
+				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
@@ -134,6 +135,7 @@ public final class MaidArcherBrainManager {
 		MEMORY_MODULES = ImmutableSet.of(
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleType.PATH,
+				MemoryModuleType.DOORS_TO_CLOSE,
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleType.MOBS,
