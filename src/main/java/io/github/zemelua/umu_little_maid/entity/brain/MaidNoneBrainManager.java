@@ -5,10 +5,10 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.WalkToHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
@@ -21,21 +21,10 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-import java.util.Set;
-
 public final class MaidNoneBrainManager {
-	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
-	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
-
-	public static Brain.Profile<LittleMaidEntity> createProfile() {
-		return Brain.createProfile(MaidNoneBrainManager.MEMORY_MODULES, MaidNoneBrainManager.SENSORS);
-	}
-
 	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
 		MaidNoneBrainManager.addCoreTasks(brain);
 		MaidNoneBrainManager.addIdleTasks(brain);
@@ -56,6 +45,7 @@ public final class MaidNoneBrainManager {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
+				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new WalkTask(1.0F)),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
@@ -109,32 +99,5 @@ public final class MaidNoneBrainManager {
 
 	private MaidNoneBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
-	}
-
-	static {
-		MEMORY_MODULES = ImmutableSet.of(
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleType.PATH,
-				MemoryModuleType.DOORS_TO_CLOSE,
-				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleType.MOBS,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleType.HURT_BY,
-				MemoryModuleType.HURT_BY_ENTITY,
-				MemoryModuleType.IS_PANICKING,
-				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_SHOULD_EAT,
-				ModEntities.MEMORY_SHOULD_SLEEP,
-				MemoryModuleType.NEAREST_BED,
-				MemoryModuleType.HOME,
-				MemoryModuleType.LAST_WOKEN,
-				MemoryModuleType.LAST_SLEPT
-		);
-		SENSORS = ImmutableSet.of(
-				SensorType.NEAREST_LIVING_ENTITIES,
-				SensorType.HURT_BY,
-				ModEntities.SENSOR_HOME_CANDIDATE
-		);
 	}
 }

@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -14,6 +14,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -33,7 +35,6 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -56,14 +57,14 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings("CommentedOutCode")
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
+	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
+	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
+
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
 	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
@@ -99,6 +100,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
 
+		this.lastJob = ModEntities.JOB_NONE;
 		this.eatingTicks = 0;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
@@ -137,8 +139,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.setCanPickUpLoot(true);
 
-		this.lastJob = ModEntities.JOB_NONE;
-
 		return entityData;
 	}
 
@@ -162,18 +162,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-		return this.getJob().createProfile();
+		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
 	}
 
 	@Override
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.getJob().initializeBrain(brain);
-
-		if (this.isSitting() && !this.world.isClient()) {
-			UMULittleMaid.LOGGER.info("Sitting on loaded is: " + this.isSitting());
-			brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
-		}
 
 		return brain;
 	}
@@ -197,8 +192,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.onJobChanged((ServerWorld) this.world);
 		}
 		this.lastJob = this.getJob();
-
-		// this.world.isChunkLoaded()
 
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
@@ -229,10 +222,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		Brain<LittleMaidEntity> brain = this.getBrain();
 		brain.stopAllTasks(world, this);
 
-		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(
-				NbtOps.INSTANCE.createString("memories"),
-				NbtOps.INSTANCE.emptyMap()
-		))));
+		this.brain = brain.copy();
+		this.getJob().initializeBrain(this.getBrain());
 	}
 
 	@Override
@@ -497,6 +488,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		this.brain.forget(MemoryModuleType.LOOK_TARGET);
+		this.setHeadYaw(this.bodyYaw);
 	}
 
 	@Override
@@ -898,6 +891,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
+	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 
@@ -924,6 +918,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_SITTING, this.isSitting());
+
+		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
+		if (job != null) {
+			nbt.putString(LittleMaidEntity.KEY_JOB, job.toString());
+		}
 
 		@Nullable Identifier personality = ModRegistries.MAID_PERSONALITY.getId(this.getPersonality());
 		if (personality != null) {
@@ -954,6 +953,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
 
+		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
+			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
+		}
+
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
 			this.setPersonality(ModRegistries.MAID_PERSONALITY.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_PERSONALITY))));
 		}
@@ -962,6 +965,49 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	static {
+		MEMORY_MODULES = ImmutableSet.of(
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleType.PATH,
+				MemoryModuleType.DOORS_TO_CLOSE,
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleType.MOBS,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleType.HURT_BY,
+				MemoryModuleType.HURT_BY_ENTITY,
+				MemoryModuleType.IS_PANICKING,
+				ModEntities.MEMORY_IS_SITTING,
+				ModEntities.MEMORY_SHOULD_EAT,
+				ModEntities.MEMORY_SHOULD_SLEEP,
+				MemoryModuleType.NEAREST_BED,
+				MemoryModuleType.HOME,
+				MemoryModuleType.LAST_WOKEN,
+				MemoryModuleType.LAST_SLEPT,
+				MemoryModuleType.NEAREST_ATTACKABLE,
+				MemoryModuleType.ATTACK_TARGET,
+				MemoryModuleType.ATTACK_COOLING_DOWN,
+				ModEntities.MEMORY_HAS_ARROWS,
+				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
+				ModEntities.MEMORY_GUARDABLE_LIVING,
+				ModEntities.MEMORY_GUARD_TARGET,
+				ModEntities.MEMORY_SHOULD_HEAL,
+				ModEntities.MEMORY_FARMABLE_POS,
+				ModEntities.MEMORY_FARM_POS,
+				ModEntities.MEMORY_FARM_COOLDOWN,
+				ModEntities.MEMORY_FARM_SITE,
+				ModEntities.MEMORY_FARM_SITE_CANDIDATE
+		);
+		SENSORS = ImmutableSet.of(
+				SensorType.NEAREST_LIVING_ENTITIES,
+				SensorType.HURT_BY,
+				ModEntities.SENSOR_HOME_CANDIDATE,
+				ModEntities.SENSOR_MAID_ATTACKABLE,
+				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
+				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
+				ModEntities.SENSOR_MAID_FARMABLE_POSES,
+				ModEntities.SENSOR_FARM_SITE_CANDIDATE
+		);
+
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);

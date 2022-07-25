@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
@@ -22,22 +22,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-import java.util.Set;
-
 public final class MaidGuardBrainManager {
-	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
-	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
-
-	public static Brain.Profile<LittleMaidEntity> createProfile() {
-		return Brain.createProfile(MaidGuardBrainManager.MEMORY_MODULES, MaidGuardBrainManager.SENSORS);
-	}
-
 	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
 		MaidGuardBrainManager.addCoreTasks(brain);
 		MaidGuardBrainManager.addIdleTasks(brain);
@@ -58,6 +46,7 @@ public final class MaidGuardBrainManager {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
+				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
@@ -111,29 +100,5 @@ public final class MaidGuardBrainManager {
 
 	private MaidGuardBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
-	}
-
-	static {
-		MEMORY_MODULES = ImmutableSet.of(
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleType.PATH,
-				MemoryModuleType.DOORS_TO_CLOSE,
-				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleType.MOBS,
-				MemoryModuleType.VISIBLE_MOBS,
-				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_SHOULD_EAT,
-				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
-				ModEntities.MEMORY_GUARDABLE_LIVING,
-				ModEntities.MEMORY_GUARD_TARGET,
-				ModEntities.MEMORY_OWNER
-		);
-		SENSORS = ImmutableSet.of(
-				SensorType.NEAREST_LIVING_ENTITIES,
-				ModEntities.SENSOR_SHOULD_EAT,
-				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
-				ModEntities.SENSOR_MAID_GUARDABLE_LIVING
-		);
 	}
 }

@@ -213,7 +213,7 @@ public final class ModEntities {
 		MEMORY_FARM_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
-		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.empty());
+		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
@@ -259,37 +259,30 @@ public final class ModEntities {
 				.build();
 
 		JOB_NONE = new MaidJob(itemStack -> false,
-				MaidNoneBrainManager::createProfile,
 				MaidNoneBrainManager::initializeBrain,
 				MaidNoneBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_NONE);
 		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem,
-				MaidFencerBrainManager::createProfile,
 				MaidFencerBrainManager::initializeBrain,
 				MaidFencerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_FENCER);
 		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem,
-				MaidCrackerBrainManager::createProfile,
 				MaidCrackerBrainManager::initializeBrain,
 				MaidCrackerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_CRACKER);
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem,
-				MaidArcherBrainManager::createProfile,
 				MaidArcherBrainManager::initializeBrain,
 				MaidArcherBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_ARCHER);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD),
-				MaidGuardBrainManager::createProfile,
 				MaidGuardBrainManager::initializeBrain,
 				MaidGuardBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_GUARD);
 		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem,
-				MaidFarmerBrainManager::createProfile,
 				MaidFarmerBrainManager::initializeBrain,
 				MaidFarmerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_FARMER);
 		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD),
-				MaidHealerBrainManager::createProfile,
 				MaidHealerBrainManager::initializeBrain,
 				MaidHealerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_HEALER);
