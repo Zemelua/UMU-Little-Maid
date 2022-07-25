@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -11,21 +11,28 @@ import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 
-public class UpdateFarmPosTask<E extends LivingEntity> extends Task<E> {
+public class ForgetShouldSleepTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_FARMABLE_POS, MemoryModuleState.VALUE_PRESENT,
-			ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_ABSENT
+			ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT
 	);
 
-	public UpdateFarmPosTask() {
-		super(UpdateFarmPosTask.REQUIRED_MEMORIES);
+	private final long sleepStartTime;
+
+	public ForgetShouldSleepTask(long sleepStartTime) {
+		super(ForgetShouldSleepTask.REQUIRED_MEMORIES, 1);
+
+		this.sleepStartTime = sleepStartTime;
+	}
+
+	@Override
+	protected boolean shouldRun(ServerWorld world, E living) {
+		return !RememberShouldSleepTask.shouldSleep(world, this.sleepStartTime);
 	}
 
 	@Override
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POS)
-				.ifPresent(nearestPos -> brain.remember(ModEntities.MEMORY_FARM_POS, nearestPos, 200L));
+		brain.forget(ModEntities.MEMORY_SHOULD_SLEEP);
 	}
 }

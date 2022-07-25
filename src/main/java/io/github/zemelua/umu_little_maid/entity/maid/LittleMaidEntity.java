@@ -490,6 +490,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	public void sleep(BlockPos pos) {
+		super.sleep(pos);
+
+		this.brain.forget(MemoryModuleType.WALK_TARGET);
+		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+	}
+
+	@Override
 	public void wakeUp() {
 		super.wakeUp();
 

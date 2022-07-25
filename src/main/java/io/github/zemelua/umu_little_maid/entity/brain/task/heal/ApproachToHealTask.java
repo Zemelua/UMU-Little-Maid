@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ApproachToHealTask<E extends LivingEntity & Tameable> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED,
+			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
 			ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT
 	);
@@ -30,7 +30,6 @@ public class ApproachToHealTask<E extends LivingEntity & Tameable> extends Task<
 	@Override
 	protected boolean shouldRun(ServerWorld world, E tameable) {
 		@Nullable Entity owner = tameable.getOwner();
-
 		if (owner == null) return false;
 
 		return tameable.distanceTo(owner) > 4.0D;

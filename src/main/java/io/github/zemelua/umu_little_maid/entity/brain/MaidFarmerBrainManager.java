@@ -5,6 +5,14 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberHomeTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -33,7 +41,7 @@ public final class MaidFarmerBrainManager {
 		MaidFarmerBrainManager.addSitTasks(brain);
 		MaidFarmerBrainManager.addEatTasks(brain);
 		MaidFarmerBrainManager.addFarmTasks(brain);
-		MaidNoneBrainManager.addSleepTasks(brain);
+		MaidFarmerBrainManager.addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -49,14 +57,16 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new UpdateShouldEatTask()),
-				Pair.of(4, new UpdateFarmPosTask<>()),
-				Pair.of(5, new UpdateFarmSiteTask<>()),
-				Pair.of(6, new UpdateFarmSiteTask<>()),
-				Pair.of(7, new KeepAroundFarmSiteTask<>()),
-				Pair.of(5, new UpdateShouldSleepTask<>()),
-				Pair.of(5, new RememberHomeTask<>()),
-				Pair.of(6, new ForgetHomeTask<>())
+				Pair.of(3, new KeepAroundFarmSiteTask<>()),
+				Pair.of(98, new RememberShouldEatTask()),
+				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
+				Pair.of(98, new RememberHomeTask<>()),
+				Pair.of(98, new RememberFarmPosTask<>()),
+				Pair.of(98, new RememberFarmSiteTask<>()),
+				Pair.of(99, new ForgetShouldEatTask()),
+				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
+				Pair.of(99, new ForgetHomeTask<>()),
+				Pair.of(99, new ForgetFarmSiteTask<>())
 		));
 	}
 
@@ -102,8 +112,8 @@ public final class MaidFarmerBrainManager {
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
-				Pair.of(0, new WalkToHomeTask<>(0.8F)),
-				Pair.of(1, new SleepTask())
+				Pair.of(0, new SleepTask()),
+				Pair.of(1, new WalkToHomeTask<>(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)

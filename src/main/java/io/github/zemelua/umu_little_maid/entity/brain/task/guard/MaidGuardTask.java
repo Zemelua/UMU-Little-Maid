@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -25,7 +25,6 @@ import java.util.Optional;
 
 public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_PRESENT,
 			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT
 	);
 
@@ -55,14 +54,14 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 	}
 
 	@Override
-	protected boolean isTimeLimitExceeded(long time) {
-		return false;
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	protected boolean shouldKeepRunning(ServerWorld world, E tameable, long time) {
 		return this.shouldRun(world, tameable) && ((TaskAccessor<E>) this).callHasRequiredMemoryState(tameable);
+	}
+
+	@Override
+	protected boolean isTimeLimitExceeded(long time) {
+		return false;
 	}
 
 	@Override
@@ -80,38 +79,32 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 		@Nullable Entity owner = tameable.getOwner();
 		if (owner == null) return;
 
-		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACT_TARGETS).ifPresent(
-				list -> {
-					for (LivingEntity living : list) {
-						if (living instanceof MobEntity mob) {
-							mob.setTarget(tameable);
-						}
-					}
-				}
+		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).ifPresent(list -> list.stream()
+				.filter(living -> living instanceof MobEntity)
+				.map(living -> (MobEntity) living)
+				.forEach(mob -> mob.setTarget(tameable))
 		);
 
-		Optional<LivingEntity> guardFrom = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
+		Optional<LivingEntity> guardTarget = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
 
-		if (guardFrom.isPresent()) {
+		if (guardTarget.isPresent()) {
 			boolean shouldGuard = tameable.distanceTo(owner) <= this.guardStartDistance;
-			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(guardFrom.get(), true));
+			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(guardTarget.get(), true));
 
-			// ご主人様の近くにいるとき
 			if (tameable.getMainHandStack().isOf(Items.SHIELD) && shouldGuard) {
 				if (!tameable.isBlocking()) {
 					tameable.setCurrentHand(Hand.MAIN_HAND);
 				}
 			} else {
-				tameable.clearActiveItem();
+				if (tameable.isBlocking()) {
+					tameable.clearActiveItem();
+				}
 			}
 
-			Vec3d guardFromPos = guardFrom.get().getPos();
-			Vec3d guardPos;
-
 			Vec3d ownerPos = owner.getPos();
-			guardPos = ownerPos.add(guardFromPos.subtract(ownerPos).normalize());
+			Vec3d guardTargetPos = guardTarget.get().getPos();
+			Vec3d guardPos = ownerPos.add(guardTargetPos.subtract(ownerPos).normalize());
 
-			// ご主人様の正面に移動する
 			Vec3d maidPos = tameable.getPos();
 			Vec3f moveVec = new Vec3f(maidPos.subtract(guardPos));
 			Vec3f lookVec = new Vec3f(tameable.getRotationVector().multiply(1.0D, 0.0D, 1.0D));
@@ -124,10 +117,10 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 
 			moveVec.normalize();
 			float speed = tameable.isBlocking() ? this.guardSpeed : this.normalSpeed;
-			float forwardSpeed = moveVec.dot(forwardVec) * speed;
+			float forwardSpeed = -moveVec.dot(forwardVec) * speed;
 			float sidewaysSpeed = moveVec.dot(sidewaysVec) * speed;
 
-			tameable.getMoveControl().strafeTo(-forwardSpeed, sidewaysSpeed);
+			tameable.getMoveControl().strafeTo(forwardSpeed, sidewaysSpeed);
 			tameable.setYaw(MathHelper.clampAngle(tameable.getYaw(), tameable.getHeadYaw(), 0.0f));
 		}
 	}

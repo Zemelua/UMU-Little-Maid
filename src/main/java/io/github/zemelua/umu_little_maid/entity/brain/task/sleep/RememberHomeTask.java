@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.BlockState;
@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * {@code MemoryModuleType.NEAREST_BED} をもとにして {@code MemoryModuleType.HOME} の値を設定するよ！
+ */
 public class RememberHomeTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.NEAREST_BED, MemoryModuleState.VALUE_PRESENT,
@@ -24,13 +27,12 @@ public class RememberHomeTask<E extends LivingEntity> extends Task<E> {
 	);
 
 	public RememberHomeTask() {
-		super(RememberHomeTask.REQUIRED_MEMORIES, 1);
+		super(RememberHomeTask.REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
-
 		Optional<BlockPos> pos = brain.getOptionalMemory(MemoryModuleType.NEAREST_BED);
 
 		pos.ifPresent(posObject -> {

@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
@@ -13,7 +13,6 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 
@@ -119,7 +118,7 @@ public class HealOwnerTask<E extends LivingEntity & Tameable> extends Task<E> {
 		return false;
 	}
 
-	public static <E extends PathAwareEntity & Tameable> boolean shouldHeal(E tameable) {
+	public static <E extends LivingEntity & Tameable> boolean shouldHeal(E tameable) {
 		@Nullable Entity owner = tameable.getOwner();
 
 		if (owner == null) return false;

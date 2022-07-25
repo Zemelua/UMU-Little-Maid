@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -13,45 +13,35 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 
 import java.util.Map;
-import java.util.Optional;
 
-public class UpdateFarmSiteTask<E extends LivingEntity> extends Task<E> {
-	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
+public class RememberFarmSiteTask<E extends LivingEntity> extends Task<E> {
+	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
+			ModEntities.MEMORY_FARM_SITE_CANDIDATE, MemoryModuleState.VALUE_PRESENT,
+			ModEntities.MEMORY_FARM_SITE, MemoryModuleState.VALUE_ABSENT
+	);
 
-	public UpdateFarmSiteTask() {
-		super(UpdateFarmSiteTask.REQUIRED_MEMORIES);
+	public RememberFarmSiteTask() {
+		super(RememberFarmSiteTask.REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		if (brain.hasMemoryModule(ModEntities.MEMORY_FARM_SITE)) {
-			Optional<GlobalPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_SITE);
-
-			if (pos.isPresent() && pos.get().getDimension() == world.getRegistryKey() && !UpdateFarmSiteTask.isSite(world, pos.get().getPos())) {
-				brain.forget(ModEntities.MEMORY_FARM_SITE);
-				UpdateFarmSiteTask.playLostSiteParticles(world, living);
-			}
-		}
-
-		if (brain.hasMemoryModule(ModEntities.MEMORY_FARM_SITE_CANDIDATE) && !brain.hasMemoryModule(ModEntities.MEMORY_FARM_SITE)) {
-			Optional<GlobalPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_SITE_CANDIDATE);
-
-			if (pos.isPresent() && pos.get().getDimension() == world.getRegistryKey() && UpdateFarmSiteTask.isSite(world, pos.get().getPos())) {
+		brain.getOptionalMemory(ModEntities.MEMORY_FARM_SITE_CANDIDATE).ifPresent(pos -> {
+			if (pos.getDimension() == world.getRegistryKey() && RememberFarmSiteTask.isSite(world, pos.getPos())) {
 				brain.remember(ModEntities.MEMORY_FARM_SITE, pos);
-				UpdateFarmSiteTask.playFoundSiteParticles(world, living);
-				UpdateFarmSiteTask.playFoundSiteParticles(world, living, pos.get().getPos());
+				RememberFarmSiteTask.playFoundSiteParticles(world, living);
+				RememberFarmSiteTask.playFoundSiteParticles(world, living, pos.getPos());
 			}
-		}
+		});
 	}
 
 	public static boolean isSite(World world, BlockPos pos) {
-		return UpdateFarmSiteTask.isComposter(world, pos) || UpdateFarmSiteTask.isScarecrow(world, pos);
+		return RememberFarmSiteTask.isComposter(world, pos) || RememberFarmSiteTask.isScarecrow(world, pos);
 	}
 
 	public static boolean isComposter(World world, BlockPos pos) {
@@ -87,19 +77,6 @@ public class UpdateFarmSiteTask<E extends LivingEntity> extends Task<E> {
 			double deltaZ = living.getRandom().nextGaussian() * 0.02;
 
 			world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, posX, posY, posZ, 0, deltaX, deltaY, deltaZ, 1.0D);
-		}
-	}
-
-	public static <E extends LivingEntity> void playLostSiteParticles(ServerWorld world, E living) {
-		for (int i = 0; i < 5; i++) {
-			double posX = living.getParticleX(1.0);
-			double posY = living.getRandomBodyY() + 1.0;
-			double posZ = living.getParticleZ(1.0);
-			double deltaX = living.getRandom().nextGaussian() * 0.02;
-			double deltaY = living.getRandom().nextGaussian() * 0.02;
-			double deltaZ = living.getRandom().nextGaussian() * 0.02;
-
-			world.spawnParticles(ParticleTypes.ANGRY_VILLAGER, posX, posY, posZ, 0, deltaX, deltaY, deltaZ, 1.0D);
 		}
 	}
 }

@@ -4,7 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.WalkToHomeTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberHomeTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -49,18 +58,12 @@ public final class MaidNoneBrainManager {
 				Pair.of(1, new WalkTask(1.0F)),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
-				Pair.of(4, new UpdateShouldEatTask((living -> false))),
-				Pair.of(5, new UpdateShouldSleepTask<>()),
-				Pair.of(5, new RememberHomeTask<>()),
-				Pair.of(6, new ForgetHomeTask<>())
-		));
-	}
-
-	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
-				Pair.of(0, new SitTask<>())
-		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(98, new RememberShouldEatTask()),
+				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
+				Pair.of(98, new RememberHomeTask<>()),
+				Pair.of(99, new ForgetShouldEatTask()),
+				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
+				Pair.of(99, new ForgetHomeTask<>())
 		));
 	}
 
@@ -76,6 +79,14 @@ public final class MaidNoneBrainManager {
 		));
 	}
 
+	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+				Pair.of(0, new SitTask<>())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
@@ -87,8 +98,8 @@ public final class MaidNoneBrainManager {
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
-				Pair.of(0, new WalkToHomeTask<>(0.8F)),
-				Pair.of(1, new SleepTask())
+				Pair.of(0, new SleepTask()),
+				Pair.of(1, new WalkToHomeTask<>(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)

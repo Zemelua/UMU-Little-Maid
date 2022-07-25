@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -11,21 +11,21 @@ import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 
-public class UpdateAttractTargetsTask extends Task<LittleMaidEntity> {
+public class RememberGuardTargetTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_ATTRACTABLE_LIVINGS, MemoryModuleState.VALUE_PRESENT,
-			ModEntities.MEMORY_ATTRACT_TARGETS, MemoryModuleState.VALUE_ABSENT
+			ModEntities.MEMORY_GUARDABLE_LIVING, MemoryModuleState.VALUE_PRESENT,
+			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_ABSENT
 	);
 
-	public UpdateAttractTargetsTask() {
-		super(UpdateAttractTargetsTask.REQUIRED_MEMORIES);
+	public RememberGuardTargetTask() {
+		super(RememberGuardTargetTask.REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).ifPresent(livings ->
-				brain.remember(ModEntities.MEMORY_ATTRACT_TARGETS, livings));
+		brain.getOptionalMemory(ModEntities.MEMORY_GUARDABLE_LIVING)
+				.ifPresent(target -> brain.remember(ModEntities.MEMORY_GUARD_TARGET, target));
 	}
 }

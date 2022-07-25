@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -25,7 +25,7 @@ public class KeepAroundFarmSiteTask<E extends PathAwareEntity> extends Task<E> {
 	);
 
 	public KeepAroundFarmSiteTask() {
-		super(KeepAroundFarmSiteTask.REQUIRED_MEMORIES);
+		super(KeepAroundFarmSiteTask.REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class KeepAroundFarmSiteTask<E extends PathAwareEntity> extends Task<E> {
 
 			if (i == tryCount || walkTo.isEmpty()) {
 				brain.forget(ModEntities.MEMORY_FARM_SITE);
-				UpdateFarmSiteTask.playLostSiteParticles(world, pathAware);
+				ForgetFarmSiteTask.playLostSiteParticles(world, pathAware);
 			} else {
 				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(walkTo.get(), 0.8F, 1));
 			}
