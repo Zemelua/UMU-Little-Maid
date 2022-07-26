@@ -1,5 +1,6 @@
 {
 	"item.umu_little_maid.little_maid_spawn_egg": "メイドさんのスポーンエッグ",
+	"entity.umu_little_maid.little_maid": "メイドさん",
 	"container.umu_little_maid.little_maid": "メイドさんの秘密のポケット",
 
 	"subtitles.umu_little_maid.entity.maid.general.ambient": "メイドさんが独り言をつぶやく",

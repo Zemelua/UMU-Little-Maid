@@ -1,5 +1,6 @@
 {
-	"item.umu_little_maid.little_maid_spawn_egg": "Spawn Little Maid",
+	"item.umu_little_maid.little_maid_spawn_egg": "Little Maid Spawn Egg",
+	"entity.umu_little_maid.little_maid": "Little Maid",
 	"container.umu_little_maid.little_maid": "Little Maid",
 
 	"subtitles.umu_little_maid.entity.maid.general.ambient": "Maid says soliloquy",
