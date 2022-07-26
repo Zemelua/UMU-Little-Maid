@@ -13,7 +13,6 @@ import java.util.Optional;
 public class WalkToHomeTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
-			MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
 			MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT
 	);
 
@@ -32,7 +31,7 @@ public class WalkToHomeTask<E extends LivingEntity> extends Task<E> {
 
 		pos.ifPresent(posObject -> {
 			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(posObject.getPos(), this.speed, 0));
-			brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(posObject.getPos()));
+			// brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(posObject.getPos()));
 		});
 	}
 }

@@ -2,6 +2,8 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -9,6 +11,7 @@ import net.minecraft.entity.ai.brain.task.FindPointOfInterestTask;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -30,7 +33,14 @@ public class HomeCandidateSensor extends Sensor<MobEntity> {
 		PointOfInterestStorage poiStorage = world.getPointOfInterestStorage();
 		Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> pois = poiStorage.getTypesAndPositions(
 						registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME),
-						pos -> true, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY)
+						pos -> {
+							BlockState blockState =  world.getBlockState(pos);
+							if (blockState.isIn(BlockTags.BEDS)) {
+								return !blockState.get(BedBlock.OCCUPIED);
+							}
+
+							return false;
+						}, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY)
 				.collect(Collectors.toSet());
 
 		@Nullable Path path = FindPointOfInterestTask.findPathToPoi(mob, pois);

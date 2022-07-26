@@ -1,6 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -30,7 +32,8 @@ public class ForgetHomeTask<E extends LivingEntity> extends Task<E> {
 		Optional<GlobalPos> pos = brain.getOptionalMemory(MemoryModuleType.HOME);
 
 		pos.ifPresent(posObject -> {
-			if (!RememberHomeTask.isHome(world.getBlockState(pos.get().getPos()))) {
+			BlockState blockState = world.getBlockState(pos.get().getPos());
+			if (!RememberHomeTask.isHome(blockState) || (blockState.get(BedBlock.OCCUPIED) && !living.isSleeping())) {
 				brain.forget(MemoryModuleType.HOME);
 			}
 		});

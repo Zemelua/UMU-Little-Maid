@@ -134,9 +134,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.setStandingAngle(limbAngle, limbDistance);
 		}
 
-		if (maid.isSleeping()) {
-			this.head.yaw = 0;
-		}
+//		if (maid.isSleeping()) {
+//			this.head.yaw = 0;
+//		}
 
 		// 手のポーズ(弓とか)
 		boolean mainArm = maid.getMainArm() == Arm.RIGHT;
