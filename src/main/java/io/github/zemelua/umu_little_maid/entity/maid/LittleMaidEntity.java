@@ -12,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -758,16 +759,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.eatingTicks = value;
 	}
 
-	public boolean hasAttackTarget() {
-		return this.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET);
-	}
+	public boolean isIdle() {
+		UMULittleMaid.LOGGER.info(this.brain.hasActivity(Activity.IDLE));
 
-	public boolean hasGuardTarget() {
-		return this.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET);
-	}
-
-	public boolean isPanicking() {
-		return this.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
+		return this.brain.hasActivity(Activity.IDLE);
 	}
 
 	public MaidPose getAnimationPose() {
@@ -845,7 +840,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public void playAmbientSound() {
-		if (!this.hasAttackTarget() && !this.hasGuardTarget() && !this.isPanicking()) {
+		if (!this.world.isClient() && this.isIdle()) {
 			this.playSound(this.getAmbientSound(), this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
@@ -876,6 +871,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void playContractSound() {
 		this.playSound(this.getPersonality().getContractSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	@Override
+	public int getMinAmbientSoundDelay() {
+		return 300;
 	}
 
 	public Identifier getTexture() {

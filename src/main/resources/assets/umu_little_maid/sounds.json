@@ -2,14 +2,38 @@
 	"entity.maid.general.ambient": {
 		"subtitle": "subtitles.entity.maid.general.ambient",
 		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_ambient1" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient2" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient3" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient4" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient5" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient6" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient7" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient8" }
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient4",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient7",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient8",
+				"weight": 5
+			}
 		]
 	},
 	"entity.maid.general.fencer_attack": {
@@ -130,15 +154,42 @@
 	"entity.maid.lazy.ambient": {
 		"subtitle": "subtitles.entity.maid.lazy.ambient",
 		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_ambient1" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient2" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient3" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient4" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient5" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient6" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient7" },
-			{ "name": "umu_little_maid:entity/maid/general_ambient8" },
-			{ "name": "umu_little_maid:entity/maid/lazy_ambient" }
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient1",
+				"weight": 18
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient2",
+				"weight": 18
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient3",
+				"weight": 18
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient4",
+				"weight": 18
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient7",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/general_ambient8",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/lazy_ambient",
+				"weight": 8
+			}
 		]
 	},
 	"entity.maid.lazy.death": {
