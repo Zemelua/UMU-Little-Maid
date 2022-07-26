@@ -3,13 +3,16 @@ package io.github.zemelua.umu_little_maid.entity.brain.task;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.FarmlandBlock;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -49,14 +52,8 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 			ItemStack crop = maid.getHasCrop();
 
 			if (MaidFarmTask.isPlantable(pos.get(), world) && !crop.isEmpty()) {
-				if (crop.isOf(Items.WHEAT_SEEDS)) {
-					MaidFarmTask.plant(world, maid, pos.get(), Blocks.WHEAT.getDefaultState(), crop);
-				} else if (crop.isOf(Items.POTATO)) {
-					MaidFarmTask.plant(world, maid, pos.get(), Blocks.POTATOES.getDefaultState(), crop);
-				} else if (crop.isOf(Items.CARROT)) {
-					MaidFarmTask.plant(world, maid, pos.get(), Blocks.CARROTS.getDefaultState(), crop);
-				} else if (crop.isOf(Items.BEETROOT_SEEDS)) {
-					MaidFarmTask.plant(world, maid, pos.get(), Blocks.BEETROOTS.getDefaultState(), crop);
+				if (crop.getItem() instanceof BlockItem cropItem) {
+					MaidFarmTask.plant(world, maid, pos.get(), cropItem.getBlock().getDefaultState(), crop);
 				}
 			}
 
