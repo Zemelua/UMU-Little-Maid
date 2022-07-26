@@ -422,9 +422,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public boolean isInvulnerableTo(DamageSource source) {
 		@Nullable UUID owner = this.getOwnerUuid();
+		@Nullable Entity attacker = source.getAttacker();
 
-		if (owner != null && source.getAttacker() instanceof PlayerEntity player) {
-			return this.getOwnerUuid().equals(player.getUuid());
+		if (owner != null && attacker instanceof PlayerEntity player) {
+			return owner.equals(player.getUuid());
+		} else if (attacker != null) {
+			if (attacker.getType().equals(ModEntities.LITTLE_MAID)) {
+				return true;
+			}
 		}
 
 		return super.isInvulnerableTo(source);
