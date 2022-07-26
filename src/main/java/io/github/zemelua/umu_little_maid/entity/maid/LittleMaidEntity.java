@@ -489,7 +489,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
-		this.setHeadYaw(this.bodyYaw);
 	}
 
 	@Override

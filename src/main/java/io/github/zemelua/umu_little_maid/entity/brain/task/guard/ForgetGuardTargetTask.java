@@ -29,7 +29,7 @@ public class ForgetGuardTargetTask<E extends LivingEntity> extends Task<E> {
 		if (target.isEmpty()) {
 			brain.forget(ModEntities.MEMORY_GUARD_TARGET);
 		} else {
-			if (!target.get().isAlive() || target.get().getWorld() != living.getWorld() || target.get().distanceTo(living) < 16.0D) {
+			if (!target.get().isAlive() || target.get().getWorld() != living.getWorld() || target.get().distanceTo(living) > 16.0D) {
 				brain.forget(ModEntities.MEMORY_GUARD_TARGET);
 			}
 		}

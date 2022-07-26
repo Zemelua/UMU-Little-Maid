@@ -121,7 +121,7 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 			float sidewaysSpeed = moveVec.dot(sidewaysVec) * speed;
 
 			tameable.getMoveControl().strafeTo(forwardSpeed, sidewaysSpeed);
-			tameable.setYaw(MathHelper.clampAngle(tameable.getYaw(), tameable.getHeadYaw(), 0.0f));
+			tameable.setYaw(MathHelper.clampAngle(tameable.getYaw(), tameable.getHeadYaw(), 0.0F));
 		}
 	}
 
