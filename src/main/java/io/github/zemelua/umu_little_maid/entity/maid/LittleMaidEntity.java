@@ -780,8 +780,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public boolean isIdle() {
-		UMULittleMaid.LOGGER.info(this.brain.hasActivity(Activity.IDLE));
-
 		return this.brain.hasActivity(Activity.IDLE);
 	}
 
