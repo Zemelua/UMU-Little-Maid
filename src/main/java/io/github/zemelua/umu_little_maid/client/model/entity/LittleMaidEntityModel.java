@@ -7,10 +7,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.AnimationState;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
@@ -114,59 +116,23 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 	@Override
 	public void setAngles(LittleMaidEntity maid, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.root.resetTransform();
-		this.head.resetTransform();
-		this.body.resetTransform();
-		this.skirt.resetTransform();
-		this.leftArm.resetTransform();
-		this.rightArm.resetTransform();
-		this.leftLeg.resetTransform();
-		this.rightLeg.resetTransform();
-		this.boneUsingDripleaf.resetTransform();
-		this.boneChangingCostume.resetTransform();
+		this.initializeCubes();
 
-		this.head.pitch = (float) Math.toRadians(headPitch);
-		this.head.yaw = (float) Math.toRadians(headYaw);
-
+		this.setHeadAngle(headPitch, headYaw);
 		if (maid.isSitting()) {
 			this.setSittingAngle();
 		} else {
 			this.setStandingAngle(limbAngle, limbDistance);
 		}
 
-//		if (maid.isSleeping()) {
-//			this.head.yaw = 0;
-//		}
-
-		// 手のポーズ(弓とか)
-		boolean mainArm = maid.getMainArm() == Arm.RIGHT;
-		if (maid.isUsingItem()) {
-			boolean activeHand = maid.getActiveHand() == Hand.MAIN_HAND;
-			if (mainArm == activeHand) {
-				this.positionRightArm(maid);
-			} else {
-				this.positionLeftArm(maid);
-			}
-		} else {
-			boolean isTwoHanded = mainArm ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
-			if (mainArm != isTwoHanded) {
-				this.positionLeftArm(maid);
-				this.positionRightArm(maid);
-			} else {
-				this.positionRightArm(maid);
-				this.positionLeftArm(maid);
-			}
-		}
-
-		// 手の揺れ
+		this.setArmAngleByItem(maid);
 		if (this.rightArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
-			CrossbowPosing.swingArm(this.rightArm, animationProgress, 1.0f);
+			CrossbowPosing.swingArm(this.rightArm, animationProgress, 1.0F);
 		}
 		if (this.leftArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
-			CrossbowPosing.swingArm(this.leftArm, animationProgress, -1.0f);
+			CrossbowPosing.swingArm(this.leftArm, animationProgress, -1.0F);
 		}
 
-		// 攻撃時の手の動き
 		Arm arm = maid.preferredHand == Hand.MAIN_HAND ? maid.getMainArm() : maid.getMainArm().getOpposite();
 		this.adaptAttackingAngel(arm);
 
@@ -212,6 +178,24 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 	}
 
+	private void initializeCubes() {
+		this.root.resetTransform();
+		this.head.resetTransform();
+		this.body.resetTransform();
+		this.skirt.resetTransform();
+		this.leftArm.resetTransform();
+		this.rightArm.resetTransform();
+		this.leftLeg.resetTransform();
+		this.rightLeg.resetTransform();
+		this.boneUsingDripleaf.resetTransform();
+		this.boneChangingCostume.resetTransform();
+	}
+
+	private void setHeadAngle(float headPitch, float headYaw) {
+		this.head.pitch = (float) Math.toRadians(headPitch);
+		this.head.yaw = (float) Math.toRadians(headYaw);
+	}
+
 	private void setStandingAngle(float limbAngle, float limbDistance) {
 		this.head.roll = (float) Math.toRadians(0.0F);
 		this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
@@ -234,6 +218,27 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.rightArm.roll = (float) Math.toRadians(-25.0F);
 	}
 
+	private void setArmAngleByItem(LittleMaidEntity maid) {
+		boolean mainHandIsRight = maid.getMainArm() == Arm.RIGHT;
+		if (maid.isUsingItem()) {
+			boolean activeHandIsMain = maid.getActiveHand() == Hand.MAIN_HAND;
+			if (mainHandIsRight == activeHandIsMain) {
+				this.setRightArmAngleByItem(maid);
+			} else {
+				this.setLeftArmAngleByItem(maid);
+			}
+		} else {
+			boolean isTwoHanded = mainHandIsRight ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
+			if (mainHandIsRight != isTwoHanded) {
+				this.setLeftArmAngleByItem(maid);
+				this.setRightArmAngleByItem(maid);
+			} else {
+				this.setRightArmAngleByItem(maid);
+				this.setLeftArmAngleByItem(maid);
+			}
+		}
+	}
+
 	private void adaptAttackingAngel(Arm attackingArm) {
 		ModelPart armPart = this.getArm(attackingArm);
 
@@ -251,101 +256,116 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	}
 
 	@Override
-	public void animateModel(LittleMaidEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-		this.leaningPitch = entity.getLeaningPitch(tickDelta);
+	public void animateModel(LittleMaidEntity maid, float limbAngle, float limbDistance, float tickDelta) {
+		this.leaningPitch = maid.getLeaningPitch(tickDelta);
 
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 
-		// 手に持ってるアイテムでArmPoseを切り替え
-		ItemStack itemStack = entity.getMainHandStack();
-		if (itemStack.isOf(Items.BOW) && entity.isAttacking()) {
-			if (entity.getMainArm() == Arm.LEFT) {
-				this.leftArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-			} else {
-				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-			}
-		} else if (itemStack.isOf(Items.SHIELD) && entity.isBlocking()) {
-			if (entity.getMainArm() == Arm.LEFT) {
-				this.leftArmPose = BipedEntityModel.ArmPose.BLOCK;
-			} else {
-				this.rightArmPose = BipedEntityModel.ArmPose.BLOCK;
-			}
-		} else if (itemStack.isOf(Items.TRIDENT) && entity.isAttacking()) {
-			if (entity.getMainArm() == Arm.LEFT) {
-				this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-			} else {
-				this.rightArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-			}
+		BipedEntityModel.ArmPose mainPose = getArmPose(maid, Hand.MAIN_HAND);
+		BipedEntityModel.ArmPose offPose = getArmPose(maid, Hand.OFF_HAND);
+		if (mainPose.isTwoHanded()) {
+			offPose = maid.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
+		}
+
+		if (maid.getMainArm() == Arm.RIGHT) {
+			this.rightArmPose = mainPose;
+			this.leftArmPose = offPose;
+		} else {
+			this.rightArmPose = offPose;
+			this.leftArmPose = mainPose;
 		}
 	}
 
-	private void positionRightArm(LittleMaidEntity entity) {
+	private void setRightArmAngleByItem(LittleMaidEntity entity) {
 		switch (this.rightArmPose) {
-			case EMPTY -> this.rightArm.yaw = 0.0f;
+			case EMPTY -> this.rightArm.yaw = 0.0F;
 			case BLOCK -> {
-				this.rightArm.pitch = this.rightArm.pitch * 0.5f - 0.9424779f;
-				this.rightArm.yaw = -0.5235988f;
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
+				this.rightArm.yaw = -0.5235988F;
 			}
 			case ITEM -> {
-				this.rightArm.pitch = this.rightArm.pitch * 0.5f - 0.31415927f;
-				this.rightArm.yaw = 0.0f;
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.31415927F;
+				this.rightArm.yaw = 0.0F;
 			}
 			case THROW_SPEAR -> {
-				this.rightArm.pitch = this.rightArm.pitch * 0.5f - (float) Math.PI;
-				this.rightArm.yaw = 0.0f;
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
+				this.rightArm.yaw = 0.0F;
+				this.rightArm.roll = (float) Math.toRadians(-20.0F);
 			}
 			case BOW_AND_ARROW -> {
-				this.rightArm.yaw = -0.1f + this.head.yaw;
-				this.leftArm.yaw = 0.1f + this.head.yaw + 0.4f;
-				this.rightArm.pitch = -1.5707964f + this.head.pitch;
-				this.leftArm.pitch = -1.5707964f + this.head.pitch;
+				this.rightArm.yaw = -0.1F + this.head.yaw;
+				this.leftArm.yaw = 0.1F + this.head.yaw + 0.4F;
+				this.rightArm.pitch = -1.5707964F + this.head.pitch;
+				this.leftArm.pitch = -1.5707964F + this.head.pitch;
 			}
 			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, true);
 			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 			case SPYGLASS -> {
-				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (entity.isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
-				this.rightArm.yaw = this.head.yaw - 0.2617994f;
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
+				this.rightArm.yaw = this.head.yaw - 0.2617994F;
 			}
 			case TOOT_HORN -> {
-				this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
-				this.rightArm.yaw = this.head.yaw - 0.5235988f;
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
+				this.rightArm.yaw = this.head.yaw - 0.5235988F;
 			}
 		}
 	}
 
-	private void positionLeftArm(LittleMaidEntity entity) {
+	private void setLeftArmAngleByItem(LittleMaidEntity entity) {
 		switch (this.leftArmPose) {
-			case EMPTY -> this.leftArm.yaw = 0.0f;
+			case EMPTY -> this.leftArm.yaw = 0.0F;
 			case BLOCK -> {
-				this.leftArm.pitch = this.leftArm.pitch * 0.5f - 0.9424779f;
-				this.leftArm.yaw = 0.5235988f;
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.9424779F;
+				this.leftArm.yaw = 0.5235988F;
 			}
 			case ITEM -> {
-				this.leftArm.pitch = this.leftArm.pitch * 0.5f - 0.31415927f;
-				this.leftArm.yaw = 0.0f;
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.31415927F;
+				this.leftArm.yaw = 0.0F;
 			}
 			case THROW_SPEAR -> {
-				this.leftArm.pitch = this.leftArm.pitch * 0.5f - (float) Math.PI;
-				this.leftArm.yaw = 0.0f;
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
+				this.leftArm.yaw = 0.0F;
+				this.rightArm.roll = (float) Math.toRadians(20.0F);
 			}
 			case BOW_AND_ARROW -> {
-				this.rightArm.yaw = -0.1f + this.head.yaw - 0.4f;
-				this.leftArm.yaw = 0.1f + this.head.yaw;
-				this.rightArm.pitch = -1.5707964f + this.head.pitch;
-				this.leftArm.pitch = -1.5707964f + this.head.pitch;
+				this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
+				this.leftArm.yaw = 0.1F + this.head.yaw;
+				this.rightArm.pitch = -1.5707964F + this.head.pitch;
+				this.leftArm.pitch = -1.5707964F + this.head.pitch;
 			}
 			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, false);
 			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
 			case SPYGLASS -> {
-				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (entity.isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
-				this.leftArm.yaw = this.head.yaw + 0.2617994f;
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
+				this.leftArm.yaw = this.head.yaw + 0.2617994F;
 			}
 			case TOOT_HORN -> {
-				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
-				this.leftArm.yaw = this.head.yaw + 0.5235988f;
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
+				this.leftArm.yaw = this.head.yaw + 0.5235988F;
 			}
 		}
+	}
+
+	private static BipedEntityModel.ArmPose getArmPose(LittleMaidEntity maid, Hand hand) {
+		ItemStack mainStack = maid.getStackInHand(hand);
+		if (mainStack.isEmpty()) return BipedEntityModel.ArmPose.EMPTY;
+
+		if (maid.getActiveHand() == hand && maid.getItemUseTimeLeft() > 0) {
+			UseAction useAction = mainStack.getUseAction();
+			switch (useAction) {
+				case BLOCK     -> {return BipedEntityModel.ArmPose.BLOCK;}
+				case BOW       -> {return BipedEntityModel.ArmPose.BOW_AND_ARROW;}
+				case SPEAR     -> {return BipedEntityModel.ArmPose.THROW_SPEAR;}
+				case SPYGLASS  -> {return BipedEntityModel.ArmPose.SPYGLASS;}
+				case TOOT_HORN -> {return BipedEntityModel.ArmPose.TOOT_HORN;}
+				case CROSSBOW  -> {return BipedEntityModel.ArmPose.CROSSBOW_CHARGE;}
+			}
+		} else if (!maid.handSwinging && mainStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(mainStack)) {
+			return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+		}
+
+		return BipedEntityModel.ArmPose.ITEM;
 	}
 
 	@Override
