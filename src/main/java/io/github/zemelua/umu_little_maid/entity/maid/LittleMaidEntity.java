@@ -6,21 +6,14 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
+import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
+import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.InventoryOwner;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.Tameable;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -41,12 +34,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -65,6 +55,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -73,15 +64,11 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings("CommentedOutCode")
-public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob {
+public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -268,6 +255,29 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		this.tickHandSwing();
+
+		if (!this.world.isClient()) {
+			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
+			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, trident -> {
+				@Nullable Entity owner = trident.getOwner();
+				if (owner == null || trident.isOnGround() && !trident.isNoClip() || trident.shake > 0) return false;
+
+				return owner.equals(this) && trident.pickupType == PickupPermission.ALLOWED && ((TridentEntityAccessor) trident).isDealtDamage();
+			});
+			for (TridentEntity trident : collideTridents) {
+				ItemStack tridentStack = ((PersistentProjectileEntityAccessor) trident).callAsItemStack();
+
+				if (this.getMainHandStack().isEmpty()) {
+					this.setStackInHand(Hand.MAIN_HAND, tridentStack);
+					this.sendPickup(trident, 1);
+					trident.discard();
+				} else if (this.inventory.canInsert(tridentStack)) {
+					this.inventory.addStack(tridentStack);
+					this.sendPickup(trident, 1);
+					trident.discard();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -394,29 +404,37 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	 */
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
-		ItemStack itemStack = this.getMainHandStack();
-		ItemStack arrow = this.getArrowType(itemStack);
-		if (arrow.isEmpty()) return;
+		ItemStack mainStack = this.getMainHandStack();
 
-		boolean consumeArrow = ModUtils.hasEnchantment(Enchantments.INFINITY, itemStack);
+		if (mainStack.isOf(Items.BOW)) {
+			ItemStack arrow = this.getArrowType(mainStack);
+			if (arrow.isEmpty()) return;
 
-		PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
-		double xVelocity = target.getX() - this.getX();
-		double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
-		double zVelocity = target.getZ() - this.getZ();
-		double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
-		projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
-		projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
+			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
 
-		this.world.spawnEntity(projectile);
+			PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
+			double xVelocity = target.getX() - this.getX();
+			double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
+			double zVelocity = target.getZ() - this.getZ();
+			double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
+			projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
+			projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
 
-		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.playArcherAttackSound();
+			this.world.spawnEntity(projectile);
 
-		itemStack.damage(1, this, entity -> {});
-		if (!consumeArrow) {
-			arrow.decrement(1);
+			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			this.playArcherAttackSound();
+
+			mainStack.damage(1, this, entity -> {});
+			if (!consumeArrow) {
+				arrow.decrement(1);
+			}
 		}
+	}
+
+	@Override
+	protected void attackLivingEntity(LivingEntity target) {
+		this.tryAttack(target);
 	}
 
 	@Override
@@ -985,6 +1003,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
+	}
+
+	@Override
+	public MobEntity self() {
+		return this;
 	}
 
 	static {

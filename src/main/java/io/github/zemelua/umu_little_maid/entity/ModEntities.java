@@ -98,6 +98,7 @@ public final class ModEntities {
 	public static final MaidJob JOB_GUARD;
 	public static final MaidJob JOB_FARMER;
 	public static final MaidJob JOB_HEALER;
+	public static final MaidJob JOB_POSEIDON;
 
 	private static final Block[] WOODEN_FENCES = new Block[]{
 			Blocks.OAK_FENCE, Blocks.ACACIA_FENCE, Blocks.DARK_OAK_FENCE, Blocks.SPRUCE_FENCE, Blocks.BIRCH_FENCE,
@@ -171,6 +172,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), ModEntities.JOB_FARMER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("heal"), ModEntities.JOB_HEALER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("poseidon"), ModEntities.JOB_POSEIDON);
 
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
@@ -286,5 +288,9 @@ public final class ModEntities {
 				MaidHealerBrainManager::initializeBrain,
 				MaidHealerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_HEALER);
+		JOB_POSEIDON = new MaidJob(itemStack -> itemStack.isOf(Items.TRIDENT),
+				MaidPoseidonBrainManager::initializeBrain,
+				MaidPoseidonBrainManager::tickBrain,
+				LittleMaidEntity.TEXTURE_NONE);
 	}
 }

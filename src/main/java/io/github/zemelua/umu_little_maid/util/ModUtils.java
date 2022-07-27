@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class ModUtils {
+	@SuppressWarnings("unused") public static final double RADIAN_D = 180.0D / Math.PI;
+	public static final float RADIAN_F = 180.0F / (float) Math.PI;
+
 	private ModUtils() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -62,4 +65,6 @@ public final class ModUtils {
 		return entity.getStatusEffects().stream()
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
+
+
 }

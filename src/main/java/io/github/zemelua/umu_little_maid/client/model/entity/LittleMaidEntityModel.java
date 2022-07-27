@@ -271,6 +271,12 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			} else {
 				this.rightArmPose = BipedEntityModel.ArmPose.BLOCK;
 			}
+		} else if (itemStack.isOf(Items.TRIDENT) && entity.isAttacking()) {
+			if (entity.getMainArm() == Arm.LEFT) {
+				this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
+			} else {
+				this.rightArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
+			}
 		}
 	}
 

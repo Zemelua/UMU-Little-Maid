@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task.attack;
+package io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -8,25 +8,24 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Unit;
 
 import java.util.Map;
 
-public class RememberHasArrowsTask<E extends LivingEntity> extends Task<E> {
+public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_ABSENT
+			ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_PRESENT
 	);
 
-	public RememberHasArrowsTask() {
-		super(RememberHasArrowsTask.REQUIRED_MEMORIES, 0);
+	public ForgetHasArrowsTask() {
+		super(ForgetHasArrowsTask.REQUIRED_MEMORIES);
 	}
 
 	@Override
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		if (!living.getArrowType(living.getMainHandStack()).isEmpty()) {
-			brain.remember(ModEntities.MEMORY_HAS_ARROWS, Unit.INSTANCE);
+		if (living.getArrowType(living.getMainHandStack()).isEmpty()) {
+			brain.forget(ModEntities.MEMORY_HAS_ARROWS);
 		}
 	}
 }

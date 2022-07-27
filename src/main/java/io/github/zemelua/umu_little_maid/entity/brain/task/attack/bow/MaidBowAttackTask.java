@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task.attack;
+package io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;

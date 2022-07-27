@@ -4,6 +4,7 @@ import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidDripleafRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidHeldItemRenderer;
+import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.RiptideRenderer;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -17,6 +18,7 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 
 		this.addFeature(new MaidHeldItemRenderer<>(this, context.getHeldItemRenderer()));
 		this.addFeature(new MaidDripleafRenderer<>(this, context.getBlockRenderManager()));
+		this.addFeature(new RiptideRenderer<>(this, context.getModelLoader()));
 	}
 
 	@Override
