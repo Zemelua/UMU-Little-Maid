@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.TridentApproachTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
@@ -36,9 +37,6 @@ public final class MaidPoseidonBrainManager {
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
 		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.FIGHT, Activity.IDLE));
-
-//		UMULittleMaid.LOGGER.info("attackTarget" + brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
-//		UMULittleMaid.LOGGER.info("cooldown" + brain.hasMemoryModule(MemoryModuleType.ATTACK_COOLING_DOWN));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -87,7 +85,8 @@ public final class MaidPoseidonBrainManager {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
 				Pair.of(0, new MeleeAttackTask(20)),
 				Pair.of(1, new ThrowTridentTask<>(10.0D, 0.8D, 20)),
-				Pair.of(1, new RiptideTridentTask<>(10.0D, 0.8D, 10))
+				Pair.of(1, new RiptideTridentTask<>(10.0D, 0.8D, 10)),
+				Pair.of(2, new TridentApproachTargetTask(1.0F))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT)

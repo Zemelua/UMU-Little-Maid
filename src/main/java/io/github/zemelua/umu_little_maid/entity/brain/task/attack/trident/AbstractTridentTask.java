@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
@@ -51,8 +50,6 @@ public abstract class AbstractTridentTask<E extends MobEntity> extends Task<E> {
 	@Override
 	@SuppressWarnings("unchecked")
 	protected boolean shouldKeepRunning(ServerWorld world, E mob, long time) {
-		UMULittleMaid.LOGGER.info(((TaskAccessor<E>) this).callHasRequiredMemoryState(mob));
-
 		Brain<?> brain = mob.getBrain();
 
 		return brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
