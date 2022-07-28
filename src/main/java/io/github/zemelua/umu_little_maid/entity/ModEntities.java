@@ -298,6 +298,6 @@ public final class ModEntities {
 		JOB_POSEIDON = new PoseidonJob(itemStack -> itemStack.isOf(Items.TRIDENT),
 				MaidPoseidonBrainManager::initializeBrain,
 				MaidPoseidonBrainManager::tickBrain,
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_POSEIDON);
 	}
 }

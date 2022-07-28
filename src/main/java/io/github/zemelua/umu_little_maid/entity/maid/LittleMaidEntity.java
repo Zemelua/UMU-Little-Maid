@@ -83,6 +83,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
 	public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
 	public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
+	public static final Identifier TEXTURE_POSEIDON = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_poseidon.png");
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
