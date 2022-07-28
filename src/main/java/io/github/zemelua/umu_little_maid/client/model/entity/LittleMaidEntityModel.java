@@ -283,7 +283,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 	}
 
-	private void setRightArmAngleByItem(LittleMaidEntity entity) {
+	private void setRightArmAngleByItem(LittleMaidEntity maid) {
 		switch (this.rightArmPose) {
 			case EMPTY -> this.rightArm.yaw = 0.0F;
 			case BLOCK -> {
@@ -296,6 +296,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			}
 			case THROW_SPEAR -> {
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
+				if (maid.isSwimming()) {
+					this.rightArm.pitch += Math.toRadians(-90.0D);
+				}
 				this.rightArm.yaw = 0.0F;
 				this.rightArm.roll = (float) Math.toRadians(-20.0F);
 			}
@@ -305,10 +308,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 				this.rightArm.pitch = -1.5707964F + this.head.pitch;
 				this.leftArm.pitch = -1.5707964F + this.head.pitch;
 			}
-			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, true);
+			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, maid, true);
 			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 			case SPYGLASS -> {
-				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (maid.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
 				this.rightArm.yaw = this.head.yaw - 0.2617994F;
 			}
 			case TOOT_HORN -> {
@@ -318,7 +321,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 	}
 
-	private void setLeftArmAngleByItem(LittleMaidEntity entity) {
+	private void setLeftArmAngleByItem(LittleMaidEntity maid) {
 		switch (this.leftArmPose) {
 			case EMPTY -> this.leftArm.yaw = 0.0F;
 			case BLOCK -> {
@@ -331,6 +334,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			}
 			case THROW_SPEAR -> {
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
+				if (maid.isSwimming()) {
+					this.rightArm.pitch += Math.toRadians(-90.0D);
+				}
 				this.leftArm.yaw = 0.0F;
 				this.rightArm.roll = (float) Math.toRadians(20.0F);
 			}
@@ -340,10 +346,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 				this.rightArm.pitch = -1.5707964F + this.head.pitch;
 				this.leftArm.pitch = -1.5707964F + this.head.pitch;
 			}
-			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, entity, false);
+			case CROSSBOW_CHARGE -> CrossbowPosing.charge(this.rightArm, this.leftArm, maid, false);
 			case CROSSBOW_HOLD -> CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
 			case SPYGLASS -> {
-				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (maid.isInSneakingPose() ? 0.2617994F : 0.0F), -2.4F, 3.3F);
 				this.leftArm.yaw = this.head.yaw + 0.2617994F;
 			}
 			case TOOT_HORN -> {
