@@ -3,9 +3,11 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.TridentApproachTargetTask;
@@ -28,6 +30,7 @@ public final class MaidPoseidonBrainManager {
 		MaidPoseidonBrainManager.addIdleTasks(brain);
 		MaidPoseidonBrainManager.addSitTasks(brain);
 		MaidPoseidonBrainManager.addEatTasks(brain);
+		MaidPoseidonBrainManager.addGoGetTridentTasks(brain);
 		MaidPoseidonBrainManager.addFightTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -36,7 +39,15 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.FIGHT, Activity.IDLE));
+		UMULittleMaid.LOGGER.info(brain.getFirstPossibleNonCoreActivity());
+
+		brain.resetPossibleActivities(ImmutableList.of(
+				ModEntities.ACTIVITY_SIT,
+				ModEntities.ACTIVITY_EAT,
+				ModEntities.ACTIVITY_GO_GET_TRIDENT,
+				Activity.FIGHT,
+				Activity.IDLE
+		));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -79,6 +90,15 @@ public final class MaidPoseidonBrainManager {
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
 		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+	}
+
+	public static void addGoGetTridentTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_GO_GET_TRIDENT, ImmutableList.of(
+				Pair.of(0, new GoGetTridentTask<>())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_THROWN_TRIDENT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN, MemoryModuleState.VALUE_PRESENT)
+		));
 	}
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {

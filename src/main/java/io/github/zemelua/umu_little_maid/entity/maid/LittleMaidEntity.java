@@ -57,10 +57,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -469,6 +466,35 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			mainStack.damage(1, this, entity -> {});
 			if (!consumeArrow) {
 				arrow.decrement(1);
+			}
+		}
+	}
+
+	@Override
+	public void throwTrident(Entity target) {
+		ItemStack mainStack = this.getMainHandStack();
+		if (!mainStack.isOf(Items.TRIDENT) || EnchantmentHelper.getRiptide(mainStack) > 0) return;
+
+		TridentEntity trident = new TridentEntity(this.getWorld(), this, mainStack);
+
+		double x = target.getX() - this.getX();
+		double y = target.getBodyY(1.0D / 3.0D) - trident.getY();
+		double z = target.getZ() - this.getZ();
+		double power = Math.sqrt(x * x + z * z);
+		trident.setVelocity(x, y + power * 0.2D, z, 1.6F, 6.0F);
+		trident.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+
+		this.getWorld().spawnEntity(trident);
+
+		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		mainStack.decrement(1);
+
+		if (mainStack.getCount() <= 0) {
+			this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+
+			this.brain.remember(ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN, Unit.INSTANCE, 200);
+			if (EnchantmentHelper.getLoyalty(trident.asItemStack()) <= 0) {
+				this.brain.remember(ModEntities.MEMORY_THROWN_TRIDENT, trident, 200);
 			}
 		}
 	}
@@ -1085,7 +1111,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
 				ModEntities.MEMORY_FARM_SITE,
-				ModEntities.MEMORY_FARM_SITE_CANDIDATE
+				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
+				ModEntities.MEMORY_THROWN_TRIDENT,
+				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

@@ -8,7 +8,6 @@ import net.minecraft.util.Identifier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class MaidJob {
 	private final Predicate<ItemStack> itemStackPredicate;
 	private final Consumer<Brain<LittleMaidEntity>> brainInitializer;

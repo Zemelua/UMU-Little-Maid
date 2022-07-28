@@ -43,7 +43,7 @@ public class MaidControl extends MoveControl {
 			float upward = -MathHelper.sin((float) Math.toRadians(this.entity.getPitch()));
 			this.entity.setMovementSpeed(speed);
 			this.entity.setForwardSpeed(forward * speed);
-			this.entity.setUpwardSpeed(upward * speed);
+			this.entity.setUpwardSpeed(upward * speed * 10);
 		} else {
 			this.entity.setSprinting(false);
 
