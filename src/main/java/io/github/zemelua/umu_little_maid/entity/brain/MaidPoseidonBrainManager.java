@@ -66,13 +66,14 @@ public final class MaidPoseidonBrainManager {
 
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
-				Pair.of(0, new FollowOwnerTask<>(10.0F, 2.0F)),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.8F), 2),
+						Pair.of(new AquaticStrollTask(0.8F), 2),
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
-				)))
+				))),
+				Pair.of(0, new FollowOwnerTask<>(10.0F, 2.0F))
 		));
 	}
 
