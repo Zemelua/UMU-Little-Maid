@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
@@ -20,7 +21,8 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -30,6 +32,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
@@ -111,7 +114,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.eatingTicks = 0;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
-		((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
+		// this.moveControl = new AquaticMoveControl(this, 85, 10, 1.0F, 1.0F, true);
+		this.moveControl = new MaidControl(this);
+		// this.lookControl = new YawAdjustingLookControl(this, 10);
+		// ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
 	}
 
 	@Nullable
@@ -193,6 +199,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Override
+	protected EntityNavigation createNavigation(World world) {
+		return new AxolotlSwimNavigation(this, world);
+		// return super.createNavigation(world);
+	}
+
+	@Override
+	public boolean isPushedByFluids() {
+		// return !this.isSwimming();
+		return true;
+	}
+
+	@Override
 	protected void mobTick() {
 		this.updateJob();
 		if (!this.getJob().equals(this.lastJob)) {
@@ -202,6 +220,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
+
+		if (this.isSwimming()) {
+			this.setPose(EntityPose.SWIMMING);
+		} else {
+			this.setPose(EntityPose.STANDING);
+		}
 
 		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
 			this.changingCostumeTicks++;
@@ -232,6 +256,34 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.brain = brain.copy();
 		this.getJob().initializeBrain(this.getBrain());
 	}
+
+	@Override
+	public float getPathfindingPenalty(PathNodeType nodeType) {
+		if (nodeType == PathNodeType.WATER) {
+			return this.getJob() == ModEntities.JOB_POSEIDON ? 0.0F : 0.8F;
+		}
+
+		return super.getPathfindingPenalty(nodeType);
+	}
+
+	public boolean canSwim() {
+		return this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON;
+	}
+
+//	@Override
+//	public void updateSwimming() {
+//		if (!this.world.isClient) {
+//			if (this.canMoveVoluntarily() && this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON) {
+//				this.setSwimming(true);
+//				// this.setSprinting(true);
+//				// this.setJumping(false);
+//			} else {
+//				this.setSwimming(false);
+//				// this.setSprinting(false);
+//				// this.setJumping(true);
+//			}
+//		}
+//	}
 
 	@Override
 	public void tickMovement() {

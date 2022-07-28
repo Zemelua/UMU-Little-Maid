@@ -41,7 +41,7 @@ public final class MaidPoseidonBrainManager {
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
-				Pair.of(0, new StayAboveWaterTask(0.8F)),
+				// Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),

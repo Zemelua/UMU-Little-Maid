@@ -11,6 +11,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity, LittleMaidEntityModel> {
 	public LittleMaidEntityRenderer(EntityRendererFactory.Context context) {
@@ -26,6 +28,22 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 		this.model.setUsingDripleaf(maid.isUsingDripleaf());
 		
 		super.render(maid, f, g, matrixStack, vertexConsumerProvider, i);
+	}
+
+	@Override
+	protected void setupTransforms(LittleMaidEntity maid, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
+		float leaningPitch = maid.getLeaningPitch(tickDelta);
+
+		if (leaningPitch > 0.0F) {
+			super.setupTransforms(maid, matrices, animationProgress, bodyYaw, tickDelta);
+
+			float maxPitch = maid.isTouchingWater() ? -90.0F - maid.getPitch() : -90.0F;
+			float pitch = MathHelper.lerp(leaningPitch, 0.0F, maxPitch);
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(pitch));
+			if (maid.isInSwimmingPose()) {
+				matrices.translate(0.0F, -1.0F, 0.3F);
+			}
+		}
 	}
 
 	@Override

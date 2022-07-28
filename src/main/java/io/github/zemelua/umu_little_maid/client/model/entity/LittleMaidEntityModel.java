@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.client.model.entity;
 
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.*;
@@ -118,7 +119,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	public void setAngles(LittleMaidEntity maid, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.initializeCubes();
 
-		this.setHeadAngle(headPitch, headYaw);
+		this.setHeadAngle(maid, headPitch, headYaw);
 		if (maid.isSitting()) {
 			this.setSittingAngle();
 		} else {
@@ -191,8 +192,13 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.boneChangingCostume.resetTransform();
 	}
 
-	private void setHeadAngle(float headPitch, float headYaw) {
-		this.head.pitch = (float) Math.toRadians(headPitch);
+	private void setHeadAngle(LittleMaidEntity maid, float headPitch, float headYaw) {
+		boolean isRolling = maid.getRoll() > 4;
+		boolean isSwimming = maid.isInSwimmingPose();
+		float lerped = isSwimming
+				? ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, -0.7853982F)
+				: ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, (float) Math.toRadians(headPitch));
+		this.head.pitch = isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch);
 		this.head.yaw = (float) Math.toRadians(headYaw);
 	}
 

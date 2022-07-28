@@ -66,5 +66,14 @@ public final class ModUtils {
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
 
-
+	public static float lerpAngle(float angleOne, float angleTwo, float magnitude) {
+		float f = (magnitude - angleTwo) % ((float)Math.PI * 2);
+		if (f < (float)(-Math.PI)) {
+			f += (float)Math.PI * 2;
+		}
+		if (f >= (float)Math.PI) {
+			f -= (float)Math.PI * 2;
+		}
+		return angleTwo + angleOne * f;
+	}
 }
