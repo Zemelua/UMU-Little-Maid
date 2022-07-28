@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;

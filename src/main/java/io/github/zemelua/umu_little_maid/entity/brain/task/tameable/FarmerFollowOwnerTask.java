@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task;
+package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import net.minecraft.entity.Tameable;

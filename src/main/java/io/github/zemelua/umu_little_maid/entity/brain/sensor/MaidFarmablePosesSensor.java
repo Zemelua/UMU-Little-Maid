@@ -3,7 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.MaidFarmTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.ai.brain.Brain;
