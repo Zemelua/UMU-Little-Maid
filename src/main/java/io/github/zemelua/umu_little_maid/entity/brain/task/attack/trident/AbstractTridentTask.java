@@ -99,7 +99,7 @@ public abstract class AbstractTridentTask<E extends MobEntity> extends Task<E> {
 				this.combatTicks = 0;
 			}
 
-			if (this.combatTicks > -1) {
+			if (this.combatTicks > -1 && !mob.isTouchingWater()) {
 				if (distance > this.range * Math.sqrt(0.75D)) {
 					this.backward = false;
 				} else if (distance < this.range * Math.sqrt(0.25D)) {

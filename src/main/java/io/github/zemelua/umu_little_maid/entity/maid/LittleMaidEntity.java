@@ -22,9 +22,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -70,7 +70,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-@SuppressWarnings("CommentedOutCode")
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
@@ -96,6 +95,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 
+	private final EntityNavigation landNavigation = new MobNavigation(this, this.world);
+	private final EntityNavigation canSwimNavigation = new AxolotlSwimNavigation(this, this.world);
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final AnimationState eatAnimation = new AnimationState();
 	private final AnimationState healAnimation = new AnimationState();
@@ -114,34 +115,31 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.eatingTicks = 0;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
-		// this.moveControl = new AquaticMoveControl(this, 85, 10, 1.0F, 1.0F, true);
+
 		this.moveControl = new MaidControl(this);
-		// this.lookControl = new YawAdjustingLookControl(this, 10);
-		// ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-	                             @Nullable EntityData entityData, @Nullable NbtCompound nbt) {
+	@SuppressWarnings("ConstantConditions")
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound nbt) {
 		Random random = world.getRandom();
 
 		MaidPersonality personality = MaidSpawnHandler.randomPersonality(random, world.getBiome(this.getBlockPos()));
 		this.setPersonality(personality);
 
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)).setBaseValue(personality.getMaxHealth());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)).setBaseValue(personality.getMovementSpeed());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).setBaseValue(personality.getAttackDamage());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK)).setBaseValue(personality.getAttackKnockback());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)).setBaseValue(personality.getArmor());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)).setBaseValue(personality.getArmorToughness());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(personality.getKnockbackResistance());
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_LUCK)).setBaseValue(personality.getLuck());
-
-		Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE))
-				.addPersistentModifier(new EntityAttributeModifier(
-						"Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001),
-						EntityAttributeModifier.Operation.MULTIPLY_BASE));
+		try {
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(personality.getMaxHealth());
+			this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(personality.getMovementSpeed());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(personality.getAttackDamage());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK).setBaseValue(personality.getAttackKnockback());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(personality.getArmor());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).setBaseValue(personality.getArmorToughness());
+			this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(personality.getKnockbackResistance());
+			this.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(personality.getLuck());
+		} catch (NullPointerException exception) {
+			UMULittleMaid.LOGGER.error("メイドさんにAttributeが登録されてないよ～");
+		}
 
 		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
@@ -153,11 +151,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.setCanPickUpLoot(true);
 
 		return entityData;
-	}
-
-	@Override
-	public double getJumpBoostVelocityModifier() {
-		return super.getJumpBoostVelocityModifier();
 	}
 
 	@Override
@@ -173,19 +166,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
 	}
 
-	@Override
-	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
-	}
-
-	@Override
-	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
-		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
-		this.getJob().initializeBrain(brain);
-
-		return brain;
-	}
-
 	public static DefaultAttributeContainer.Builder createAttributes() {
 		return MobEntity.createMobAttributes()
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
@@ -198,18 +178,96 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				.add(EntityAttributes.GENERIC_LUCK, 0.0D);
 	}
 
+	// <editor-fold desc="Brain">
+	@Override
+	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
+		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+	}
+
+	@Override
+	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
+		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
+		this.getJob().initializeBrain(brain);
+
+		return brain;
+	}
+	// </editor-fold>
+
+	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
 		return new AxolotlSwimNavigation(this, world);
-		// return super.createNavigation(world);
 	}
 
 	@Override
-	public boolean isPushedByFluids() {
-		// return !this.isSwimming();
-		return true;
+	public float getPathfindingPenalty(PathNodeType nodeType) {
+		if (nodeType == PathNodeType.WATER) {
+			return this.getJob() == ModEntities.JOB_POSEIDON ? 0.0F : 0.8F;
+		}
+
+		return super.getPathfindingPenalty(nodeType);
 	}
 
+	public boolean canSwim() {
+		return this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON;
+	}
+
+	@Override
+	public void tickMovement() {
+		super.tickMovement();
+
+		if (!this.onGround) {
+			if (!this.isUsingDripleaf() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 2) {
+				this.setUsingDripleaf(true);
+				this.setAnimationPose(MaidPose.USE_DRIPLEAF);
+			}
+		} else {
+			if (this.isUsingDripleaf()) {
+				this.setUsingDripleaf(false);
+				this.setAnimationPose(MaidPose.NONE);
+			}
+		}
+
+		Vec3d velocity = this.getVelocity();
+		if (this.isUsingDripleaf() && velocity.getY() < 0.0D) {
+			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
+		}
+
+		this.pickUpTridents();
+
+		this.tickHandSwing();
+	}
+
+	private void pickUpTridents() {
+		if (!this.world.isClient()) {
+			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
+			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, trident -> {
+				@Nullable Entity owner = trident.getOwner();
+				if (owner == null || trident.isOnGround() && !trident.isNoClip() || trident.shake > 0) return false;
+
+				return owner.equals(this) && trident.pickupType == PickupPermission.ALLOWED && ((TridentEntityAccessor) trident).isDealtDamage();
+			});
+
+			for (TridentEntity trident : collideTridents) {
+				ItemStack tridentStack = ((PersistentProjectileEntityAccessor) trident).callAsItemStack();
+
+				if (this.getMainHandStack().isEmpty()) {
+					this.setStackInHand(Hand.MAIN_HAND, tridentStack);
+					this.sendPickup(trident, 1);
+					trident.discard();
+				} else if (this.inventory.canInsert(tridentStack)) {
+					this.inventory.addStack(tridentStack);
+					this.sendPickup(trident, 1);
+					trident.discard();
+				}
+			}
+		}
+	}
+	//</editor-fold>
+
+	/**
+	 * サーバーでのみ呼ばれるよ！
+	 */
 	@Override
 	protected void mobTick() {
 		this.updateJob();
@@ -225,6 +283,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setPose(EntityPose.SWIMMING);
 		} else {
 			this.setPose(EntityPose.STANDING);
+		}
+
+		if (this.getJob() == ModEntities.JOB_POSEIDON) {
+			this.navigation = this.canSwimNavigation;
+		} else {
+			this.navigation = this.landNavigation;
 		}
 
 		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
@@ -255,81 +319,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.brain = brain.copy();
 		this.getJob().initializeBrain(this.getBrain());
-	}
-
-	@Override
-	public float getPathfindingPenalty(PathNodeType nodeType) {
-		if (nodeType == PathNodeType.WATER) {
-			return this.getJob() == ModEntities.JOB_POSEIDON ? 0.0F : 0.8F;
-		}
-
-		return super.getPathfindingPenalty(nodeType);
-	}
-
-	public boolean canSwim() {
-		return this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON;
-	}
-
-//	@Override
-//	public void updateSwimming() {
-//		if (!this.world.isClient) {
-//			if (this.canMoveVoluntarily() && this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON) {
-//				this.setSwimming(true);
-//				// this.setSprinting(true);
-//				// this.setJumping(false);
-//			} else {
-//				this.setSwimming(false);
-//				// this.setSprinting(false);
-//				// this.setJumping(true);
-//			}
-//		}
-//	}
-
-	@Override
-	public void tickMovement() {
-		super.tickMovement();
-
-		if (!this.onGround) {
-			if (!this.isUsingDripleaf() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 2) {
-				this.setUsingDripleaf(true);
-				this.setAnimationPose(MaidPose.USE_DRIPLEAF);
-			}
-		} else {
-			if (this.isUsingDripleaf()) {
-				this.setUsingDripleaf(false);
-				this.setAnimationPose(MaidPose.NONE);
-			}
-		}
-
-		Vec3d velocity = this.getVelocity();
-		if (this.isUsingDripleaf() && velocity.getY() < 0.0D) {
-			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
-		}
-
-		this.tickHandSwing();
-
-		if (!this.world.isClient()) {
-			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
-			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, trident -> {
-				@Nullable Entity owner = trident.getOwner();
-				if (owner == null || trident.isOnGround() && !trident.isNoClip() || trident.shake > 0) return false;
-
-				return owner.equals(this) && trident.pickupType == PickupPermission.ALLOWED && ((TridentEntityAccessor) trident).isDealtDamage();
-			});
-			for (TridentEntity trident : collideTridents) {
-				ItemStack tridentStack = ((PersistentProjectileEntityAccessor) trident).callAsItemStack();
-
-				if (this.getMainHandStack().isEmpty()) {
-					this.setStackInHand(Hand.MAIN_HAND, tridentStack);
-					this.sendPickup(trident, 1);
-					trident.discard();
-				} else if (this.inventory.canInsert(tridentStack)) {
-					this.inventory.addStack(tridentStack);
-					this.sendPickup(trident, 1);
-					trident.discard();
-				}
-			}
-		}
 	}
 
 	@Override
@@ -484,6 +473,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
+	/**
+	 * Riptideで敵にぶつかったときに呼ばれるよ！
+	 *
+	 * @param target 攻撃対象の {@code LivingEntity}
+	 */
 	@Override
 	protected void attackLivingEntity(LivingEntity target) {
 		this.tryAttack(target);
@@ -792,10 +786,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private void setOwnerUuid(@Nullable UUID uuid) {
 		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
 		this.getBrain().remember(ModEntities.MEMORY_OWNER, uuid);
-
-//		if (this.getOwner() instanceof ServerPlayerEntity ownerPlayer) {
-//			MaidContracts.addMaid(ownerPlayer, this);
-//		}
 	}
 
 	@Nullable
@@ -980,6 +970,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return LittleMaidEntity.TEXTURE_NONE;
 	}
 
+	//<editor-fold desc="Save/Load">
 	private static final String KEY_INVENTORY = "Inventory";
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_OWNER = "Owner";
@@ -1056,6 +1047,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
 	}
+	//</editor-fold>
 
 	@Override
 	public MobEntity self() {

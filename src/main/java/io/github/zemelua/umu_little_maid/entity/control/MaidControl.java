@@ -12,10 +12,9 @@ public class MaidControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		LittleMaidEntity maid = (LittleMaidEntity) this.entity;
-		maid.setSprinting(this.state == State.MOVE_TO);
+		if (this.state == State.MOVE_TO && ((LittleMaidEntity) this.entity).canSwim()) {
+			this.entity.setSprinting(true);
 
-		if (this.state == State.MOVE_TO && maid.canSwim()) {
 			this.entity.setVelocity(this.entity.getVelocity().add(0.0, 0.005, 0.0));
 
 			double x = this.targetX - this.entity.getX();
@@ -28,7 +27,7 @@ public class MaidControl extends MoveControl {
 			}
 
 			float yaw = (float) Math.toDegrees(MathHelper.atan2(z, x)) - 90.0F;
-			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), yaw, 10));
+			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), yaw, 10.0F));
 			this.entity.bodyYaw = this.entity.getYaw();
 			this.entity.headYaw = this.entity.getYaw();
 
@@ -46,11 +45,9 @@ public class MaidControl extends MoveControl {
 			this.entity.setForwardSpeed(forward * speed);
 			this.entity.setUpwardSpeed(upward * speed);
 		} else {
+			this.entity.setSprinting(false);
+
 			super.tick();
-		}
-
-		if (this.state == State.WAIT) {
-
 		}
 	}
 }

@@ -34,9 +34,9 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 	protected void setupTransforms(LittleMaidEntity maid, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
 		float leaningPitch = maid.getLeaningPitch(tickDelta);
 
-		if (leaningPitch > 0.0F) {
-			super.setupTransforms(maid, matrices, animationProgress, bodyYaw, tickDelta);
+		super.setupTransforms(maid, matrices, animationProgress, bodyYaw, tickDelta);
 
+		if (leaningPitch > 0.0F) {
 			float maxPitch = maid.isTouchingWater() ? -90.0F - maid.getPitch() : -90.0F;
 			float pitch = MathHelper.lerp(leaningPitch, 0.0F, maxPitch);
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(pitch));
