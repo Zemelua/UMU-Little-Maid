@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.FollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.PoseidonFollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
@@ -73,7 +73,7 @@ public final class MaidPoseidonBrainManager {
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
-				Pair.of(0, new FollowOwnerTask<>(10.0F, 2.0F))
+				Pair.of(0, new PoseidonFollowOwnerTask<>(10.0F, 2.0F))
 		));
 	}
 

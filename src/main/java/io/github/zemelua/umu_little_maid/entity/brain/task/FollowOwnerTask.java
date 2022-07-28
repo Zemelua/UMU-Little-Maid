@@ -102,7 +102,7 @@ public class FollowOwnerTask<E extends PathAwareEntity & Tameable> extends Task<
 		return true;
 	}
 
-	private boolean canTeleportTo(E tameable, BlockPos pos) {
+	protected boolean canTeleportTo(E tameable, BlockPos pos) {
 		PathNodeType pathType = LandPathNodeMaker.getLandNodeType(tameable.getWorld(), pos.mutableCopy());
 		if (pathType != PathNodeType.WALKABLE) return false;
 		if (tameable.getWorld().getBlockState(pos.down()).getBlock() instanceof LeavesBlock) return false;
