@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.*;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -247,6 +248,7 @@ public final class ModEntities {
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
+				.setHostile(living -> living.getType().isIn(ModTags.MAID_BRAVERY_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
 				.setFencerAttackSound(ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK)
 				.setHurtSound(ModSounds.ENTITY_MAID_BRAVERY_HURT)
@@ -265,6 +267,7 @@ public final class ModEntities {
 				.setContractSound(ModSounds.ENTITY_MAID_SHY_CONTRACT)
 				.build();
 		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
+				.setHostile(living -> living.getType().isIn(ModTags.MAID_LAZY_HOSTILES))
 				.setAmbientSound(ModSounds.ENTITY_MAID_LAZY_AMBIENT)
 				.setDeathSound(ModSounds.ENTITY_MAID_LAZY_DEATH)
 				.setContractSound(ModSounds.ENTITY_MAID_LAZY_CONTRACT)

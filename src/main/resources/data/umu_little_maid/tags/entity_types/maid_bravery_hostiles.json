@@ -1,0 +1,10 @@
+{
+	"values": [
+		"#umu_little_maid:maid_general_hostiles",
+		"minecraft:enderman",
+		"minecraft:ghast",
+		"minecraft:ravager",
+		"minecraft:zombie_villager",
+		"minecraft:zombified_piglin"
+	]
+}

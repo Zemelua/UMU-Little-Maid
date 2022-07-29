@@ -1,0 +1,27 @@
+{
+	"values": [
+		"minecraft:blaze",
+		"minecraft:cave_spider",
+		"minecraft:drowned",
+		"minecraft:evoker",
+		"minecraft:guardian",
+		"minecraft:husk",
+		"minecraft:illusioner",
+		"minecraft:magma_cube",
+		"minecraft:phantom",
+		"minecraft:piglin",
+		"minecraft:piglin_brute",
+		"minecraft:pillager",
+		"minecraft:silverfish",
+		"minecraft:skeleton",
+		"minecraft:slime",
+		"minecraft:spider",
+		"minecraft:stray",
+		"minecraft:vex",
+		"minecraft:vindicator",
+		"minecraft:witch",
+		"minecraft:wither_skeleton",
+		"minecraft:zoglin",
+		"minecraft:zombie"
+	]
+}

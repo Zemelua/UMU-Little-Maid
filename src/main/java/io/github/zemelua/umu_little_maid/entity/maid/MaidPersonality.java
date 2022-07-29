@@ -1,7 +1,11 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvent;
+
+import java.util.function.Predicate;
 
 public class MaidPersonality {
 	private final double maxHealth;
@@ -12,6 +16,7 @@ public class MaidPersonality {
 	private final double armorToughness;
 	private final double knockbackResistance;
 	private final double luck;
+	private final Predicate<LivingEntity> hostile;
 	private final SoundEvent ambientSound;
 	private final SoundEvent fencerAttackSound;
 	private final SoundEvent crackerAttackSound;
@@ -32,6 +37,7 @@ public class MaidPersonality {
 		this.armorToughness = builder.armorToughness;
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
+		this.hostile = builder.hostile;
 		this.ambientSound = builder.ambientSound;
 		this.fencerAttackSound = builder.fencerAttackSound;
 		this.crackerAttackSound = builder.crackerAttackSound;
@@ -74,6 +80,10 @@ public class MaidPersonality {
 
 	public double getLuck() {
 		return this.luck;
+	}
+
+	public boolean isHostile(LivingEntity living) {
+		return this.hostile.test(living);
 	}
 
 	public SoundEvent getAmbientSound() {
@@ -126,6 +136,7 @@ public class MaidPersonality {
 		private double armorToughness = 0.0D;
 		private double knockbackResistance = 0.0D;
 		private double luck = 0.0D;
+		private Predicate<LivingEntity> hostile = (living -> living.getType().isIn(ModTags.MAID_GENERAL_HOSTILES));
 		private SoundEvent ambientSound = ModSounds.ENTITY_MAID_GENERAL_AMBIENT;
 		private SoundEvent fencerAttackSound = ModSounds.ENTITY_MAID_GENERAL_FENCER_ATTACK;
 		private SoundEvent crackerAttackSound = ModSounds.ENTITY_MAID_GENERAL_CRACKER_ATTACK;
@@ -181,6 +192,12 @@ public class MaidPersonality {
 
 		public Builder setLuck(double luck) {
 			this.luck = luck;
+
+			return this;
+		}
+
+		public Builder setHostile(Predicate<LivingEntity> value) {
+			this.hostile = value;
 
 			return this;
 		}
