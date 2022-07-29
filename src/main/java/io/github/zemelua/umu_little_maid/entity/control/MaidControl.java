@@ -12,7 +12,7 @@ public class MaidControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		if (this.state == State.MOVE_TO && ((LittleMaidEntity) this.entity).canSwim()) {
+		if (this.isMoving() && ((LittleMaidEntity) this.entity).canSwim()) {
 			this.entity.setSprinting(true);
 
 			this.entity.setVelocity(this.entity.getVelocity().add(0.0, 0.005, 0.0));
@@ -45,7 +45,15 @@ public class MaidControl extends MoveControl {
 			this.entity.setForwardSpeed(forward * speed);
 			this.entity.setUpwardSpeed(upward * speed * 20);
 		} else {
-			this.entity.setSprinting(false);
+			if (this.entity.isSprinting()) {
+				this.entity.setSprinting(false);
+			}
+
+			if (this.isMoving()) {
+				this.entity.setMovementSpeed(0);
+				this.entity.setForwardSpeed(0);
+				this.entity.setUpwardSpeed(0);
+			}
 
 			super.tick();
 		}

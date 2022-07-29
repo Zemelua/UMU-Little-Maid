@@ -203,7 +203,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new AxolotlSwimNavigation(this, world);
+		return new MobNavigation(this, world);
 	}
 
 	@Override
@@ -263,6 +263,17 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.tickHandSwing();
 	}
 
+	@Override
+	public void updateSwimming() {
+		if (this.getJob() == ModEntities.JOB_POSEIDON) {
+			this.navigation = this.canSwimNavigation;
+		} else {
+			this.navigation = this.landNavigation;
+		}
+
+		super.updateSwimming();
+	}
+
 	private void pickUpTridents() {
 		if (!this.world.isClient()) {
 			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
@@ -304,17 +315,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
 
-		if (this.isSwimming()) {
-			this.setPose(EntityPose.SWIMMING);
-		} else {
-			this.setPose(EntityPose.STANDING);
-		}
-
-		if (this.getJob() == ModEntities.JOB_POSEIDON) {
-			this.navigation = this.canSwimNavigation;
-		} else {
-			this.navigation = this.landNavigation;
-		}
+		this.updatePose();
 
 		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
 			this.changingCostumeTicks++;
@@ -324,6 +325,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setAnimationPose(MaidPose.NONE);
 			this.changingCostumeTicks = 0;
 		}
+	}
+
+	private void updatePose() {
+		if (!this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
+			return;
+		}
+		EntityPose entityPose = this.isFallFlying() ? EntityPose.FALL_FLYING : (this.isSleeping() ? EntityPose.SLEEPING : (this.isSwimming() ? EntityPose.SWIMMING : (this.isUsingRiptide() ? EntityPose.SPIN_ATTACK : (this.isSneaking() ? EntityPose.CROUCHING : EntityPose.STANDING))));
+		EntityPose entityPose2 = this.isSpectator() || this.hasVehicle() || this.wouldPoseNotCollide(entityPose) ? entityPose : (this.wouldPoseNotCollide(EntityPose.CROUCHING) ? EntityPose.CROUCHING : EntityPose.SWIMMING);
+		this.setPose(entityPose2);
 	}
 
 	private void updateJob() {
