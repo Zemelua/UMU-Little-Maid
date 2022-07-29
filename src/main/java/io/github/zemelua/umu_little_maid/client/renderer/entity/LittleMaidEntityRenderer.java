@@ -33,7 +33,6 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 	@Override
 	protected void setupTransforms(LittleMaidEntity maid, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
 		float leaningPitch = maid.getLeaningPitch(tickDelta);
-
 		super.setupTransforms(maid, matrices, animationProgress, bodyYaw, tickDelta);
 
 		if (leaningPitch > 0.0F) {

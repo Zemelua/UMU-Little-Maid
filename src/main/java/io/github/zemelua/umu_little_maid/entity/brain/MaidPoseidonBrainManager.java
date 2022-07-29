@@ -3,13 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.PoseidonFollowOwnerTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
@@ -17,6 +11,11 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.Triden
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.PoseidonFollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -43,8 +42,6 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		UMULittleMaid.LOGGER.info(brain.getFirstPossibleNonCoreActivity());
-
 		brain.resetPossibleActivities(ImmutableList.of(
 				ModEntities.ACTIVITY_SIT,
 				ModEntities.ACTIVITY_BREATH,
