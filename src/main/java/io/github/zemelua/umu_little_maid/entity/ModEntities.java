@@ -66,6 +66,7 @@ public final class ModEntities {
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP;
 	public static final MemoryModuleType<TridentEntity> MEMORY_THROWN_TRIDENT;
 	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN;
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH;
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
@@ -81,6 +82,7 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_FARM;
 	public static final Activity ACTIVITY_HEAL;
 	public static final Activity ACTIVITY_GO_GET_TRIDENT;
+	public static final Activity ACTIVITY_BREATH;
 
 	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
 
@@ -138,6 +140,7 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_sleep"), ModEntities.MEMORY_SHOULD_SLEEP);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident"), ModEntities.MEMORY_THROWN_TRIDENT);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident_cooldown"), ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_breath"), ModEntities.MEMORY_SHOULD_BREATH);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
@@ -153,6 +156,7 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("farm"), ModEntities.ACTIVITY_FARM);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModEntities.ACTIVITY_HEAL);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModEntities.ACTIVITY_GO_GET_TRIDENT);
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModEntities.ACTIVITY_BREATH);
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
@@ -222,6 +226,7 @@ public final class ModEntities {
 		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_THROWN_TRIDENT = new MemoryModuleType<>(Optional.empty());
 		MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+		MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
@@ -237,6 +242,7 @@ public final class ModEntities {
 		ACTIVITY_FARM = new Activity("farm");
 		ACTIVITY_HEAL = new Activity("heal");
 		ACTIVITY_GO_GET_TRIDENT = new Activity("go_get_trident");
+		ACTIVITY_BREATH = new Activity("breath");
 
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 

@@ -5,6 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.PoseidonFollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
@@ -29,6 +32,7 @@ public final class MaidPoseidonBrainManager {
 		MaidPoseidonBrainManager.addCoreTasks(brain);
 		MaidPoseidonBrainManager.addIdleTasks(brain);
 		MaidPoseidonBrainManager.addSitTasks(brain);
+		MaidPoseidonBrainManager.addBreathTasks(brain);
 		MaidPoseidonBrainManager.addEatTasks(brain);
 		MaidPoseidonBrainManager.addGoGetTridentTasks(brain);
 		MaidPoseidonBrainManager.addFightTasks(brain);
@@ -43,6 +47,7 @@ public final class MaidPoseidonBrainManager {
 
 		brain.resetPossibleActivities(ImmutableList.of(
 				ModEntities.ACTIVITY_SIT,
+				ModEntities.ACTIVITY_BREATH,
 				ModEntities.ACTIVITY_EAT,
 				ModEntities.ACTIVITY_GO_GET_TRIDENT,
 				Activity.FIGHT,
@@ -55,10 +60,13 @@ public final class MaidPoseidonBrainManager {
 				// Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
-				Pair.of(1, new LookAroundTask(45, 90)),
-				Pair.of(2, new WanderAroundTask()),
+				// Pair.of(1, new BreathAirTask<>()),
+				Pair.of(2, new LookAroundTask(45, 90)),
+				Pair.of(3, new WanderAroundTask()),
+				Pair.of(98, new RememberShouldBreathTask<>(100)),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(99, new ForgetShouldBreathTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetAttackTargetTask<>())
 		));
@@ -79,9 +87,18 @@ public final class MaidPoseidonBrainManager {
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
-				Pair.of(0, new SitTask<>())
+				Pair.of(0, new SitTask<>()),
+				Pair.of(1, new StayAboveWaterTask(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+		));
+	}
+
+	public static void addBreathTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModEntities.ACTIVITY_BREATH, ImmutableList.of(
+				Pair.of(0, new BreathAirTask<>())
+		), ImmutableSet.of(
+				Pair.of(ModEntities.MEMORY_SHOULD_BREATH, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

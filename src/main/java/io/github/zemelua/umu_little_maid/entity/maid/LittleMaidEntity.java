@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
@@ -76,6 +77,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT, Items.PUMPKIN, Items.MELON_SLICE};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	public static final Predicate<ItemStack> CHANGE_COSTUME = itemStack -> itemStack.isIn(ItemTags.WOOL);
+	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
+			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
+			EntityPose.SLEEPING, EntityDimensions.fixed(0.2F, 0.2F),
+			EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.6F),
+			EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.6F),
+			EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.6F),
+			EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F),
+			EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F));
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
 	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
@@ -208,6 +217,24 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public boolean canSwim() {
 		return this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON;
+	}
+
+	@Override
+	public EntityDimensions getDimensions(EntityPose pose) {
+		return LittleMaidEntity.DIMENSIONS.getOrDefault(pose, EntityDimensions.fixed(0.6F, 1.5F));
+	}
+
+	@Override
+	public float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		switch (pose) {
+			case SWIMMING, FALL_FLYING, SPIN_ATTACK -> {
+				return 0.4F;
+			}
+			case CROUCHING -> {
+				return 1.27F;
+			}
+		}
+		return 1.62F;
 	}
 
 	@Override
@@ -596,6 +623,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.world.getRandom().nextFloat() * 0.4F);
 			}
 		}
+	}
+
+	@Override
+	protected int getNextAirOnLand(int air) {
+		return Math.min(air + 10, this.getMaxAir());
 	}
 
 	@Override
@@ -1114,7 +1146,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_FARM_SITE,
 				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
 				ModEntities.MEMORY_THROWN_TRIDENT,
-				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN
+				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
+				ModEntities.MEMORY_SHOULD_BREATH
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
