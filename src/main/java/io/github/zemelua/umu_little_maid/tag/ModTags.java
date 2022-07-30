@@ -13,9 +13,16 @@ public final class ModTags {
 	public static final Marker MARKER = MarkerManager.getMarker("TAG").addParents(UMULittleMaid.MARKER);
 
 	public static final TagKey<Block> BLOCK_SCARECROW_HEAD;
+
 	public static final TagKey<EntityType<?>> MAID_GENERAL_HOSTILES;
 	public static final TagKey<EntityType<?>> MAID_BRAVERY_HOSTILES;
+	public static final TagKey<EntityType<?>> MAID_DILIGENT_HOSTILES;
+	public static final TagKey<EntityType<?>> MAID_AUDACIOUS_HOSTILES;
+	public static final TagKey<EntityType<?>> MAID_GENTLE_HOSTILES;
+	public static final TagKey<EntityType<?>> MAID_SHY_HOSTILES;
 	public static final TagKey<EntityType<?>> MAID_LAZY_HOSTILES;
+	public static final TagKey<EntityType<?>> MAID_TSUNDERE_HOSTILES;
+
 	public static final TagKey<PointOfInterestType> POI_FARMER;
 
 	private static boolean initialized = false;
@@ -33,9 +40,16 @@ public final class ModTags {
 
 	static {
 		BLOCK_SCARECROW_HEAD = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("scarecrow_head"));
+
 		MAID_GENERAL_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_general_hostiles"));
 		MAID_BRAVERY_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_bravery_hostiles"));
+		MAID_DILIGENT_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_diligent_hostiles"));
+		MAID_AUDACIOUS_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_audacious_hostiles"));
+		MAID_GENTLE_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_gentle_hostiles"));
+		MAID_SHY_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_shy_hostiles"));
 		MAID_LAZY_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_lazy_hostiles"));
+		MAID_TSUNDERE_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_tsundere_hostiles"));
+
 		POI_FARMER = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("farmer"));
 	}
 }
