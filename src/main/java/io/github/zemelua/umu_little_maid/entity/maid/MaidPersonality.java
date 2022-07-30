@@ -16,7 +16,7 @@ public class MaidPersonality {
 	private final double armorToughness;
 	private final double knockbackResistance;
 	private final double luck;
-	private final Predicate<LivingEntity> hostile;
+	private final Predicate<LivingEntity> hostiles;
 	private final SoundEvent ambientSound;
 	private final SoundEvent fencerAttackSound;
 	private final SoundEvent crackerAttackSound;
@@ -37,7 +37,7 @@ public class MaidPersonality {
 		this.armorToughness = builder.armorToughness;
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
-		this.hostile = builder.hostile;
+		this.hostiles = builder.hostiles;
 		this.ambientSound = builder.ambientSound;
 		this.fencerAttackSound = builder.fencerAttackSound;
 		this.crackerAttackSound = builder.crackerAttackSound;
@@ -83,7 +83,7 @@ public class MaidPersonality {
 	}
 
 	public boolean isHostile(LivingEntity living) {
-		return this.hostile.test(living);
+		return this.hostiles.test(living);
 	}
 
 	public SoundEvent getAmbientSound() {
@@ -136,7 +136,7 @@ public class MaidPersonality {
 		private double armorToughness = 0.0D;
 		private double knockbackResistance = 0.0D;
 		private double luck = 0.0D;
-		private Predicate<LivingEntity> hostile = (living -> living.getType().isIn(ModTags.MAID_GENERAL_HOSTILES));
+		private Predicate<LivingEntity> hostiles = (living -> living.getType().isIn(ModTags.ENTITY_MAID_GENERAL_HOSTILES));
 		private SoundEvent ambientSound = ModSounds.ENTITY_MAID_GENERAL_AMBIENT;
 		private SoundEvent fencerAttackSound = ModSounds.ENTITY_MAID_GENERAL_FENCER_ATTACK;
 		private SoundEvent crackerAttackSound = ModSounds.ENTITY_MAID_GENERAL_CRACKER_ATTACK;
@@ -196,8 +196,8 @@ public class MaidPersonality {
 			return this;
 		}
 
-		public Builder setHostile(Predicate<LivingEntity> value) {
-			this.hostile = value;
+		public Builder setHostiles(Predicate<LivingEntity> value) {
+			this.hostiles = value;
 
 			return this;
 		}

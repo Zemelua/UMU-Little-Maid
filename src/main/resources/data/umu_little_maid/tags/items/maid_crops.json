@@ -1,0 +1,10 @@
+# items in this file must be a block item, and are planted as the block.
+
+{
+	"values": [
+		"minecraft:wheat_seeds",
+		"minecraft:potato",
+		"minecraft:carrot",
+		"minecraft:beetroot_seeds"
+	]
+}

@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -96,6 +97,14 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 
-		return block instanceof CropBlock crop && crop.isMature(blockState);
+		if (blockState.isIn(ModTags.BLOCK_MAID_HARVESTS)) {
+			if (block instanceof CropBlock crop) {
+				return crop.isMature(blockState);
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }

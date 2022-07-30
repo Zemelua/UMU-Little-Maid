@@ -1,0 +1,11 @@
+# if a block in this file is a crop block, it will be checked if it is mature.
+# not a crop block, is not checked and be broken soon.
+
+{
+	"values": [
+		"minecraft:wheat",
+		"minecraft:carrots",
+		"minecraft:potatoes",
+		"minecraft:beetroots"
+	]
+}

@@ -11,6 +11,7 @@ import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -684,14 +685,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public ItemStack getHasCrop() {
-		if (Arrays.stream(LittleMaidEntity.CROPS).anyMatch(this.getOffHandStack()::isOf)) {
+		if (this.getOffHandStack().isIn(ModTags.ITEM_MAID_CROPS)) {
 			return this.getOffHandStack();
 		}
 
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
 
-			if (Arrays.stream(LittleMaidEntity.CROPS).anyMatch(itemStack::isOf)) {
+			if (itemStack.isIn(ModTags.ITEM_MAID_CROPS)) {
 				return itemStack;
 			}
 		}
@@ -787,8 +788,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public boolean canPickupItem(ItemStack itemStack) {
 		if (this.getJob() == ModEntities.JOB_FARMER) {
-			return Arrays.stream(LittleMaidEntity.CROPS).anyMatch(itemStack::isOf)
-					|| Arrays.stream(LittleMaidEntity.PRODUCTS).anyMatch(itemStack::isOf);
+			return itemStack.isIn(ModTags.ITEM_MAID_PRODUCTS);
 		}
 
 		return false;

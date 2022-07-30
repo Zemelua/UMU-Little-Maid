@@ -248,31 +248,36 @@ public final class ModEntities {
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
-				.setHostile(living -> living.getType().isIn(ModTags.MAID_BRAVERY_HOSTILES))
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
 				.setFencerAttackSound(ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK)
 				.setHurtSound(ModSounds.ENTITY_MAID_BRAVERY_HURT)
 				.build();
 		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D)
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_DILIGENT_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_DILIGENT_CONTRACT)
 				.build();
 		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D)
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_AUDACIOUS_HOSTILES))
 				.setDeathSound(ModSounds.ENTITY_MAID_AUDACIOUS_DEATH)
 				.setContractSound(ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT)
 				.build();
 		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D)
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_GENTLE_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_GENTLE_CONTRACT)
 				.build();
 		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D)
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_SHY_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_SHY_CONTRACT)
 				.build();
 		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
-				.setHostile(living -> living.getType().isIn(ModTags.MAID_LAZY_HOSTILES))
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_LAZY_HOSTILES))
 				.setAmbientSound(ModSounds.ENTITY_MAID_LAZY_AMBIENT)
 				.setDeathSound(ModSounds.ENTITY_MAID_LAZY_DEATH)
 				.setContractSound(ModSounds.ENTITY_MAID_LAZY_CONTRACT)
 				.build();
 		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D)
+				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_TSUNDERE_HOSTILES))
 				.setContractSound(ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT)
 				.build();
 
