@@ -12,7 +12,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -91,7 +90,7 @@ public class MaidGuardTask<E extends MobEntity & Tameable> extends Task<E> {
 			boolean shouldGuard = tameable.distanceTo(owner) <= this.guardStartDistance;
 			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(guardTarget.get(), true));
 
-			if (tameable.getMainHandStack().isOf(Items.SHIELD) && shouldGuard) {
+			if (shouldGuard) {
 				if (!tameable.isBlocking()) {
 					tameable.setCurrentHand(Hand.MAIN_HAND);
 				}

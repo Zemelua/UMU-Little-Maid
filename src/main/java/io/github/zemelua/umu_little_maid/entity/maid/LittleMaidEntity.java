@@ -481,37 +481,34 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
 		ItemStack mainStack = this.getMainHandStack();
+		ItemStack arrow = this.getArrowType(mainStack);
+		if (arrow.isEmpty()) return;
 
-		if (mainStack.isOf(Items.BOW)) {
-			ItemStack arrow = this.getArrowType(mainStack);
-			if (arrow.isEmpty()) return;
+		boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
 
-			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
+		PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
+		double xVelocity = target.getX() - this.getX();
+		double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
+		double zVelocity = target.getZ() - this.getZ();
+		double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
+		projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
+		projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
 
-			PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
-			double xVelocity = target.getX() - this.getX();
-			double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
-			double zVelocity = target.getZ() - this.getZ();
-			double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
-			projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
-			projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
+		this.world.spawnEntity(projectile);
 
-			this.world.spawnEntity(projectile);
+		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		this.playArcherAttackSound();
 
-			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-			this.playArcherAttackSound();
-
-			mainStack.damage(1, this, entity -> {});
-			if (!consumeArrow) {
-				arrow.decrement(1);
-			}
+		mainStack.damage(1, this, entity -> {});
+		if (!consumeArrow) {
+			arrow.decrement(1);
 		}
 	}
 
 	@Override
 	public void throwTrident(Entity target) {
 		ItemStack mainStack = this.getMainHandStack();
-		if (!mainStack.isOf(Items.TRIDENT) || EnchantmentHelper.getRiptide(mainStack) > 0) return;
+		if (EnchantmentHelper.getRiptide(mainStack) > 0) return;
 
 		TridentEntity trident = new TridentEntity(this.getWorld(), this, mainStack);
 

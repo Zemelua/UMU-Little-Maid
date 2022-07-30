@@ -8,7 +8,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -20,7 +19,7 @@ public interface IPoseidonMob extends IMob {
 		MobEntity self = this.self();
 		ItemStack mainStack = this.self().getMainHandStack();
 		int riptide = EnchantmentHelper.getRiptide(mainStack);
-		if (!mainStack.isOf(Items.TRIDENT) || riptide <= 0) return;
+		if (riptide <= 0) return;
 
 		Vec3d velocity = target.getPos().subtract(self.getPos()).normalize();
 		double x = velocity.getX();
@@ -48,7 +47,7 @@ public interface IPoseidonMob extends IMob {
 	default void throwTrident(Entity target) {
 		MobEntity self = this.self();
 		ItemStack mainStack = self.getMainHandStack();
-		if (!mainStack.isOf(Items.TRIDENT) || EnchantmentHelper.getRiptide(mainStack) > 0) return;
+		if (EnchantmentHelper.getRiptide(mainStack) > 0) return;
 
 		TridentEntity trident = new TridentEntity(self.getWorld(), self, mainStack);
 
