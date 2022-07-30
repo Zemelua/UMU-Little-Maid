@@ -38,6 +38,6 @@ public class RememberShouldSleepTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	public static boolean shouldSleep(ServerWorld world, long sleepStartTime) {
-		return world.getTimeOfDay() >= sleepStartTime;
+		return world.getTimeOfDay() % 24000 >= sleepStartTime;
 	}
 }
