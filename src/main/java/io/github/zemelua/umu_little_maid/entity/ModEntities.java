@@ -22,7 +22,6 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.item.*;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
@@ -285,31 +284,31 @@ public final class ModEntities {
 				MaidNoneBrainManager::initializeBrain,
 				MaidNoneBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_NONE);
-		JOB_FENCER = new MaidJob(itemStack -> itemStack.getItem() instanceof SwordItem,
+		JOB_FENCER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FENCER_TOOLS),
 				MaidFencerBrainManager::initializeBrain,
 				MaidFencerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_FENCER);
-		JOB_CRACKER = new MaidJob(itemStack -> itemStack.getItem() instanceof AxeItem,
+		JOB_CRACKER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_CRACKER_TOOLS),
 				MaidCrackerBrainManager::initializeBrain,
 				MaidCrackerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_CRACKER);
-		JOB_ARCHER = new MaidJob(itemStack -> itemStack.getItem() instanceof BowItem,
+		JOB_ARCHER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_ARCHER_TOOLS),
 				MaidArcherBrainManager::initializeBrain,
 				MaidArcherBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_ARCHER);
-		JOB_GUARD = new MaidJob(itemStack -> itemStack.isOf(Items.SHIELD),
+		JOB_GUARD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_GUARD_TOOLS),
 				MaidGuardBrainManager::initializeBrain,
 				MaidGuardBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_GUARD);
-		JOB_FARMER = new MaidJob(itemStack -> itemStack.getItem() instanceof HoeItem,
+		JOB_FARMER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FARMER_TOOLS),
 				MaidFarmerBrainManager::initializeBrain,
 				MaidFarmerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_FARMER);
-		JOB_HEALER = new MaidJob(itemStack -> itemStack.isOf(Items.AMETHYST_SHARD),
+		JOB_HEALER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_HEALER_TOOLS),
 				MaidHealerBrainManager::initializeBrain,
 				MaidHealerBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_HEALER);
-		JOB_POSEIDON = new PoseidonJob(itemStack -> itemStack.isOf(Items.TRIDENT),
+		JOB_POSEIDON = new PoseidonJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_POSEIDON_TOOLS),
 				MaidPoseidonBrainManager::initializeBrain,
 				MaidPoseidonBrainManager::tickBrain,
 				LittleMaidEntity.TEXTURE_POSEIDON);
