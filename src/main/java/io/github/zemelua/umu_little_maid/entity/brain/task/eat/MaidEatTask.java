@@ -5,6 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
+import io.github.zemelua.umu_little_maid.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ai.brain.Brain;
@@ -17,7 +18,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class MaidEatTask extends Task<LittleMaidEntity> {
@@ -73,6 +73,6 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 
 	public static <E extends InventoryOwner> ItemStack searchHealItems(E inventoryOwner) {
 		return ModUtils.searchInInventory(inventoryOwner.getInventory(), itemStackArg
-				-> Arrays.stream(MaidEatTask.EAT_ITEMS).anyMatch(itemStackArg::isOf));
+				-> itemStackArg.isIn(ModTags.ITEM_MAID_HEAL_FOODS));
 	}
 }

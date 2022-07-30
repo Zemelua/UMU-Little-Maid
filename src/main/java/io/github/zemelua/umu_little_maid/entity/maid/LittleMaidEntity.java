@@ -54,12 +54,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -74,10 +76,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
 	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
-	public static final Item[] CROPS = new Item[]{Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS};
-	public static final Item[] PRODUCTS = new Item[]{Items.WHEAT, Items.POTATO, Items.CARROT, Items.BEETROOT, Items.PUMPKIN, Items.MELON_SLICE};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
-	public static final Predicate<ItemStack> CHANGE_COSTUME = itemStack -> itemStack.isIn(ItemTags.WOOL);
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
 			EntityPose.SLEEPING, EntityDimensions.fixed(0.2F, 0.2F),
@@ -369,7 +368,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (LittleMaidEntity.CHANGE_COSTUME.test(interactItem) && this.isOnGround()) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.isOnGround()) {
 					if (!this.world.isClient()) {
 						this.setVariableCostume(!this.isVariableCostume());
 						this.setAnimationPose(MaidPose.CHANGE_COSTUME);
@@ -391,7 +390,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				}
 			}
 		} else {
-			if (interactItem.isOf(Items.CAKE)) {
+			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS)) {
 				if (!this.world.isClient()) {
 					this.setOwner(player);
 					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
@@ -702,7 +701,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public boolean hasDripleaf() {
 		for (int i = 0; i < this.inventory.size(); i++) {
-			if (this.inventory.getStack(i).isOf(Items.BIG_DRIPLEAF)) {
+			if (this.inventory.getStack(i).isIn(ModTags.ITEM_MAID_DRIPLEAFS)) {
 				return true;
 			}
 		}

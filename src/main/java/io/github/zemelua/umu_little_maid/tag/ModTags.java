@@ -23,6 +23,10 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_FARMER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_HEALER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_POSEIDON_TOOLS;
+	public static final TagKey<Item> ITEM_MAID_CONTRACT_FOODS;
+	public static final TagKey<Item> ITEM_MAID_HEAL_FOODS;
+	public static final TagKey<Item> ITEM_MAID_DRIPLEAFS;
+	public static final TagKey<Item> ITEM_MAID_CHANGE_COSTUMES;
 	public static final TagKey<Item> ITEM_MAID_CROPS;
 	public static final TagKey<Item> ITEM_MAID_PRODUCTS;
 
@@ -61,6 +65,10 @@ public final class ModTags {
 		ITEM_MAID_FARMER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_farmer_tools"));
 		ITEM_MAID_HEALER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_healer_tools"));
 		ITEM_MAID_POSEIDON_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_poseidon_tools"));
+		ITEM_MAID_CONTRACT_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_contract_foods"));
+		ITEM_MAID_HEAL_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_heal_foods"));
+		ITEM_MAID_DRIPLEAFS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_dripleafs"));
+		ITEM_MAID_CHANGE_COSTUMES = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_change_costumes"));
 		ITEM_MAID_CROPS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_crops"));
 		ITEM_MAID_PRODUCTS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_products"));
 
