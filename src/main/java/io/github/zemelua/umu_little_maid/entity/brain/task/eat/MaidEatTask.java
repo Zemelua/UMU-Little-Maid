@@ -55,7 +55,7 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 
 	@Override
 	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.playEatingAnimation();
+		maid.playEatingParticles();
 		maid.setEatingTicks(maid.getEatingTicks() + 1);
 	}
 

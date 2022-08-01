@@ -721,18 +721,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-	public void playEatingAnimation() {
+	public void playEatingParticles() {
 		if (!this.world.isClient() && this.getEatingTicks() % 5 == 0) {
 			for (int i = 0; i < 6; i++) {
-				double d = -this.random.nextDouble() * 0.6D - 0.3D;
-				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, d, 0.6D);
-				pos = pos.rotateX(-this.getPitch() * ((float) Math.PI / 180));
-				pos = pos.rotateY(-this.getYaw() * ((float) Math.PI / 180));
-				pos = pos.add(this.getX(), this.getEyeY(), this.getZ());
+				double y = -this.random.nextDouble() * 0.6D - 0.3D;
+				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, y, 0.6D)
+						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
+						.rotateY(-this.getYaw() * ((float) Math.PI / 180))
+						.add(this.getX(), this.getEyeY(), this.getZ());
 
-				Vec3d delta = new Vec3d((this.random.nextDouble() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
-				delta = delta.rotateX(-this.getPitch() * ((float) Math.PI / 180));
-				delta = delta.rotateY(-this.getYaw() * ((float) Math.PI / 180));
+				Vec3d delta = new Vec3d((this.random.nextDouble() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D)
+						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
+						.rotateY(-this.getYaw() * ((float) Math.PI / 180));
 
 				final ParticleEffect particle = new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND));
 				((ServerWorld) this.world).spawnParticles(particle, pos.x, pos.y, pos.z, 0, delta.x, delta.y + 0.05, delta.z, 1.0);
