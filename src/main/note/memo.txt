@@ -1,6 +1,0 @@
-preferredHand 攻撃とかの動作をしたときに動かす手(Main or Off)
-Arm メインハンド(Right or Left)
-
-entitymodelの中心点はエンティティの頭の先っぽい？
-
-異なるJobで異なるBrainを使い分ける(Jobが変わったら新しいJob専用のBrainにつけかえる)ってのはどうでしょうか。←いいかも
