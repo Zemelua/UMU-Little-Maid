@@ -20,7 +20,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"client": [ "io.github.zemelua.umu_little_maid.client.UMULittleMaidClient" ],
-		"main": [ "io.github.zemelua.umu_little_maid.UMULittleMaid" ]
+		"main": [ "io.github.zemelua.umu_little_maid.UMULittleMaid" ],
+		"mm:early_risers": [ "io.github.zemelua.umu_little_maid.util.EarlyRiser" ]
 	},
 	"mixins": [ "umu_little_maid.mixins.json" ],
 	"depends": {

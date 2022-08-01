@@ -3,18 +3,16 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.eat;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 
@@ -25,9 +23,9 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 			ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT
 	);
 	private static final int USE_TIME = 16;
-	private static final Item[] EAT_ITEMS = new Item[]{Items.SUGAR};
 
 	private ItemStack eatingStack = ItemStack.EMPTY;
+	private int eatingTicks = 0;
 
 	public MaidEatTask() {
 		super(MaidEatTask.REQUIRED_MEMORIES, MaidEatTask.USE_TIME);
@@ -43,10 +41,11 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
 		this.eatingStack = MaidEatTask.searchHealItems(maid);
+		this.eatingTicks = 0;
+
 		maid.setStackInHand(Hand.OFF_HAND, this.eatingStack.copy().split(1));
-		maid.setEatingTicks(0);
 		maid.playEatSound(this.eatingStack);
-		maid.setAnimationPose(MaidPose.EAT);
+		maid.setPose(ModEntities.POSE_EATING);
 		brain.forget(MemoryModuleType.ATTACK_TARGET);
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		brain.forget(MemoryModuleType.LOOK_TARGET);
@@ -55,20 +54,23 @@ public class MaidEatTask extends Task<LittleMaidEntity> {
 
 	@Override
 	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.playEatingParticles();
-		maid.setEatingTicks(maid.getEatingTicks() + 1);
+		if (this.eatingTicks % 5 == 0) {
+			maid.spawnEatingParticles();
+		}
+
+		this.eatingTicks++;
 	}
 
 	@Override
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
+		this.eatingTicks = 0;
 		maid.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
 
 		if (time > ((TaskAccessor<?>) this).getEndTime()) {
 			maid.heal(5.0F);
 			this.eatingStack.split(1);
 		}
-		maid.setEatingTicks(0);
-		maid.setAnimationPose(MaidPose.NONE);
+		maid.setPose(EntityPose.STANDING);
 	}
 
 	public static <E extends InventoryOwner> ItemStack searchHealItems(E inventoryOwner) {

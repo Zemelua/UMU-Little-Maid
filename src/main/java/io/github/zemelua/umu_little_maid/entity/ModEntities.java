@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity;
 
+import com.chocohead.mm.api.ClassTinkerers;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.*;
@@ -9,6 +10,7 @@ import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
+import io.github.zemelua.umu_little_maid.util.EarlyRiser;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -48,7 +50,6 @@ public final class ModEntities {
 
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
-	public static final TrackedDataHandler<MaidPose> DATA_MAID_POSE;
 
 	public static final MemoryModuleType<UUID> MEMORY_OWNER;
 	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
@@ -83,6 +84,11 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_HEAL;
 	public static final Activity ACTIVITY_GO_GET_TRIDENT;
 	public static final Activity ACTIVITY_BREATH;
+
+	public static final EntityPose POSE_EATING;
+	public static final EntityPose POSE_USING_DRIPLEAF;
+	public static final EntityPose POSE_CHANGING_COSTUME;
+	public static final EntityPose POSE_HEALING;
 
 	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
 
@@ -122,7 +128,6 @@ public final class ModEntities {
 
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
-		TrackedDataHandlerRegistry.register(ModEntities.DATA_MAID_POSE);
 
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.MEMORY_OWNER);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
@@ -208,7 +213,6 @@ public final class ModEntities {
 
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
-		DATA_MAID_POSE = TrackedDataHandler.ofEnum(MaidPose.class);
 
 		MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
@@ -243,6 +247,11 @@ public final class ModEntities {
 		ACTIVITY_HEAL = new Activity("heal");
 		ACTIVITY_GO_GET_TRIDENT = new Activity("go_get_trident");
 		ACTIVITY_BREATH = new Activity("breath");
+
+		POSE_EATING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_EATING);
+		POSE_USING_DRIPLEAF = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_USING_DRIPLEAF);
+		POSE_CHANGING_COSTUME = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_CHANGING_COSTUME);
+		POSE_HEALING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_HEALING);
 
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 

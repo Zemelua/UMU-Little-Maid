@@ -98,7 +98,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
-	private static final TrackedData<MaidPose> POSE;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 
@@ -111,7 +110,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState changeCostumeAnimation = new AnimationState();
 
 	private MaidJob lastJob;
-	private int eatingTicks;
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
 
@@ -119,7 +117,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		super(type, world);
 
 		this.lastJob = ModEntities.JOB_NONE;
-		this.eatingTicks = 0;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
 
@@ -168,7 +165,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
-		this.dataTracker.startTracking(LittleMaidEntity.POSE, MaidPose.NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
 	}
@@ -244,12 +240,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (!this.onGround) {
 			if (!this.isUsingDripleaf() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 2) {
 				this.setUsingDripleaf(true);
-				this.setAnimationPose(MaidPose.USE_DRIPLEAF);
 			}
 		} else {
 			if (this.isUsingDripleaf()) {
 				this.setUsingDripleaf(false);
-				this.setAnimationPose(MaidPose.NONE);
 			}
 		}
 
@@ -317,17 +311,28 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.updatePose();
 
-		if (this.getAnimationPose() == MaidPose.CHANGE_COSTUME) {
+		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
 			this.changingCostumeTicks++;
-			this.playChangingCostumeParticles();
+			this.spawnChangingCostumeParticles();
 		}
 		if (this.changingCostumeTicks >= 10) {
-			this.setAnimationPose(MaidPose.NONE);
+			this.setPose(EntityPose.STANDING);
 			this.changingCostumeTicks = 0;
 		}
 	}
 
 	private void updatePose() {
+		EntityPose pose = this.getPose();
+		if (pose == ModEntities.POSE_EATING || pose == ModEntities.POSE_CHANGING_COSTUME || pose == ModEntities.POSE_HEALING) {
+			return;
+		}
+
+		if (this.isUsingDripleaf()) {
+			this.setPose(ModEntities.POSE_USING_DRIPLEAF);
+
+			return;
+		}
+
 		if (!this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
 			return;
 		}
@@ -371,7 +376,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.isOnGround()) {
 					if (!this.world.isClient()) {
 						this.setVariableCostume(!this.isVariableCostume());
-						this.setAnimationPose(MaidPose.CHANGE_COSTUME);
+						this.setPose(ModEntities.POSE_CHANGING_COSTUME);
 						this.navigation.stop();
 						this.jump();
 
@@ -393,7 +398,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS)) {
 				if (!this.world.isClient()) {
 					this.setOwner(player);
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+					this.spawnContractParticles();
 					this.playContractSound();
 
 					if (!player.getAbilities().creativeMode) {
@@ -721,8 +726,22 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-	public void playEatingParticles() {
-		if (!this.world.isClient() && this.getEatingTicks() % 5 == 0) {
+	public void spawnContractParticles() {
+		final ParticleEffect particle = ParticleTypes.HEART;
+
+		for (int i = 0; i < 7; i++) {
+			double x = this.random.nextGaussian() * 0.02;
+			double y = this.random.nextGaussian() * 0.02;
+			double z = this.random.nextGaussian() * 0.02;
+
+			((ServerWorld) this.world).spawnParticles(particle, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0, x, y, z, 1.0D);
+		}
+	}
+
+	public void spawnEatingParticles() {
+		if (!this.world.isClient()) {
+			final ParticleEffect particle = new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND));
+
 			for (int i = 0; i < 6; i++) {
 				double y = -this.random.nextDouble() * 0.6D - 0.3D;
 				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, y, 0.6D)
@@ -734,24 +753,23 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
 						.rotateY(-this.getYaw() * ((float) Math.PI / 180));
 
-				final ParticleEffect particle = new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND));
-				((ServerWorld) this.world).spawnParticles(particle, pos.x, pos.y, pos.z, 0, delta.x, delta.y + 0.05, delta.z, 1.0);
+				((ServerWorld) this.world).spawnParticles(particle, pos.getX(), pos.getY(), pos.getZ(), 0, delta.getX(), delta.getY() + 0.05, delta.getZ(), 1.0);
 			}
 		}
 	}
 
-	public void playChangingCostumeParticles() {
+	public void spawnChangingCostumeParticles() {
 		if (!this.world.isClient()) {
-			double xRotate = this.changingCostumeTicks * 360.0D / 10;
+			double rotate = Math.toRadians(this.getYaw() + this.changingCostumeTicks * 360.0D / 10);
 			Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-					.rotateY((float) Math.toRadians(this.getYaw() + xRotate))
+					.rotateY((float) rotate)
 					.add(this.getX(), this.getY() + 0.7D, this.getZ());
 			Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-					.rotateY((float) Math.toRadians(this.getYaw() + xRotate))
+					.rotateY((float) rotate)
 					.add(this.getX(), this.getY() + 0.7D, this.getZ());
 
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.x, left.y, left.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.x, right.y, right.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
 		}
 	}
 
@@ -801,30 +819,30 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (data.equals(LittleMaidEntity.POSE)) {
-			MaidPose pose = this.getAnimationPose();
-			if (pose == MaidPose.EAT) {
+		if (data.equals(Entity.POSE)) {
+			EntityPose pose = this.getPose();
+			if (pose == ModEntities.POSE_EATING) {
 				this.eatAnimation.start(this.age);
 			} else {
 				this.eatAnimation.stop();
 			}
 
-			if (pose == MaidPose.HEAL) {
-				this.healAnimation.start(this.age);
-			} else {
-				this.healAnimation.stop();
-			}
-
-			if (pose == MaidPose.USE_DRIPLEAF) {
+			if (pose == ModEntities.POSE_USING_DRIPLEAF) {
 				this.useDripleafAnimation.start(this.age);
 			} else {
 				this.useDripleafAnimation.stop();
 			}
 
-			if (pose == MaidPose.CHANGE_COSTUME) {
+			if (pose == ModEntities.POSE_CHANGING_COSTUME) {
 				this.changeCostumeAnimation.start(this.age);
 			} else {
 				this.changeCostumeAnimation.stop();
+			}
+
+			if (pose == ModEntities.POSE_HEALING) {
+				this.healAnimation.start(this.age);
+			} else {
+				this.healAnimation.stop();
 			}
 		}
 
@@ -902,24 +920,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
-	public int getEatingTicks() {
-		return this.eatingTicks;
-	}
-
-	public void setEatingTicks(int value) {
-		this.eatingTicks = value;
-	}
-
 	public boolean isIdle() {
 		return this.brain.hasActivity(Activity.IDLE);
-	}
-
-	public MaidPose getAnimationPose() {
-		return this.dataTracker.get(LittleMaidEntity.POSE);
-	}
-
-	public void setAnimationPose(MaidPose value) {
-		this.dataTracker.set(LittleMaidEntity.POSE, value);
 	}
 
 	public boolean isUsingDripleaf() {
@@ -1170,7 +1172,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
-		POSE = DataTracker.registerData(LittleMaidEntity.class, ModEntities.DATA_MAID_POSE);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	}

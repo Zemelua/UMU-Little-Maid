@@ -1,7 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
+import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidPose;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.server.world.ServerWorld;
 
 public class MaidHealOwnerTask extends HealOwnerTask<LittleMaidEntity> {
@@ -9,13 +10,13 @@ public class MaidHealOwnerTask extends HealOwnerTask<LittleMaidEntity> {
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		super.run(world, maid, time);
 
-		maid.setAnimationPose(MaidPose.HEAL);
+		maid.setPose(ModEntities.POSE_HEALING);
 	}
 
 	@Override
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		super.finishRunning(world, maid, time);
 
-		maid.setAnimationPose(MaidPose.NONE);
+		maid.setPose(EntityPose.STANDING);
 	}
 }
