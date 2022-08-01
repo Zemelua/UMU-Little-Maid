@@ -742,16 +742,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void playChangingCostumeParticles() {
 		if (!this.world.isClient()) {
-			Vec3d posLeft = new Vec3d(0.0D, 0.0D, -0.5D);
-			Vec3d posRight = new Vec3d(0.0D, 0.0D, 0.5D);
 			double xRotate = this.changingCostumeTicks * 360.0D / 10;
-			posLeft = posLeft.rotateY((float) Math.toRadians(this.getYaw() + xRotate));
-			posRight = posRight.rotateY((float) Math.toRadians(this.getYaw() + xRotate));
-			posLeft = posLeft.add(this.getX(), this.getY() + 0.7D, this.getZ());
-			posRight = posRight.add(this.getX(), this.getY() + 0.7D, this.getZ());
+			Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+					.rotateY((float) Math.toRadians(this.getYaw() + xRotate))
+					.add(this.getX(), this.getY() + 0.7D, this.getZ());
+			Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+					.rotateY((float) Math.toRadians(this.getYaw() + xRotate))
+					.add(this.getX(), this.getY() + 0.7D, this.getZ());
 
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, posLeft.x, posLeft.y, posLeft.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, posRight.x, posRight.y, posRight.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.x, left.y, left.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.x, right.y, right.z, 0, 0.0D, 0.0D, 0.0D, 1.0D);
 		}
 	}
 
