@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
+import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.model.*;
@@ -126,7 +127,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.setStandingAngle(limbAngle, limbDistance);
 		}
 
-		this.setArmAngleByItem(maid);
+		if (maid.getPose() != ModEntities.POSE_EATING) {
+			this.setArmAngleByItem(maid);
+		}
 		if (this.rightArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
 			CrossbowPosing.swingArm(this.rightArm, animationProgress, 1.0F);
 		}

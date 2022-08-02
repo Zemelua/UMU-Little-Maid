@@ -41,7 +41,10 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermissi
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.*;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -68,6 +71,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -109,7 +113,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState useDripleafAnimation = new AnimationState();
 	private final AnimationState changeCostumeAnimation = new AnimationState();
 
-	private MaidJob lastJob;
+	@Nonnull private MaidJob lastJob;
+	@Nullable private PlayerEntity givenCakeBy;
+	private int eatingTicks;
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
 
@@ -311,6 +317,25 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.updatePose();
 
+		if (this.getPose() == ModEntities.POSE_EATING) {
+			this.eatingTicks++;
+			if (this.eatingTicks % 5 == 0) {
+				this.spawnEatingParticles();
+			}
+
+			this.navigation.stop();
+			this.lookControl.lookAt(Objects.requireNonNull(this.givenCakeBy));
+		}
+		if (this.eatingTicks >= 16) {
+			this.setOwner(Objects.requireNonNull(this.givenCakeBy));
+			this.givenCakeBy = null;
+			this.spawnContractParticles();
+			this.playContractSound();
+			this.eatingTicks = 0;
+			this.getOffHandStack().decrement(1);
+			this.setPose(EntityPose.STANDING);
+		}
+
 		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
 			this.changingCostumeTicks++;
 			this.spawnChangingCostumeParticles();
@@ -395,15 +420,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				}
 			}
 		} else {
-			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS)) {
+			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
 				if (!this.world.isClient()) {
-					this.setOwner(player);
-					this.spawnContractParticles();
-					this.playContractSound();
+					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 
-					if (!player.getAbilities().creativeMode) {
-						interactItem.decrement(1);
-					}
+					this.givenCakeBy = player;
+					this.setStackInHand(Hand.OFF_HAND, food);
+					this.playEatSound(food);
+					this.setPose(ModEntities.POSE_EATING);
 				}
 
 				return ActionResult.success(this.world.isClient());
