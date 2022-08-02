@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -32,6 +33,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AxolotlSwimNavigation;
@@ -73,6 +75,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob {
@@ -114,8 +117,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final AnimationState changeCostumeAnimation = new AnimationState();
 
 	@Nonnull private MaidJob lastJob;
-	@Nullable private PlayerEntity givenCakeBy;
+
+	@Nullable private PlayerEntity givenFoodBy;
 	private int eatingTicks;
+	@Nullable private Consumer<PlayerEntity> onFinishEating;
+	// TODO: もぐもぐをクラスにまとめるかなんかしてきれいにする！
+
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
 
@@ -324,13 +331,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			}
 
 			this.navigation.stop();
-			this.lookControl.lookAt(Objects.requireNonNull(this.givenCakeBy));
 		}
 		if (this.eatingTicks >= 16) {
-			this.setOwner(Objects.requireNonNull(this.givenCakeBy));
-			this.givenCakeBy = null;
-			this.spawnContractParticles();
-			this.playContractSound();
+			Objects.requireNonNull(this.onFinishEating).accept(this.givenFoodBy);
+			this.onFinishEating = null;
+			this.givenFoodBy = null;
 			this.eatingTicks = 0;
 			this.getOffHandStack().decrement(1);
 			this.setPose(EntityPose.STANDING);
@@ -398,7 +403,31 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.isOnGround()) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
+					if (!this.world.isClient()) {
+						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
+
+						this.givenFoodBy = player;
+						this.setStackInHand(Hand.OFF_HAND, food);
+						this.playEatSound(food);
+						this.onFinishEating = playerArg -> {
+							if (food.isFood()) {
+								for (Pair<StatusEffectInstance, Float> effect : Objects.requireNonNull(food.getItem().getFoodComponent()).getStatusEffects()) {
+									if (this.world.getRandom().nextFloat() < effect.getSecond()) {
+										this.addStatusEffect(new StatusEffectInstance(effect.getFirst()));
+									}
+								}
+							}
+						};
+						this.setPose(ModEntities.POSE_EATING);
+
+						if (!player.getAbilities().creativeMode) {
+							interactItem.decrement(1);
+						}
+					}
+
+					return ActionResult.success(this.world.isClient());
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.getPose() != ModEntities.POSE_CHANGING_COSTUME) {
 					if (!this.world.isClient()) {
 						this.setVariableCostume(!this.isVariableCostume());
 						this.setPose(ModEntities.POSE_CHANGING_COSTUME);
@@ -424,9 +453,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				if (!this.world.isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 
-					this.givenCakeBy = player;
+					this.givenFoodBy = player;
 					this.setStackInHand(Hand.OFF_HAND, food);
 					this.playEatSound(food);
+					this.onFinishEating = playerArg -> {
+						this.setOwner(Objects.requireNonNull(this.givenFoodBy));
+						this.spawnContractParticles();
+						this.playContractSound();
+					};
 					this.setPose(ModEntities.POSE_EATING);
 				}
 
