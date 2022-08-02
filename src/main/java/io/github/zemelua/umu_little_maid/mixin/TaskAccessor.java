@@ -8,9 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Task.class)
 public interface TaskAccessor<E extends LivingEntity> {
-	@Accessor
-	long getEndTime();
+	@Accessor long getEndTime();
 
-	@Invoker
-	boolean callHasRequiredMemoryState(E entity);
+	@Invoker boolean callHasRequiredMemoryState(E entity);
 }

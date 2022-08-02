@@ -114,12 +114,7 @@ public final class ModEntities {
 			Blocks.JUNGLE_FENCE, Blocks.CRIMSON_FENCE, Blocks.WARPED_FENCE, Blocks.MANGROVE_FENCE
 	};
 
-	private ModEntities() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
 	private static boolean initialized = false;
-
 	@SuppressWarnings("ConstantConditions")
 	public static void initialize() {
 		if (ModEntities.initialized) throw new IllegalStateException("Entities are already initialized!");
@@ -204,6 +199,8 @@ public final class ModEntities {
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
 	}
+
+	private ModEntities() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		LITTLE_MAID = FabricEntityTypeBuilder

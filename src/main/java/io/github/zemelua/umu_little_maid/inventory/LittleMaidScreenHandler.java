@@ -41,9 +41,8 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		this.addSlot(this.new MaidHeldItemSlot(8, 18));
 
 		// index : 1~2
-		for (int i = 0; i < LittleMaidEntity.ARMORS.length; i++) {
-			this.addSlot(new MaidArmorSlot(LittleMaidEntity.ARMORS[i], 8, 36 + i * 18));
-		}
+		this.addSlot(this.new MaidHelmetSlot(8, 36));
+		this.addSlot(this.new MaidBootsSlot(8, 54));
 
 		// index : 3~(2 + size)
 		Inventory maidInventory = this.maid.getInventory();
@@ -69,15 +68,15 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		this.addListener(new ScreenHandlerListener() {
 			@Override
 			public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
-				if (slotId == 0) maid.setStackInHand(Hand.MAIN_HAND, itemStack);
-				else if (slotId == 1) maid.equipStack(EquipmentSlot.HEAD, itemStack);
-				else if (slotId == 2) maid.equipStack(EquipmentSlot.FEET, itemStack);
+				switch (slotId) {
+					case 0 -> maid.setStackInHand(Hand.MAIN_HAND, itemStack);
+					case 1 -> maid.equipStack(EquipmentSlot.HEAD, itemStack);
+					case 2 -> maid.equipStack(EquipmentSlot.FEET, itemStack);
+				}
 			}
 
 			@Override
-			public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
-
-			}
+			public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
 		});
 	}
 
@@ -122,7 +121,9 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 
 	private class MaidHeldItemSlot extends Slot {
 		public MaidHeldItemSlot(int x, int y) {
-			super(new SimpleInventory(LittleMaidScreenHandler.this.maid.getMainHandStack()), 0, x, y);
+			super(new SimpleInventory(1), 0, x, y);
+
+			this.setStack(LittleMaidScreenHandler.this.getMaid().getMainHandStack());
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -133,17 +134,16 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private class MaidArmorSlot extends Slot {
-		private final EquipmentSlot slot;
+	private class MaidHelmetSlot extends Slot {
+		public MaidHelmetSlot(int x, int y) {
+			super(new SimpleInventory(1), 0, x, y);
 
-		public MaidArmorSlot(EquipmentSlot slot, int x, int y) {
-			super(new SimpleInventory(LittleMaidScreenHandler.this.maid.getEquippedStack(slot)), 0, x, y);
-			this.slot = slot;
+			this.setStack(LittleMaidScreenHandler.this.getMaid().getEquippedStack(EquipmentSlot.HEAD));
 		}
 
 		@Override
 		public boolean canInsert(ItemStack itemStack) {
-			return super.canInsert(itemStack) && this.slot == MobEntity.getPreferredEquipmentSlot(itemStack);
+			return super.canInsert(itemStack) && MobEntity.getPreferredEquipmentSlot(itemStack) == EquipmentSlot.HEAD;
 		}
 
 		@Override
@@ -154,8 +154,31 @@ public class LittleMaidScreenHandler extends ScreenHandler {
 		@Nullable
 		@Override
 		public Pair<Identifier, Identifier> getBackgroundSprite() {
-			return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-					LittleMaidScreen.EMPTY_ARMOR_SLOT_TEXTURES[this.slot.getEntitySlotId()]);
+			return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, LittleMaidScreen.EMPTY_HELMET_SLOT_TEXTURE);
+		}
+	}
+
+	private class MaidBootsSlot extends Slot {
+		public MaidBootsSlot(int x, int y) {
+			super(new SimpleInventory(1), 0, x, y);
+
+			this.setStack(LittleMaidScreenHandler.this.getMaid().getEquippedStack(EquipmentSlot.FEET));
+		}
+
+		@Override
+		public boolean canInsert(ItemStack itemStack) {
+			return super.canInsert(itemStack) && MobEntity.getPreferredEquipmentSlot(itemStack) == EquipmentSlot.FEET;
+		}
+
+		@Override
+		public boolean canTakeItems(PlayerEntity player) {
+			return !(player.isCreative() && EnchantmentHelper.hasBindingCurse(this.getStack())) && super.canTakeItems(player);
+		}
+
+		@Nullable
+		@Override
+		public Pair<Identifier, Identifier> getBackgroundSprite() {
+			return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, LittleMaidScreen.EMPTY_BOOTS_SLOT_TEXTURE);
 		}
 	}
 }

@@ -46,8 +46,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
 			registry.register(LittleMaidScreen.EMPTY_HELD_SLOT_TEXTURE);
-			registry.register(LittleMaidScreen.EMPTY_ARMOR_SLOT_TEXTURES[0]);
-			registry.register(LittleMaidScreen.EMPTY_ARMOR_SLOT_TEXTURES[3]);
+			registry.register(LittleMaidScreen.EMPTY_HELMET_SLOT_TEXTURE);
+			registry.register(LittleMaidScreen.EMPTY_BOOTS_SLOT_TEXTURE);
 		});
 
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Succeeded initializing mod client!");

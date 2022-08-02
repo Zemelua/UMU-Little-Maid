@@ -43,7 +43,6 @@ public final class ModTags {
 	public static final TagKey<PointOfInterestType> POI_FARMER;
 
 	private static boolean initialized = false;
-
 	public static void initialize() {
 		if (ModTags.initialized) throw new IllegalStateException("Tags are already initialized!");
 
@@ -51,9 +50,7 @@ public final class ModTags {
 		UMULittleMaid.LOGGER.info(ModTags.MARKER, "Tags are initialized!");
 	}
 
-	private ModTags() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
+	private ModTags() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		BLOCK_MAID_HARVESTS = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_harvests"));

@@ -82,7 +82,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
-	public static final EquipmentSlot[] ARMORS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.FEET};
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),

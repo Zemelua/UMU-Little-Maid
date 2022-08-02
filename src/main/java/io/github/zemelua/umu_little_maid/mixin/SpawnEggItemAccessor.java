@@ -10,8 +10,7 @@ import java.util.Map;
 
 @Mixin(SpawnEggItem.class)
 public interface SpawnEggItemAccessor {
-	@Accessor
-	static Map<EntityType<? extends MobEntity>, SpawnEggItem> getSPAWN_EGGS() {
+	@Accessor static Map<EntityType<? extends MobEntity>, SpawnEggItem> getSPAWN_EGGS() {
 		throw new UnsupportedOperationException();
 	}
 }

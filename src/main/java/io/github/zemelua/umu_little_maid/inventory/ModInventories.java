@@ -12,12 +12,7 @@ public class ModInventories {
 
 	public static final ScreenHandlerType<LittleMaidScreenHandler> LITTLE_MAID;
 
-	private ModInventories() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
 	private static boolean initialized = false;
-
 	public static void initialize() {
 		if (ModInventories.initialized) throw new IllegalStateException("Inventories are already initialized!");
 
@@ -26,6 +21,8 @@ public class ModInventories {
 		ModInventories.initialized = true;
 		UMULittleMaid.LOGGER.info(ModInventories.MARKER, "Inventories are initialized!");
 	}
+
+	private ModInventories() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		LITTLE_MAID = new ExtendedScreenHandlerType<>(LittleMaidScreenHandler::new);

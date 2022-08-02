@@ -4,7 +4,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -19,17 +18,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class ModUtils {
-	@SuppressWarnings("unused") public static final double RADIAN_D = 180.0D / Math.PI;
-	public static final float RADIAN_F = 180.0F / (float) Math.PI;
-
-	private ModUtils() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
-	public static boolean isMonster(Entity entity) {
-		return entity.getType().getSpawnGroup() == SpawnGroup.MONSTER;
-	}
-
 	public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
 		return EnchantmentHelper.getLevel(enchantment, itemStack) > 0;
 	}
@@ -53,27 +41,32 @@ public final class ModUtils {
 	public static int getHeightFromGround(World world, Entity entity) {
 		BlockPos.Mutable pos = entity.getBlockPos().down().mutableCopy();
 
-		int height;
-		for (height = 0; world.getBlockState(pos).isAir(); pos.move(Direction.DOWN, 1)) {
-			height++;
+		int i;
+		for (i = 0; world.getBlockState(pos).isAir() && world.isInBuildLimit(pos); pos.move(Direction.DOWN, 1)) {
+			i++;
 		}
 
-		return height;
+		return i;
 	}
 
-	public static boolean hasHarmfulEffect(LivingEntity entity) {
-		return entity.getStatusEffects().stream()
+	public static float lerpAngle(float angle0, float angle1, float magnitude) {
+		float f = (magnitude - angle1) % ((float) Math.PI * 2);
+
+		if (f < (float) -Math.PI) {
+			f += (float) Math.PI * 2;
+		}
+
+		if (f >= (float) Math.PI) {
+			f -= (float) Math.PI * 2;
+		}
+
+		return angle1 + angle0 * f;
+	}
+
+	public static boolean hasHarmfulEffect(LivingEntity living) {
+		return living.getStatusEffects().stream()
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
 
-	public static float lerpAngle(float angleOne, float angleTwo, float magnitude) {
-		float f = (magnitude - angleTwo) % ((float)Math.PI * 2);
-		if (f < (float)(-Math.PI)) {
-			f += (float)Math.PI * 2;
-		}
-		if (f >= (float)Math.PI) {
-			f -= (float)Math.PI * 2;
-		}
-		return angleTwo + angleOne * f;
-	}
+	private ModUtils() throws IllegalAccessException {throw new IllegalAccessException();}
 }

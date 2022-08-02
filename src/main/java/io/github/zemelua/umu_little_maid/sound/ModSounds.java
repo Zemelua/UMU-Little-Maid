@@ -32,12 +32,7 @@ public final class ModSounds {
 	public static final SoundEvent ENTITY_MAID_LAZY_CONTRACT;
 	public static final SoundEvent ENTITY_MAID_TSUNDERE_CONTRACT;
 
-	private ModSounds() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
 	private static boolean initialized = false;
-
 	public static void initialize() {
 		if (ModSounds.initialized) throw new IllegalStateException("Sounds are already initialized!");
 
@@ -67,6 +62,8 @@ public final class ModSounds {
 		ModSounds.initialized = true;
 		UMULittleMaid.LOGGER.info(ModSounds.MARKER, "Sounds are initialized!");
 	}
+
+	private ModSounds() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		ENTITY_MAID_GENERAL_AMBIENT = new SoundEvent(UMULittleMaid.identifier("entity.maid.general.ambient"));

@@ -9,9 +9,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(SpawnRestriction.class)
 public interface SpawnRestrictionAccessor {
-	@Invoker
-	static <T extends MobEntity> void callRegister(EntityType<T> ignoredType, SpawnRestriction.Location ignoredLocation,
-	                                               @SuppressWarnings("unused") Heightmap.Type ignoredMapType, SpawnRestriction.SpawnPredicate<T> ignoredPredicate) {
+	@Invoker static <T extends MobEntity> void callRegister(@SuppressWarnings("unused") EntityType<T> type,
+	                                                        @SuppressWarnings("unused") SpawnRestriction.Location location,
+	                                                        @SuppressWarnings("unused") Heightmap.Type heightmapType,
+	                                                        @SuppressWarnings("unused") SpawnRestriction.SpawnPredicate<T> predicate) {
 		throw new UnsupportedOperationException();
 	}
 }

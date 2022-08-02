@@ -14,18 +14,15 @@ public final class ModRegistries {
 	public static final Registry<MaidPersonality> MAID_PERSONALITY;
 	public static final Registry<MaidJob> MAID_JOB;
 
-	private ModRegistries() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
 	private static boolean initialized = false;
-
 	public static void initialize() {
 		if (ModRegistries.initialized) throw new IllegalStateException("Registries are already initialized!");
 
 		ModRegistries.initialized = true;
 		UMULittleMaid.LOGGER.info(ModRegistries.MARKER, "Registries are initialized!");
 	}
+
+	private ModRegistries() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		MAID_PERSONALITY = FabricRegistryBuilder

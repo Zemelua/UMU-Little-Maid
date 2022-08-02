@@ -15,12 +15,7 @@ public final class ModItems {
 
 	public static final Item LITTLE_MAID_SPAWN_EGG;
 
-	private ModItems() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
-
 	private static boolean initialized = false;
-
 	public static void initialize() {
 		if (ModItems.initialized) throw new IllegalStateException("Inventories are already initialized!");
 
@@ -30,6 +25,8 @@ public final class ModItems {
 		ModItems.initialized = true;
 		UMULittleMaid.LOGGER.info(ModItems.MARKER, "Items are initialized!");
 	}
+
+	private ModItems() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		LITTLE_MAID_SPAWN_EGG = new SpawnEggItem(ModEntities.LITTLE_MAID, 0, 0, new Item.Settings().group(ItemGroup.MISC));
