@@ -15,7 +15,6 @@ import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
-import io.github.zemelua.umu_little_maid.util.ItemParticleScaleManager;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -57,7 +56,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
@@ -832,8 +830,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void spawnEatingParticles() {
 		if (!this.world.isClient()) {
-			final ParticleEffect particle = new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.OFFHAND));
-
 			for (int i = 0; i < 6; i++) {
 				double y = -this.random.nextDouble() * 0.6D - 0.3D;
 				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, y, 0.6D)
@@ -847,13 +843,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 				for (ServerPlayerEntity target : ((ServerWorld) this.world).getPlayers()) {
 					PacketByteBuf packet = PacketByteBufs.create();
-					packet.writeFloat(0.75F);
-					ServerPlayNetworking.send(target, NetworkHandler.CHANNEL_PARTICLE_SIZE, packet);
+					packet.writeItemStack(this.getOffHandStack());
+					packet.writeDouble(pos.getX());
+					packet.writeDouble(pos.getY());
+					packet.writeDouble(pos.getZ());
+					packet.writeDouble(delta.getX());
+					packet.writeDouble(delta.getY());
+					packet.writeDouble(delta.getZ());
+
+					ServerPlayNetworking.send(target, NetworkHandler.CHANNEL_MAID_EAT_PARTICLE, packet);
 				}
-
-				((ServerWorld) this.world).spawnParticles(particle, pos.getX(), pos.getY(), pos.getZ(), 0, delta.getX(), delta.getY() + 0.05, delta.getZ(), 1.0);
-
-				ItemParticleScaleManager.setSize(1.0F);
 			}
 		}
 	}

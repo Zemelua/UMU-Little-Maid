@@ -16,7 +16,7 @@ public abstract class CrackParticleMixin extends SpriteBillboardParticle {
 		super(world, x, y, z);
 	}
 
-	@Inject(method = "<init>*", at = @At("RETURN"))
+	@Inject(method = "<init>*", at = @At("TAIL"))
 	private void constructor(ClientWorld world, double x, double y, double z, ItemStack item, CallbackInfo callback) {
 		this.scale(ItemParticleScaleManager.getSize());
 	}
