@@ -129,6 +129,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
 
+	private float sitProgress;
+	private float lastSitProgress;
+
 	private float begProgress;
 	private float lastBegProgress;
 
@@ -141,6 +144,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.begProgress = 0.0F;
 		this.lastBegProgress = 0.0F;
+
+		this.sitProgress = 0.0F;
+		this.lastSitProgress = 0.0F;
 
 		this.moveControl = new MaidControl(this);
 	}
@@ -321,6 +327,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public void tick() {
 		super.tick();
+
+		this.lastSitProgress = this.sitProgress;
+		if (this.isSitting()) {
+			this.sitProgress += (1.0F - this.sitProgress) * 0.4F;
+		} else {
+			this.sitProgress += (0.0F - this.sitProgress) * 0.4F;
+		}
 
 		this.lastBegProgress = this.begProgress;
 		if (this.getOwner() != null && this.isSitting() && this.distanceTo(this.getOwner()) < 7.0F) {
@@ -1042,6 +1055,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@SuppressWarnings("unused")
 	public double getIntimacy() {
 		return 0;
+	}
+
+	public float getSitProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastSitProgress, this.sitProgress);
 	}
 
 	public float getBegProgress(float tickDelta) {

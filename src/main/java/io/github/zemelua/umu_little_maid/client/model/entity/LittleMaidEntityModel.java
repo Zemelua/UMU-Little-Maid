@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -205,24 +206,24 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 	private void setStandingAngle(float limbAngle, float limbDistance) {
 		// this.head.roll = (float) Math.toRadians(0.0F);
-		this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
-		this.leftArm.yaw = (float) Math.toRadians(0.0F);
-		this.leftArm.roll = (float) Math.toRadians(-15.0F);
-		this.rightArm.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
-		this.rightArm.yaw = (float) Math.toRadians(0.0F);
-		this.rightArm.roll = (float) Math.toRadians(15.0F);
+		this.leftArm.pitch += MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
+//		this.leftArm.yaw = (float) Math.toRadians(0.0F);
+//		this.leftArm.roll = (float) Math.toRadians(-15.0F);
+		this.rightArm.pitch += MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
+//		this.rightArm.yaw = (float) Math.toRadians(0.0F);
+//		this.rightArm.roll = (float) Math.toRadians(15.0F);
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 	}
 
 	private void setSittingAngle() {
 		// this.head.roll = (float) Math.toRadians(13.7F);
-		this.leftArm.pitch = (float) Math.toRadians(-42.0F);
-		this.leftArm.yaw = (float) Math.toRadians(0.0F);
-		this.leftArm.roll = (float) Math.toRadians(25.0F);
-		this.rightArm.pitch = (float) Math.toRadians(-42.0);
-		this.rightArm.yaw = (float) Math.toRadians(0.0F);
-		this.rightArm.roll = (float) Math.toRadians(-25.0F);
+//		this.leftArm.pitch = (float) Math.toRadians(-42.0F);
+//		this.leftArm.yaw = (float) Math.toRadians(0.0F);
+//		this.leftArm.roll = (float) Math.toRadians(25.0F);
+//		this.rightArm.pitch = (float) Math.toRadians(-42.0);
+//		this.rightArm.yaw = (float) Math.toRadians(0.0F);
+//		this.rightArm.roll = (float) Math.toRadians(-25.0F);
 	}
 
 	private void setArmAngleByItem(LittleMaidEntity maid) {
@@ -285,7 +286,15 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.leftArmPose = mainPose;
 		}
 
-		this.head.roll = (float) Math.toRadians(13.7F * maid.getBegProgress(tickDelta));
+		float sitProgress = maid.getSitProgress(tickDelta);
+		UMULittleMaid.LOGGER.info(sitProgress);
+		this.leftArm.pitch = (float) Math.toRadians(-42.0F * sitProgress);
+		this.leftArm.roll = (float) Math.toRadians(-15.0F + 40.0F * sitProgress);
+		this.rightArm.pitch = (float) Math.toRadians(-42.0 * sitProgress);
+		this.rightArm.roll = (float) Math.toRadians(15.0F - 40.0F * sitProgress);
+
+		float begProgress = maid.getBegProgress(tickDelta);
+		this.head.roll = (float) Math.toRadians(13.7F * begProgress);
 	}
 
 	private void setRightArmAngleByItem(LittleMaidEntity maid) {
