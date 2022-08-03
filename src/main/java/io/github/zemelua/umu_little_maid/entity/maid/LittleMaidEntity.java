@@ -11,16 +11,21 @@ import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactor
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
+import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
+import io.github.zemelua.umu_little_maid.util.ItemParticleScaleManager;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
@@ -50,11 +55,13 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -117,13 +124,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Nonnull private MaidJob lastJob;
 
-	@Nullable private PlayerEntity givenFoodBy;
 	private int eatingTicks;
-	@Nullable private Consumer<PlayerEntity> onFinishEating;
+	@Nullable private Consumer<ItemStack> onFinishEating;
 	// TODO: もぐもぐをクラスにまとめるかなんかしてきれいにする！
 
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
+
+	private float begProgress;
+	private float lastBegProgress;
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
@@ -131,6 +140,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.lastJob = ModEntities.JOB_NONE;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
+
+		this.begProgress = 0.0F;
+		this.lastBegProgress = 0.0F;
 
 		this.moveControl = new MaidControl(this);
 	}
@@ -307,6 +319,23 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 	//</editor-fold>
 
+
+	@Override
+	public void tick() {
+		super.tick();
+
+		this.lastBegProgress = this.begProgress;
+		if (this.getOwner() != null && this.isSitting() && this.distanceTo(this.getOwner()) < 7.0F) {
+			this.begProgress += (1.0F - this.begProgress) * 0.4F;
+
+			if (!this.world.isClient()) {
+				this.lookControl.lookAt(this.getOwner());
+			}
+		} else {
+			this.begProgress += (0.0F - this.begProgress) * 0.4F;
+		}
+	}
+
 	/**
 	 * サーバーでのみ呼ばれるよ！
 	 */
@@ -332,12 +361,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.navigation.stop();
 		}
 		if (this.eatingTicks >= 16) {
-			Objects.requireNonNull(this.onFinishEating).accept(this.givenFoodBy);
+			if (this.onFinishEating != null) {
+				this.onFinishEating.accept(this.getOffHandStack());
+			}
 			this.onFinishEating = null;
-			this.givenFoodBy = null;
 			this.eatingTicks = 0;
 			this.getOffHandStack().decrement(1);
 			this.setPose(EntityPose.STANDING);
+		} else if (this.getPose() == EntityPose.STANDING) {
+			this.onFinishEating = null;
+			this.eatingTicks = 0;
+			this.inventory.addStack(this.getOffHandStack().copy());
+			this.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
 		}
 
 		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
@@ -405,11 +440,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
 					if (!this.world.isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
-
-						this.givenFoodBy = player;
-						this.setStackInHand(Hand.OFF_HAND, food);
-						this.playEatSound(food);
-						this.onFinishEating = playerArg -> {
+						this.eatFood(food, (foodArg) -> {
 							if (food.isFood()) {
 								for (Pair<StatusEffectInstance, Float> effect : Objects.requireNonNull(food.getItem().getFoodComponent()).getStatusEffects()) {
 									if (this.world.getRandom().nextFloat() < effect.getSecond()) {
@@ -417,8 +448,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 									}
 								}
 							}
-						};
-						this.setPose(ModEntities.POSE_EATING);
+						});
 
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
@@ -451,16 +481,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
 				if (!this.world.isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
-
-					this.givenFoodBy = player;
-					this.setStackInHand(Hand.OFF_HAND, food);
-					this.playEatSound(food);
-					this.onFinishEating = playerArg -> {
-						this.setOwner(Objects.requireNonNull(this.givenFoodBy));
+					this.eatFood(food, (foodArg) -> {
+						this.setOwner(player);
 						this.spawnContractParticles();
 						this.playContractSound();
-					};
-					this.setPose(ModEntities.POSE_EATING);
+					});
+					this.brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(player, true));
 				}
 
 				return ActionResult.success(this.world.isClient());
@@ -468,6 +494,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		return super.interactMob(player, hand);
+	}
+
+	public void eatFood(ItemStack food, Consumer<ItemStack> onFinishEating) {
+		this.setStackInHand(Hand.OFF_HAND, food);
+		this.onFinishEating = onFinishEating;
+		this.playEatSound(food);
+		this.brain.forget(MemoryModuleType.WALK_TARGET);
+		this.brain.forget(MemoryModuleType.LOOK_TARGET);
+		this.setPose(ModEntities.POSE_EATING);
 	}
 
 	/**
@@ -803,14 +838,22 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				double y = -this.random.nextDouble() * 0.6D - 0.3D;
 				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, y, 0.6D)
 						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
-						.rotateY(-this.getYaw() * ((float) Math.PI / 180))
+						.rotateY(-this.bodyYaw * ((float) Math.PI / 180))
 						.add(this.getX(), this.getEyeY(), this.getZ());
 
 				Vec3d delta = new Vec3d((this.random.nextDouble() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D)
 						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
 						.rotateY(-this.getYaw() * ((float) Math.PI / 180));
 
+				for (ServerPlayerEntity target : ((ServerWorld) this.world).getPlayers()) {
+					PacketByteBuf packet = PacketByteBufs.create();
+					packet.writeFloat(0.75F);
+					ServerPlayNetworking.send(target, NetworkHandler.CHANNEL_PARTICLE_SIZE, packet);
+				}
+
 				((ServerWorld) this.world).spawnParticles(particle, pos.getX(), pos.getY(), pos.getZ(), 0, delta.getX(), delta.getY() + 0.05, delta.getZ(), 1.0);
+
+				ItemParticleScaleManager.setSize(1.0F);
 			}
 		}
 	}
@@ -1000,6 +1043,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@SuppressWarnings("unused")
 	public double getIntimacy() {
 		return 0;
+	}
+
+	public float getBegProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastBegProgress, this.begProgress);
 	}
 
 	public AnimationState getEatAnimation() {

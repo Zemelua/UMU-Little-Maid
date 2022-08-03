@@ -9,6 +9,7 @@
 		"TridentEntityAccessor"
 	],
 	"client": [
+		"CrackParticleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

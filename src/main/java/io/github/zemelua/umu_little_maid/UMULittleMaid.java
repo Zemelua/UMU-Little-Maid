@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.item.ModItems;
+import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
@@ -28,6 +29,7 @@ public class UMULittleMaid implements ModInitializer {
 		ModInventories.initialize();
 		ModSounds.initialize();
 		ModTags.initialize();
+		NetworkHandler.initialize();
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}

@@ -118,8 +118,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 	@Override
 	public void setAngles(LittleMaidEntity maid, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.initializeCubes();
-
 		this.setHeadAngle(maid, headPitch, headYaw);
 		if (maid.isSitting()) {
 			this.setSittingAngle();
@@ -206,7 +204,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	}
 
 	private void setStandingAngle(float limbAngle, float limbDistance) {
-		this.head.roll = (float) Math.toRadians(0.0F);
+		// this.head.roll = (float) Math.toRadians(0.0F);
 		this.leftArm.pitch = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
 		this.leftArm.yaw = (float) Math.toRadians(0.0F);
 		this.leftArm.roll = (float) Math.toRadians(-15.0F);
@@ -218,7 +216,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	}
 
 	private void setSittingAngle() {
-		this.head.roll = (float) Math.toRadians(13.7F);
+		// this.head.roll = (float) Math.toRadians(13.7F);
 		this.leftArm.pitch = (float) Math.toRadians(-42.0F);
 		this.leftArm.yaw = (float) Math.toRadians(0.0F);
 		this.leftArm.roll = (float) Math.toRadians(25.0F);
@@ -266,6 +264,8 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 	@Override
 	public void animateModel(LittleMaidEntity maid, float limbAngle, float limbDistance, float tickDelta) {
+		this.initializeCubes();
+
 		this.leaningPitch = maid.getLeaningPitch(tickDelta);
 
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
@@ -284,6 +284,8 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.rightArmPose = offPose;
 			this.leftArmPose = mainPose;
 		}
+
+		this.head.roll = (float) Math.toRadians(13.7F * maid.getBegProgress(tickDelta));
 	}
 
 	private void setRightArmAngleByItem(LittleMaidEntity maid) {
