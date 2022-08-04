@@ -27,8 +27,12 @@ public class MaidPersonality {
 	private final SoundEvent deathSound;
 	private final SoundEvent eatSound;
 	private final SoundEvent contractSound;
+	private final SoundEvent sitSound;
+	private final SoundEvent engageSound;
 
-	public MaidPersonality(Builder builder) {
+	public MaidPersonality(Builder builder,
+	                       SoundEvent sitSound,
+	                       SoundEvent engageSound) {
 		this.maxHealth = builder.maxHealth;
 		this.movementSpeed = builder.movementSpeed;
 		this.attackDamage = builder.attackDamage;
@@ -48,6 +52,8 @@ public class MaidPersonality {
 		this.deathSound = builder.deathSound;
 		this.eatSound = builder.eatSound;
 		this.contractSound = builder.contractSound;
+		this.sitSound = sitSound;
+		this.engageSound = engageSound;
 	}
 
 	public double getMaxHealth() {
@@ -124,6 +130,14 @@ public class MaidPersonality {
 
 	public SoundEvent getContractSound() {
 		return this.contractSound;
+	}
+
+	public SoundEvent getSitSound() {
+		return this.sitSound;
+	}
+
+	public SoundEvent getEngageSound() {
+		return this.engageSound;
 	}
 
 	@SuppressWarnings("unused")
@@ -262,8 +276,8 @@ public class MaidPersonality {
 			return this;
 		}
 
-		public MaidPersonality build() {
-			return new MaidPersonality(this);
+		public MaidPersonality build(SoundEvent sitSound, SoundEvent engageSound) {
+			return new MaidPersonality(this, sitSound, engageSound);
 		}
 	}
 }

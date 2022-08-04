@@ -19,18 +19,39 @@ public final class ModSounds {
 	public static final SoundEvent ENTITY_MAID_GENERAL_DEATH;
 	public static final SoundEvent ENTITY_MAID_GENERAL_EAT;
 	public static final SoundEvent ENTITY_MAID_GENERAL_CONTRACT;
+
 	public static final SoundEvent ENTITY_MAID_BRAVERY_FENCER_ATTACK;
 	public static final SoundEvent ENTITY_MAID_BRAVERY_HURT;
 	public static final SoundEvent ENTITY_MAID_BRAVERY_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_BRAVERY_SIT;
+	public static final SoundEvent ENTITY_MAID_BRAVERY_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_DILIGENT_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_DILIGENT_SIT;
+	public static final SoundEvent ENTITY_MAID_DILIGENT_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_AUDACIOUS_DEATH;
 	public static final SoundEvent ENTITY_MAID_AUDACIOUS_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_AUDACIOUS_SIT;
+	public static final SoundEvent ENTITY_MAID_AUDACIOUS_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_GENTLE_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_GENTLE_SIT;
+	public static final SoundEvent ENTITY_MAID_GENTLE_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_SHY_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_SHY_SIT;
+	public static final SoundEvent ENTITY_MAID_SHY_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_LAZY_AMBIENT;
 	public static final SoundEvent ENTITY_MAID_LAZY_DEATH;
 	public static final SoundEvent ENTITY_MAID_LAZY_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_LAZY_SIT;
+	public static final SoundEvent ENTITY_MAID_LAZY_ENGAGE;
+
 	public static final SoundEvent ENTITY_MAID_TSUNDERE_CONTRACT;
+	public static final SoundEvent ENTITY_MAID_TSUNDERE_SIT;
+	public static final SoundEvent ENTITY_MAID_TSUNDERE_ENGAGE;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -46,24 +67,45 @@ public final class ModSounds {
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.general.death", ModSounds.ENTITY_MAID_GENERAL_DEATH);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.general.eat", ModSounds.ENTITY_MAID_GENERAL_EAT);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.general.contract", ModSounds.ENTITY_MAID_GENERAL_CONTRACT);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.bravery.fencer_attack", ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.bravery.hurt", ModSounds.ENTITY_MAID_BRAVERY_HURT);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.bravery.contract", ModSounds.ENTITY_MAID_BRAVERY_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.bravery.sit", ModSounds.ENTITY_MAID_BRAVERY_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.bravery.engage", ModSounds.ENTITY_MAID_BRAVERY_ENGAGE);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.diligent.contract", ModSounds.ENTITY_MAID_DILIGENT_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.diligent.sit", ModSounds.ENTITY_MAID_DILIGENT_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.diligent.engage", ModSounds.ENTITY_MAID_DILIGENT_ENGAGE);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.audacious.death", ModSounds.ENTITY_MAID_AUDACIOUS_DEATH);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.audacious.contract", ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.audacious.engage", ModSounds.ENTITY_MAID_AUDACIOUS_ENGAGE);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.audacious.sit", ModSounds.ENTITY_MAID_AUDACIOUS_SIT);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.gentle.contract", ModSounds.ENTITY_MAID_GENTLE_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.gentle.sit", ModSounds.ENTITY_MAID_GENTLE_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.gentle.engage", ModSounds.ENTITY_MAID_GENTLE_ENGAGE);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.shy.contract", ModSounds.ENTITY_MAID_SHY_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.shy.sit", ModSounds.ENTITY_MAID_SHY_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.shy.engage", ModSounds.ENTITY_MAID_SHY_ENGAGE);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.lazy.ambient", ModSounds.ENTITY_MAID_LAZY_AMBIENT);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.lazy.death", ModSounds.ENTITY_MAID_LAZY_DEATH);
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.lazy.contract", ModSounds.ENTITY_MAID_LAZY_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.lazy.sit", ModSounds.ENTITY_MAID_LAZY_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.lazy.engage", ModSounds.ENTITY_MAID_LAZY_ENGAGE);
+
 		Registry.register(Registry.SOUND_EVENT, "entity.maid.tsundere.contract", ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.tsundere.sit", ModSounds.ENTITY_MAID_TSUNDERE_SIT);
+		Registry.register(Registry.SOUND_EVENT, "entity.maid.tsundere.engage", ModSounds.ENTITY_MAID_TSUNDERE_ENGAGE);
 
 		ModSounds.initialized = true;
 		UMULittleMaid.LOGGER.info(ModSounds.MARKER, "Sounds are initialized!");
 	}
 
-	private ModSounds() throws IllegalAccessException {throw new IllegalAccessException();}
+	@Deprecated private ModSounds() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		ENTITY_MAID_GENERAL_AMBIENT = new SoundEvent(UMULittleMaid.identifier("entity.maid.general.ambient"));
@@ -76,17 +118,38 @@ public final class ModSounds {
 		ENTITY_MAID_GENERAL_DEATH = new SoundEvent(UMULittleMaid.identifier("entity.maid.general.death"));
 		ENTITY_MAID_GENERAL_EAT = new SoundEvent(UMULittleMaid.identifier("entity.maid.general.eat"));
 		ENTITY_MAID_GENERAL_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.general.contract"));
+
 		ENTITY_MAID_BRAVERY_FENCER_ATTACK = new SoundEvent(UMULittleMaid.identifier("entity.maid.bravery.fencer_attack"));
 		ENTITY_MAID_BRAVERY_HURT = new SoundEvent(UMULittleMaid.identifier("entity.maid.bravery.hurt"));
 		ENTITY_MAID_BRAVERY_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.bravery.contract"));
+		ENTITY_MAID_BRAVERY_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.bravery.sit"));
+		ENTITY_MAID_BRAVERY_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.bravery.engage"));
+
 		ENTITY_MAID_DILIGENT_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.diligent.contract"));
+		ENTITY_MAID_DILIGENT_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.diligent.sit"));
+		ENTITY_MAID_DILIGENT_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.diligent.engage"));
+
 		ENTITY_MAID_AUDACIOUS_DEATH = new SoundEvent(UMULittleMaid.identifier("entity.maid.audacious.death"));
 		ENTITY_MAID_AUDACIOUS_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.audacious.contract"));
+		ENTITY_MAID_AUDACIOUS_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.audacious.sit"));
+		ENTITY_MAID_AUDACIOUS_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.audacious.engage"));
+
 		ENTITY_MAID_GENTLE_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.gentle.contract"));
+		ENTITY_MAID_GENTLE_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.gentle.sit"));
+		ENTITY_MAID_GENTLE_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.gentle.engage"));
+
 		ENTITY_MAID_SHY_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.shy.contract"));
+		ENTITY_MAID_SHY_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.shy.sit"));
+		ENTITY_MAID_SHY_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.shy.engage"));
+
 		ENTITY_MAID_LAZY_AMBIENT = new SoundEvent(UMULittleMaid.identifier("entity.maid.lazy.ambient"));
 		ENTITY_MAID_LAZY_DEATH = new SoundEvent(UMULittleMaid.identifier("entity.maid.lazy.death"));
 		ENTITY_MAID_LAZY_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.lazy.contract"));
+		ENTITY_MAID_LAZY_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.lazy.sit"));
+		ENTITY_MAID_LAZY_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.lazy.engage"));
+
 		ENTITY_MAID_TSUNDERE_CONTRACT = new SoundEvent(UMULittleMaid.identifier("entity.maid.tsundere.contract"));
+		ENTITY_MAID_TSUNDERE_SIT = new SoundEvent(UMULittleMaid.identifier("entity.maid.tsundere.sit"));
+		ENTITY_MAID_TSUNDERE_ENGAGE = new SoundEvent(UMULittleMaid.identifier("entity.maid.tsundere.engage"));
 	}
 }

@@ -493,12 +493,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 							this.setEngaging(false);
 							this.spawnSingleParticle(ParticleTypes.ANGRY_VILLAGER);
 						}
+
+						this.playEngageSound();
 					}
 
 					return ActionResult.success(this.world.isClient());
 				} else {
 					if (!this.world.isClient()) {
 						this.setSitting(!this.isSitting());
+						this.playSitSound();
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1179,6 +1182,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void playContractSound() {
 		this.playSound(this.getPersonality().getContractSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playSitSound() {
+		this.playSound(this.getPersonality().getSitSound(), this.getSoundVolume(), this.getSoundPitch());
+	}
+
+	public void playEngageSound() {
+		this.playSound(this.getPersonality().getEngageSound(), this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override

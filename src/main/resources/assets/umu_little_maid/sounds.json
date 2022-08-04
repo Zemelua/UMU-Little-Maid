@@ -131,9 +131,45 @@
 		"subtitle": "subtitles.umu_little_maid.entity.maid.bravery.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/bravery_contract" } ]
 	},
+	"entity.maid.bravery.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.bravery.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
+		]
+	},
 	"entity.maid.diligent.contract": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.diligent.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/diligent_contract" } ]
+	},
+	"entity.maid.diligent.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.diligent.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
+		]
 	},
 	"entity.maid.audacious.death": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.audacious.death",
@@ -143,13 +179,68 @@
 		"subtitle": "subtitles.umu_little_maid.entity.maid.audacious.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/audacious_contract" } ]
 	},
+	"entity.maid.audacious.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.audacious.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
+		]
+	},
 	"entity.maid.gentle.contract": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.gentle.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/gentle_contract" } ]
 	},
+	"entity.maid.gentle.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.gentle.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
+		]
+	},
 	"entity.maid.shy.contract": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.shy.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/shy_contract" } ]
+	},
+	"entity.maid.shy.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.shy.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage4" }
+		]
 	},
 	"entity.maid.lazy.ambient": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.lazy.ambient",
@@ -200,11 +291,47 @@
 		"subtitle": "subtitles.umu_little_maid.entity.maid.lazy.contract",
 		"sounds": [ { "name": "umu_little_maid:entity/maid/lazy_contract" } ]
 	},
+	"entity.maid.lazy.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.lazy.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
+		]
+	},
 	"entity.maid.tsundere.contract": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.tsundere.contract",
 		"sounds": [
 			{ "name": "umu_little_maid:entity/maid/tsundere_contract1" },
 			{ "name": "umu_little_maid:entity/maid/tsundere_contract2" }
+		]
+	},
+	"entity.maid.tsundere.sit": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/sit/sit0" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit1" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit2" },
+			{ "name": "umu_little_maid:entity/maid/sit/sit3" }
+		]
+	},
+	"entity.maid.tsundere.engage": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.engage",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/engage/engage0" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage1" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage2" },
+			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	}
 }
