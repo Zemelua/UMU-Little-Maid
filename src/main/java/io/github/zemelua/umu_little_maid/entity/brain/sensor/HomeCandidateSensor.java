@@ -40,7 +40,7 @@ public class HomeCandidateSensor extends Sensor<MobEntity> {
 							}
 
 							return false;
-						}, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY)
+						}, mob.getBlockPos(), 30, PointOfInterestStorage.OccupationStatus.ANY)
 				.collect(Collectors.toSet());
 
 		@Nullable Path path = FindPointOfInterestTask.findPathToPoi(mob, pois);

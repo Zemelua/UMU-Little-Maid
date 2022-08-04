@@ -48,6 +48,7 @@ public final class ModEntities {
 
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
+	public static final TrackedDataHandler<MaidMode> MODE_HANDLER;
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
 
@@ -60,8 +61,8 @@ public final class ModEntities {
 	public static final MemoryModuleType<BlockPos> MEMORY_FARMABLE_POS;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
 	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN;
-	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE;
-	public static final MemoryModuleType<GlobalPos> MEMORY_FARM_SITE_CANDIDATE;
+	public static final MemoryModuleType<GlobalPos> MEMORY_JOB_SITE;
+	public static final MemoryModuleType<GlobalPos> MEMORY_JOB_SITE_CANDIDATE;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP;
@@ -73,7 +74,7 @@ public final class ModEntities {
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
 	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES;
-	public static final SensorType<FarmSiteCandidateSensor> SENSOR_FARM_SITE_CANDIDATE;
+	public static final SensorType<JobSiteCandidateSensor> SENSOR_JOB_SITE_CANDIDATE;
 	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
 	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE;
 
@@ -90,7 +91,10 @@ public final class ModEntities {
 	public static final EntityPose POSE_CHANGING_COSTUME;
 	public static final EntityPose POSE_HEALING;
 
+	public static final RegistryKey<PointOfInterestType> POI_TARGET;
 	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
+	public static final RegistryKey<PointOfInterestType> POI_AMETHYST_BLOCK;
+	public static final RegistryKey<PointOfInterestType> POI_CONDUIT;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -121,6 +125,7 @@ public final class ModEntities {
 
 		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), ModEntities.LITTLE_MAID);
 
+		TrackedDataHandlerRegistry.register(ModEntities.MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
@@ -133,8 +138,8 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_site"), ModEntities.MEMORY_FARM_SITE);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.MEMORY_FARM_SITE_CANDIDATE);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("job_site"), ModEntities.MEMORY_JOB_SITE);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("job_site_candidate"), ModEntities.MEMORY_JOB_SITE_CANDIDATE);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), ModEntities.MEMORY_SHOULD_HEAL);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_sleep"), ModEntities.MEMORY_SHOULD_SLEEP);
@@ -146,7 +151,7 @@ public final class ModEntities {
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.SENSOR_FARM_SITE_CANDIDATE);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.SENSOR_JOB_SITE_CANDIDATE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("home"), ModEntities.SENSOR_HOME_CANDIDATE);
 
@@ -160,10 +165,16 @@ public final class ModEntities {
 
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_TARGET,
+				PointOfInterestTypes.getStatesOfBlock(Blocks.TARGET), 1, 1);
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_SCARECROW,
 				Arrays.stream(ModEntities.WOODEN_FENCES)
 						.flatMap(block -> block.getStateManager().getStates().stream())
 						.collect(Collectors.toSet()), 1, 1);
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_AMETHYST_BLOCK,
+				PointOfInterestTypes.getStatesOfBlock(Blocks.AMETHYST_BLOCK), 1, 1);
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_CONDUIT,
+				PointOfInterestTypes.getStatesOfBlock(Blocks.CONDUIT), 1, 1);
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
@@ -208,6 +219,7 @@ public final class ModEntities {
 				.dimensions(EntityDimensions.fixed(0.6F, 1.5F))
 				.build();
 
+		MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
 
@@ -220,8 +232,8 @@ public final class ModEntities {
 		MEMORY_FARMABLE_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_FARM_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
-		MEMORY_FARM_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
+		MEMORY_JOB_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
+		MEMORY_JOB_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
@@ -233,7 +245,7 @@ public final class ModEntities {
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
 		SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
-		SENSOR_FARM_SITE_CANDIDATE = new SensorType<>(FarmSiteCandidateSensor::new);
+		SENSOR_JOB_SITE_CANDIDATE = new SensorType<>(JobSiteCandidateSensor::new);
 		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
 		SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
 
@@ -250,7 +262,10 @@ public final class ModEntities {
 		POSE_CHANGING_COSTUME = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_CHANGING_COSTUME);
 		POSE_HEALING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_HEALING);
 
+		POI_TARGET = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("target"));
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
+		POI_AMETHYST_BLOCK = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("amethyst_block"));
+		POI_CONDUIT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("conduit"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
@@ -289,34 +304,42 @@ public final class ModEntities {
 		JOB_NONE = new MaidJob(itemStack -> false,
 				MaidNoneBrainManager::initializeBrain,
 				MaidNoneBrainManager::tickBrain,
+				PointOfInterestType.NONE,
 				LittleMaidEntity.TEXTURE_NONE);
 		JOB_FENCER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FENCER_TOOLS),
 				MaidFencerBrainManager::initializeBrain,
 				MaidFencerBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_FENCER_SITE),
 				LittleMaidEntity.TEXTURE_FENCER);
 		JOB_CRACKER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_CRACKER_TOOLS),
 				MaidCrackerBrainManager::initializeBrain,
 				MaidCrackerBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_CRACKER_SITE),
 				LittleMaidEntity.TEXTURE_CRACKER);
 		JOB_ARCHER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_ARCHER_TOOLS),
 				MaidArcherBrainManager::initializeBrain,
 				MaidArcherBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_ARCHER_SITE),
 				LittleMaidEntity.TEXTURE_ARCHER);
 		JOB_GUARD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_GUARD_TOOLS),
 				MaidGuardBrainManager::initializeBrain,
 				MaidGuardBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_GUARD_SITE),
 				LittleMaidEntity.TEXTURE_GUARD);
 		JOB_FARMER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FARMER_TOOLS),
 				MaidFarmerBrainManager::initializeBrain,
 				MaidFarmerBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_FARMER_SITE),
 				LittleMaidEntity.TEXTURE_FARMER);
 		JOB_HEALER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_HEALER_TOOLS),
 				MaidHealerBrainManager::initializeBrain,
 				MaidHealerBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_HEALER_SITE),
 				LittleMaidEntity.TEXTURE_HEALER);
 		JOB_POSEIDON = new PoseidonJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_POSEIDON_TOOLS),
 				MaidPoseidonBrainManager::initializeBrain,
 				MaidPoseidonBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_POSEIDON_SITE),
 				LittleMaidEntity.TEXTURE_POSEIDON);
 	}
 }

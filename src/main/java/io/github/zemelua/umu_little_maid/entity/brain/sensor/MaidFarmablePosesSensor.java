@@ -22,7 +22,7 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	protected void sense(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		List<BlockPos> list = Lists.newArrayList();
-		Optional<GlobalPos> sitePos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_SITE);
+		Optional<GlobalPos> sitePos = brain.getOptionalMemory(ModEntities.MEMORY_JOB_SITE);
 
 		if (sitePos.isEmpty()) {
 			for (int x = -5; x < 6; x++) {
@@ -37,9 +37,9 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 				}
 			}
 		} else {
-			for (int x = -10; x < 11; x++) {
+			for (int x = -16; x < 17; x++) {
 				for (int y = -3; y < 4; y++) {
-					for (int z = -10; z < 11; z++) {
+					for (int z = -16; z < 17; z++) {
 						BlockPos pos = sitePos.get().getPos().add(x, y, z);
 
 						if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {

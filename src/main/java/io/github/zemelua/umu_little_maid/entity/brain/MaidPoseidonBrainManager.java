@@ -11,6 +11,9 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.Triden
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
@@ -60,12 +63,15 @@ public final class MaidPoseidonBrainManager {
 				// Pair.of(1, new BreathAirTask<>()),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
+				Pair.of(4, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldBreathTask<>(100)),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldBreathTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
-				Pair.of(99, new ForgetAttackTargetTask<>())
+				Pair.of(99, new ForgetAttackTargetTask<>()),
+				Pair.of(99, new ForgetJobSiteTask())
 		));
 	}
 
@@ -78,7 +84,7 @@ public final class MaidPoseidonBrainManager {
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
-				Pair.of(0, new PoseidonFollowOwnerTask<>(10.0F, 2.0F))
+				Pair.of(0, new PoseidonFollowOwnerTask(10.0F, 2.0F))
 		));
 	}
 

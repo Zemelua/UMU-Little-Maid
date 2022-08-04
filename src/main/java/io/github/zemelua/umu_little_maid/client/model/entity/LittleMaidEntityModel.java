@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -287,7 +286,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 
 		float sitProgress = maid.getSitProgress(tickDelta);
-		UMULittleMaid.LOGGER.info(sitProgress);
 		this.leftArm.pitch = (float) Math.toRadians(-42.0F * sitProgress);
 		this.leftArm.roll = (float) Math.toRadians(-15.0F + 40.0F * sitProgress);
 		this.rightArm.pitch = (float) Math.toRadians(-42.0 * sitProgress);

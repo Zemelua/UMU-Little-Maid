@@ -24,6 +24,7 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_HEALER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_POSEIDON_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_CONTRACT_FOODS;
+	public static final TagKey<Item> ITEM_MAID_ENGAGE_BATONS;
 	public static final TagKey<Item> ITEM_MAID_HEAL_FOODS;
 	public static final TagKey<Item> ITEM_MAID_REINFORCE_FOODS;
 	public static final TagKey<Item> ITEM_MAID_DRIPLEAFS;
@@ -40,7 +41,13 @@ public final class ModTags {
 	public static final TagKey<EntityType<?>> ENTITY_MAID_LAZY_HOSTILES;
 	public static final TagKey<EntityType<?>> ENTITY_MAID_TSUNDERE_HOSTILES;
 
-	public static final TagKey<PointOfInterestType> POI_FARMER;
+	public static final TagKey<PointOfInterestType> POI_MAID_FENCER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_CRACKER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_ARCHER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_GUARD_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_FARMER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_HEALER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_POSEIDON_SITE;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -64,6 +71,7 @@ public final class ModTags {
 		ITEM_MAID_HEALER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_healer_tools"));
 		ITEM_MAID_POSEIDON_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_poseidon_tools"));
 		ITEM_MAID_CONTRACT_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_contract_foods"));
+		ITEM_MAID_ENGAGE_BATONS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_engage_batons"));
 		ITEM_MAID_HEAL_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_heal_foods"));
 		ITEM_MAID_REINFORCE_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_reinforce_foods"));
 		ITEM_MAID_DRIPLEAFS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_dripleafs"));
@@ -80,6 +88,12 @@ public final class ModTags {
 		ENTITY_MAID_LAZY_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_lazy_hostiles"));
 		ENTITY_MAID_TSUNDERE_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_tsundere_hostiles"));
 
-		POI_FARMER = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("farmer"));
+		POI_MAID_FENCER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_fencer_site"));
+		POI_MAID_CRACKER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_cracker_site"));
+		POI_MAID_ARCHER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_archer_site"));
+		POI_MAID_GUARD_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_guard_site"));
+		POI_MAID_FARMER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_farmer_site"));
+		POI_MAID_HEALER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_healer_site"));
+		POI_MAID_POSEIDON_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_poseidon_site"));
 	}
 }

@@ -4,11 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
@@ -16,6 +17,8 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -49,20 +52,23 @@ public final class MaidGuardBrainManager {
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
+				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new RememberGuardTargetTask()),
+				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetHomeTask<>()),
-				Pair.of(99, new ForgetGuardTargetTask<>())
+				Pair.of(99, new ForgetGuardTargetTask<>()),
+				Pair.of(99, new ForgetJobSiteTask())
 		));
 	}
 
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
-				Pair.of(0, new FollowOwnerTask<>(10.0F, 2.0F)),
+				Pair.of(0, new FollowOwnerTask(10.0F, 2.0F)),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.8F), 2),

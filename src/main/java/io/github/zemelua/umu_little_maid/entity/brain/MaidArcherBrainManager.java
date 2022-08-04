@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToHomeTask;
@@ -44,8 +47,6 @@ public final class MaidArcherBrainManager {
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
 		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, Activity.FIGHT, Activity.IDLE));
-
-		// UMULittleMaid.LOGGER.info(brain.getFirstPossibleNonCoreActivity());
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -55,22 +56,25 @@ public final class MaidArcherBrainManager {
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
+				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(98, new RememberHasArrowsTask<>()),
+				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetHomeTask<>()),
 				Pair.of(99, new ForgetAttackTargetTask<>()),
-				Pair.of(99, new ForgetHasArrowsTask<>())
+				Pair.of(99, new ForgetHasArrowsTask<>()),
+				Pair.of(99, new ForgetJobSiteTask())
 		));
 	}
 
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
-				Pair.of(0, new FollowOwnerTask<>(10.0F, 2.0F)),
+				Pair.of(0, new FollowOwnerTask(10.0F, 2.0F)),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.8F), 2),

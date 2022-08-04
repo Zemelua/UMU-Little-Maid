@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FarmerFollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
@@ -51,22 +52,22 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new KeepAroundFarmSiteTask<>()),
+				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask()),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new RememberFarmPosTask<>()),
-				Pair.of(98, new RememberFarmSiteTask<>()),
+				Pair.of(98, new RememberFarmSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask()),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetHomeTask<>()),
-				Pair.of(99, new ForgetFarmSiteTask<>())
+				Pair.of(99, new ForgetFarmSiteTask())
 		));
 	}
 
 	private static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
-				Pair.of(0, new FarmerFollowOwnerTask<>(10.0F, 2.0F)),
+				Pair.of(0, new FollowOwnerTask(10.0F, 2.0F)),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.8F), 2),

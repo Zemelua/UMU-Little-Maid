@@ -107,6 +107,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private static final TrackedData<Optional<UUID>> OWNER;
 	private static final TrackedData<Boolean> IS_SITTING;
+	private static final TrackedData<Boolean> IS_ENGAGING;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
@@ -191,6 +192,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
 		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
+		this.dataTracker.startTracking(LittleMaidEntity.IS_ENGAGING, false);
 		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
@@ -434,6 +436,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.brain = brain.copy();
 		this.getJob().initializeBrain(this.getBrain());
+		this.brain.forget(ModEntities.MEMORY_JOB_SITE);
+		this.brain.forget(ModEntities.MEMORY_JOB_SITE_CANDIDATE);
 	}
 
 	@Override
@@ -476,6 +480,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
+						}
+					}
+
+					return ActionResult.success(this.world.isClient());
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_ENGAGE_BATONS)) {
+					if (!this.world.isClient()) {
+						if (!this.isEngaging()) {
+							this.setEngaging(true);
+							this.spawnEngageParticle();
+						} else {
+							this.setEngaging(false);
+							this.spawnSingleParticle(ParticleTypes.ANGRY_VILLAGER);
 						}
 					}
 
@@ -885,6 +901,19 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
+	private void spawnSingleParticle(@SuppressWarnings("SameParameterValue") ParticleEffect particle) {
+		if (!this.world.isClient()) {
+			((ServerWorld) this.world).spawnParticles(particle, this.getX(), this.getY() + 1.2D, this.getZ(), 0, 1.0D, 0.0D, 0.0D, 1.0D);
+		}
+	}
+
+	private void spawnEngageParticle() {
+		if (!this.world.isClient()) {
+			double color = MathHelper.clamp(0.3D, 0.0D, 1.0D);
+			((ServerWorld) this.world).spawnParticles(ParticleTypes.NOTE, this.getX(), this.getY() + 1.2D, this.getZ(), 0, color, 0.0D, 0.0D, 1.0D);
+		}
+	}
+
 	@Override
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
@@ -1013,6 +1042,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
+	}
+
+	public boolean isEngaging() {
+		return this.dataTracker.get(LittleMaidEntity.IS_ENGAGING);
+	}
+
+	private void setEngaging(boolean value) {
+		this.dataTracker.set(LittleMaidEntity.IS_ENGAGING, value);
 	}
 
 	public MaidJob getJob() {
@@ -1162,6 +1199,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
+	private static final String KEY_IS_ENGAGING = "IsEngaging";
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
@@ -1189,6 +1227,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_SITTING, this.isSitting());
+		nbt.putBoolean(LittleMaidEntity.KEY_IS_ENGAGING, this.isEngaging());
 
 		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
 		if (job != null) {
@@ -1223,6 +1262,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.setOwnerUuid(uuid);
 
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
+		this.setEngaging(nbt.getBoolean(LittleMaidEntity.KEY_IS_ENGAGING));
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
 			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
@@ -1271,8 +1311,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_FARMABLE_POS,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
-				ModEntities.MEMORY_FARM_SITE,
-				ModEntities.MEMORY_FARM_SITE_CANDIDATE,
+				ModEntities.MEMORY_JOB_SITE,
+				ModEntities.MEMORY_JOB_SITE_CANDIDATE,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
 				ModEntities.MEMORY_SHOULD_BREATH
@@ -1285,11 +1325,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
 				ModEntities.SENSOR_MAID_FARMABLE_POSES,
-				ModEntities.SENSOR_FARM_SITE_CANDIDATE
+				ModEntities.SENSOR_JOB_SITE_CANDIDATE
 		);
 
 		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_ENGAGING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
