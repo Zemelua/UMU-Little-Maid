@@ -30,7 +30,7 @@ public abstract class ConduitBlockEntityMixin extends BlockEntity {
 		int x = pos.getX();
 		int y = pos.getY();
 		int z = pos.getZ();
-		Box box = new Box(x, y, z, x + 1, y, z).expand(range).stretch(0.0, world.getHeight(), 0.0);
+		Box box = new Box(x, y, z, x + 1, y + 1, z + 1).expand(range).stretch(0.0, world.getHeight(), 0.0);
 		List<LivingEntity> targets = ImmutableList.<LivingEntity>builder()
 				.addAll(world.getNonSpectatingEntities(PlayerEntity.class, box))
 				.addAll(world.getNonSpectatingEntities(LittleMaidEntity.class, box)).build();
