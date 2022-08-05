@@ -25,7 +25,7 @@ public abstract class ConduitBlockEntityMixin extends BlockEntity {
 			at = @At(value = "INVOKE",
 					target = "Lnet/minecraft/block/entity/ConduitBlockEntity;givePlayersEffects(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Ljava/util/List;)V"))
 	@SuppressWarnings("SpellCheckingInspection")
-	private static void serverTick(World world, BlockPos pos, List<BlockPos> activatingPoses) {
+	private static void giveLivingsEffect(World world, BlockPos pos, List<BlockPos> activatingPoses) {
 		int range = activatingPoses.size() / 7 * 16;
 		int x = pos.getX();
 		int y = pos.getY();
