@@ -6,5 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
 public interface LivingEntityAccessor {
-	@Accessor void setRiptideTicks(int value);
+	@Accessor
+	void setRiptideTicks(int value);
 }

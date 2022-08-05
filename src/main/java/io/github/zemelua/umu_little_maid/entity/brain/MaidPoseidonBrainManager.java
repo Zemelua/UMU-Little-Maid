@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
@@ -54,9 +53,6 @@ public final class MaidPoseidonBrainManager {
 				Activity.FIGHT,
 				Activity.IDLE
 		));
-
-		UMULittleMaid.LOGGER.info("candidate: " + brain.hasMemoryModule(ModEntities.MEMORY_JOB_SITE_CANDIDATE));
-		UMULittleMaid.LOGGER.info("site: " + brain.hasMemoryModule(ModEntities.MEMORY_JOB_SITE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {

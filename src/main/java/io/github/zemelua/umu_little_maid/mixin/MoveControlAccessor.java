@@ -6,5 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MoveControl.class)
 public interface MoveControlAccessor {
-	@Accessor void setSpeed(double value);
+	@Accessor
+	void setSpeed(double value);
 }
