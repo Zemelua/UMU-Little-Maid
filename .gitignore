@@ -5,7 +5,7 @@
 *.ipr
 *.iws
 
-/src/main/resources/assets/umu_little_maid/sounds/entity/maid/*.ogg
+src/main/resources/assets/umu_little_maid/sounds/entity/maid/**/*.ogg
 
 # IntelliJ
 out/
