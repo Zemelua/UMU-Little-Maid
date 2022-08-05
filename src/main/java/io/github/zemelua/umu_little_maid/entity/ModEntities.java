@@ -1,11 +1,15 @@
 package io.github.zemelua.umu_little_maid.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
-import io.github.zemelua.umu_little_maid.entity.maid.*;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
+import io.github.zemelua.umu_little_maid.entity.maid.PoseidonJob;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
@@ -15,7 +19,7 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Activity;
@@ -37,18 +41,15 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
 
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
-	public static final TrackedDataHandler<MaidMode> MODE_HANDLER;
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
 
@@ -113,19 +114,12 @@ public final class ModEntities {
 	public static final MaidJob JOB_HEALER;
 	public static final MaidJob JOB_POSEIDON;
 
-	private static final Block[] WOODEN_FENCES = new Block[]{
-			Blocks.OAK_FENCE, Blocks.ACACIA_FENCE, Blocks.DARK_OAK_FENCE, Blocks.SPRUCE_FENCE, Blocks.BIRCH_FENCE,
-			Blocks.JUNGLE_FENCE, Blocks.CRIMSON_FENCE, Blocks.WARPED_FENCE, Blocks.MANGROVE_FENCE
-	};
-
 	private static boolean initialized = false;
-	@SuppressWarnings("ConstantConditions")
 	public static void initialize() {
 		if (ModEntities.initialized) throw new IllegalStateException("Entities are already initialized!");
 
 		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), ModEntities.LITTLE_MAID);
 
-		TrackedDataHandlerRegistry.register(ModEntities.MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
@@ -163,14 +157,23 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModEntities.ACTIVITY_GO_GET_TRIDENT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModEntities.ACTIVITY_BREATH);
 
+		//noinspection ConstantConditions
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_TARGET,
 				PointOfInterestTypes.getStatesOfBlock(Blocks.TARGET), 1, 1);
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_SCARECROW,
-				Arrays.stream(ModEntities.WOODEN_FENCES)
-						.flatMap(block -> block.getStateManager().getStates().stream())
-						.collect(Collectors.toSet()), 1, 1);
+				ImmutableSet.<BlockState>builder()
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.OAK_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ACACIA_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.DARK_OAK_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.SPRUCE_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BIRCH_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.JUNGLE_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CRIMSON_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WARPED_FENCE))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MANGROVE_FENCE))
+						.build(), 1, 1);
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_AMETHYST_BLOCK,
 				PointOfInterestTypes.getStatesOfBlock(Blocks.AMETHYST_BLOCK), 1, 1);
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_CONDUIT,
@@ -219,7 +222,6 @@ public final class ModEntities {
 				.dimensions(EntityDimensions.fixed(0.6F, 1.5F))
 				.build();
 
-		MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
 

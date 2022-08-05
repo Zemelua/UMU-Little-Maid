@@ -91,9 +91,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
 			EntityPose.SLEEPING, EntityDimensions.fixed(0.2F, 0.2F),
-			EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.6F),
-			EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.6F),
-			EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.6F),
+			EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.4F),
+			EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.4F),
+			EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.4F),
 			EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F),
 			EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F));
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
