@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
-import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import io.github.zemelua.umu_little_maid.tag.ModTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvent;
@@ -31,6 +30,16 @@ public class MaidPersonality {
 	private final SoundEvent engageSound;
 
 	public MaidPersonality(Builder builder,
+	                       SoundEvent ambientSound,
+	                       SoundEvent fencerAttackSound,
+	                       SoundEvent crackerAttackSound,
+	                       SoundEvent archerAttackSound,
+	                       SoundEvent killedSound,
+	                       SoundEvent killedBarelySound,
+	                       SoundEvent hurtSound,
+	                       SoundEvent deathSound,
+	                       SoundEvent eatSound,
+	                       SoundEvent contractSound,
 	                       SoundEvent sitSound,
 	                       SoundEvent engageSound) {
 		this.maxHealth = builder.maxHealth;
@@ -42,16 +51,16 @@ public class MaidPersonality {
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
 		this.hostiles = builder.hostiles;
-		this.ambientSound = builder.ambientSound;
-		this.fencerAttackSound = builder.fencerAttackSound;
-		this.crackerAttackSound = builder.crackerAttackSound;
-		this.archerAttackSound = builder.archerAttackSound;
-		this.killedSound = builder.killedSound;
-		this.killedBarelySound = builder.killedBarelySound;
-		this.hurtSound = builder.hurtSound;
-		this.deathSound = builder.deathSound;
-		this.eatSound = builder.eatSound;
-		this.contractSound = builder.contractSound;
+		this.ambientSound = ambientSound;
+		this.fencerAttackSound = fencerAttackSound;
+		this.crackerAttackSound = crackerAttackSound;
+		this.archerAttackSound = archerAttackSound;
+		this.killedSound = killedSound;
+		this.killedBarelySound = killedBarelySound;
+		this.hurtSound = hurtSound;
+		this.deathSound = deathSound;
+		this.eatSound = eatSound;
+		this.contractSound = contractSound;
 		this.sitSound = sitSound;
 		this.engageSound = engageSound;
 	}
@@ -151,16 +160,6 @@ public class MaidPersonality {
 		private double knockbackResistance = 0.0D;
 		private double luck = 0.0D;
 		private Predicate<LivingEntity> hostiles = (living -> living.getType().isIn(ModTags.ENTITY_MAID_GENERAL_HOSTILES));
-		private SoundEvent ambientSound = ModSounds.ENTITY_MAID_GENERAL_AMBIENT;
-		private SoundEvent fencerAttackSound = ModSounds.ENTITY_MAID_GENERAL_FENCER_ATTACK;
-		private SoundEvent crackerAttackSound = ModSounds.ENTITY_MAID_GENERAL_CRACKER_ATTACK;
-		private SoundEvent archerAttackSound = ModSounds.ENTITY_MAID_GENERAL_ARCHER_ATTACK;
-		private SoundEvent killedSound = ModSounds.ENTITY_MAID_GENERAL_KILLED;
-		private SoundEvent killedBarelySound = ModSounds.ENTITY_MAID_GENERAL_KILLED_BARELY;
-		private SoundEvent hurtSound = ModSounds.ENTITY_MAID_GENERAL_HURT;
-		private SoundEvent deathSound = ModSounds.ENTITY_MAID_GENERAL_DEATH;
-		private SoundEvent eatSound = ModSounds.ENTITY_MAID_GENERAL_EAT;
-		private SoundEvent contractSound = ModSounds.ENTITY_MAID_GENERAL_CONTRACT;
 
 		public Builder setMaxHealth(double maxHealth) {
 			this.maxHealth = maxHealth;
@@ -216,68 +215,32 @@ public class MaidPersonality {
 			return this;
 		}
 
-		public Builder setAmbientSound(SoundEvent ambientSound) {
-			this.ambientSound = ambientSound;
-
-			return this;
-		}
-
-		public Builder setFencerAttackSound(SoundEvent fencerAttackSound) {
-			this.fencerAttackSound = fencerAttackSound;
-
-			return this;
-		}
-
-		public Builder setCrackerAttackSound(SoundEvent crackerAttackSound) {
-			this.crackerAttackSound = crackerAttackSound;
-
-			return this;
-		}
-
-		public Builder setArcherAttackSound(SoundEvent archerAttackSound) {
-			this.archerAttackSound = archerAttackSound;
-
-			return this;
-		}
-
-		public Builder setKilledSound(SoundEvent killedSound) {
-			this.killedSound = killedSound;
-
-			return this;
-		}
-
-		public Builder setKilledBarelySound(SoundEvent killedBarelySound) {
-			this.killedBarelySound = killedBarelySound;
-
-			return this;
-		}
-
-		public Builder setHurtSound(SoundEvent hurtSound) {
-			this.hurtSound = hurtSound;
-
-			return this;
-		}
-
-		public Builder setDeathSound(SoundEvent deathSound) {
-			this.deathSound = deathSound;
-
-			return this;
-		}
-
-		public Builder setEatSound(SoundEvent eatSound) {
-			this.eatSound = eatSound;
-
-			return this;
-		}
-
-		public Builder setContractSound(SoundEvent contractSound) {
-			this.contractSound = contractSound;
-
-			return this;
-		}
-
-		public MaidPersonality build(SoundEvent sitSound, SoundEvent engageSound) {
-			return new MaidPersonality(this, sitSound, engageSound);
+		public MaidPersonality build(SoundEvent ambientSound,
+		                             SoundEvent fencerAttackSound,
+		                             SoundEvent crackerAttackSound,
+		                             SoundEvent archerAttackSound,
+		                             SoundEvent killedSound,
+		                             SoundEvent killedBarelySound,
+		                             SoundEvent hurtSound,
+		                             SoundEvent deathSound,
+		                             SoundEvent eatSound,
+		                             SoundEvent contractSound,
+		                             SoundEvent sitSound,
+		                             SoundEvent engageSound) {
+			return new MaidPersonality(this,
+					ambientSound,
+					fencerAttackSound,
+					crackerAttackSound,
+					archerAttackSound,
+					killedSound,
+					killedBarelySound,
+					hurtSound,
+					deathSound,
+					eatSound,
+					contractSound,
+					sitSound,
+					engageSound
+			);
 		}
 	}
 }

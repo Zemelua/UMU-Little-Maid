@@ -1,135 +1,119 @@
 {
-	"entity.maid.general.ambient": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.ambient",
+	"entity.maid.general.contract": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract0" } ]
+	},
+
+	"entity.maid.bravery.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
 		"sounds": [
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient1",
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
 				"weight": 20
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient2",
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
 				"weight": 20
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient3",
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
 				"weight": 20
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient4",
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
 				"weight": 20
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient5",
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient6",
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient7",
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient8",
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
 				"weight": 5
 			}
 		]
 	},
-	"entity.maid.general.fencer_attack": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.fencer_attack",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack1" },
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack2" },
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack3" }
-		]
-	},
-	"entity.maid.general.cracker_attack": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.cracker_attack",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_cracker_attack1" },
-			{ "name": "umu_little_maid:entity/maid/general_cracker_attack2" },
-			{ "name": "umu_little_maid:entity/maid/general_cracker_attack3" }
-		]
-	},
-	"entity.maid.general.archer_attack": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.archer_attack",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_archer_attack1" },
-			{ "name": "umu_little_maid:entity/maid/general_archer_attack2" },
-			{ "name": "umu_little_maid:entity/maid/general_archer_attack3" },
-			{ "name": "umu_little_maid:entity/maid/general_archer_attack4" }
-		]
-	},
-	"entity.maid.general.killed": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.killed",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_killed1" },
-			{ "name": "umu_little_maid:entity/maid/general_killed2" },
-			{ "name": "umu_little_maid:entity/maid/general_killed3" },
-			{ "name": "umu_little_maid:entity/maid/general_killed4" }
-		]
-	},
-	"entity.maid.general.killed_barely": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.killed_barely",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_killed_barely1" },
-			{ "name": "umu_little_maid:entity/maid/general_killed_barely2" }
-		]
-	},
-	"entity.maid.general.hurt": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.hurt",
-		"sounds": [
-			{
-				"name": "umu_little_maid:entity/maid/general_hurt1",
-				"weight": 3
-			},
-			{ "name": "umu_little_maid:entity/maid/general_hurt2" },
-			{ "name": "umu_little_maid:entity/maid/general_hurt3" }
-		]
-	},
-	"entity.maid.general.death": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.death",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/general_death" } ]
-	},
-	"entity.maid.general.eat": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.eat",
-		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_eat1" },
-			{ "name": "umu_little_maid:entity/maid/general_eat2" }
-		]
-	},
-	"entity.maid.general.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.general.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/general_contract" } ]
-	},
 	"entity.maid.bravery.fencer_attack": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.bravery.fencer_attack",
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
 		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack1" },
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack2" },
-			{ "name": "umu_little_maid:entity/maid/general_fencer_attack3" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack1" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack2" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack3" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack4" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack5" },
-			{ "name": "umu_little_maid:entity/maid/bravery_fencer_attack6" }
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack3" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack4" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack5" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack6" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack7" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack8" }
+		]
+	},
+	"entity.maid.bravery.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.bravery.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.bravery.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.bravery.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
 		]
 	},
 	"entity.maid.bravery.hurt": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.bravery.hurt",
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
 		"sounds": [
 			{
-				"name": "umu_little_maid:entity.maid.general.hurt",
-				"type": "event"
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
 			},
-			{ "name": "umu_little_maid:entity/maid/bravery_hurt" }
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt3" }
+		]
+	},
+	"entity.maid.bravery.death": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death0" } ]
+	},
+	"entity.maid.bravery.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
 		]
 	},
 	"entity.maid.bravery.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.bravery.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/bravery_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract0" } ]
 	},
 	"entity.maid.bravery.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -149,9 +133,109 @@
 			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	},
+	"entity.maid.diligent.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
+				"weight": 5
+			}
+		]
+	},
+	"entity.maid.diligent.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.diligent.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.diligent.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.diligent.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.diligent.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.diligent.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
+	"entity.maid.diligent.death": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death0" } ]
+	},
+	"entity.maid.diligent.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
+	},
 	"entity.maid.diligent.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.diligent.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/diligent_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract1" } ]
 	},
 	"entity.maid.diligent.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -171,13 +255,109 @@
 			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	},
+	"entity.maid.audacious.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
+				"weight": 5
+			}
+		]
+	},
+	"entity.maid.audacious.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.audacious.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.audacious.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.audacious.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.audacious.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.audacious.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
 	"entity.maid.audacious.death": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.audacious.death",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/audacious_death" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death1" } ]
+	},
+	"entity.maid.audacious.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
 	},
 	"entity.maid.audacious.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.audacious.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/audacious_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract2" } ]
 	},
 	"entity.maid.audacious.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -197,9 +377,109 @@
 			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	},
+	"entity.maid.gentle.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
+				"weight": 5
+			}
+		]
+	},
+	"entity.maid.gentle.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.gentle.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.gentle.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.gentle.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.gentle.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.gentle.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
+	"entity.maid.gentle.death": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death0" } ]
+	},
+	"entity.maid.gentle.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
+	},
 	"entity.maid.gentle.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.gentle.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/gentle_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract3" } ]
 	},
 	"entity.maid.gentle.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -219,9 +499,109 @@
 			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	},
+	"entity.maid.shy.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
+				"weight": 5
+			}
+		]
+	},
+	"entity.maid.shy.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.shy.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.shy.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.shy.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.shy.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.shy.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
+	"entity.maid.shy.death": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death0" } ]
+	},
+	"entity.maid.shy.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
+	},
 	"entity.maid.shy.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.shy.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/shy_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract4" } ]
 	},
 	"entity.maid.shy.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -243,53 +623,112 @@
 		]
 	},
 	"entity.maid.lazy.ambient": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.lazy.ambient",
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
 		"sounds": [
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient1",
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
 				"weight": 18
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient2",
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
 				"weight": 18
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient3",
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
 				"weight": 18
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient4",
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
 				"weight": 18
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient5",
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient6",
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient7",
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/general_ambient8",
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
 				"weight": 5
 			},
 			{
-				"name": "umu_little_maid:entity/maid/lazy_ambient",
+				"name": "umu_little_maid:entity/maid/ambient/ambient8",
 				"weight": 8
 			}
 		]
 	},
+	"entity.maid.lazy.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.lazy.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.lazy.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.lazy.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.lazy.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.lazy.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
 	"entity.maid.lazy.death": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.lazy.death",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/lazy_death" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death2" } ]
+	},
+	"entity.maid.lazy.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
 	},
 	"entity.maid.lazy.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.lazy.contract",
-		"sounds": [ { "name": "umu_little_maid:entity/maid/lazy_contract" } ]
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/contract/contract5" } ]
 	},
 	"entity.maid.lazy.sit": {
 		"subtitle": "subtitles.umu_little_maid.entity.maid.sit",
@@ -309,11 +748,111 @@
 			{ "name": "umu_little_maid:entity/maid/engage/engage3" }
 		]
 	},
-	"entity.maid.tsundere.contract": {
-		"subtitle": "subtitles.umu_little_maid.entity.maid.tsundere.contract",
+	"entity.maid.tsundere.ambient": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.ambient",
 		"sounds": [
-			{ "name": "umu_little_maid:entity/maid/tsundere_contract1" },
-			{ "name": "umu_little_maid:entity/maid/tsundere_contract2" }
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient0",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient1",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient2",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient3",
+				"weight": 20
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient4",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient5",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient6",
+				"weight": 5
+			},
+			{
+				"name": "umu_little_maid:entity/maid/ambient/ambient7",
+				"weight": 5
+			}
+		]
+	},
+	"entity.maid.tsundere.fencer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.fencer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/fencer_attack2" }
+		]
+	},
+	"entity.maid.tsundere.cracker_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.cracker_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/cracker_attack2" }
+		]
+	},
+	"entity.maid.tsundere.archer_attack": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.archer_attack",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack0" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack1" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack2" },
+			{ "name": "umu_little_maid:entity/maid/attack/archer_attack3" }
+		]
+	},
+	"entity.maid.tsundere.killed": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed1" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed2" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed3" }
+		]
+	},
+	"entity.maid.tsundere.killed_barely": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.killed",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely0" },
+			{ "name": "umu_little_maid:entity/maid/attack/killed_barely1" }
+		]
+	},
+	"entity.maid.tsundere.hurt": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.hurt",
+		"sounds": [
+			{
+				"name": "umu_little_maid:entity/maid/hurt/hurt0",
+				"weight": 3
+			},
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt1" },
+			{ "name": "umu_little_maid:entity/maid/hurt/hurt2" }
+		]
+	},
+	"entity.maid.tsundere.death": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.death",
+		"sounds": [ { "name": "umu_little_maid:entity/maid/hurt/death0" } ]
+	},
+	"entity.maid.tsundere.eat": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.eat",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/eat/eat0" },
+			{ "name": "umu_little_maid:entity/maid/eat/eat1" }
+		]
+	},
+	"entity.maid.tsundere.contract": {
+		"subtitle": "subtitles.umu_little_maid.entity.maid.contract",
+		"sounds": [
+			{ "name": "umu_little_maid:entity/maid/contract/contract6" },
+			{ "name": "umu_little_maid:entity/maid/contract/contract7" }
 		]
 	},
 	"entity.maid.tsundere.sit": {

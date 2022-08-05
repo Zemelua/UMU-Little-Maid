@@ -271,43 +271,101 @@ public final class ModEntities {
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
-				.setContractSound(ModSounds.ENTITY_MAID_BRAVERY_CONTRACT)
-				.setFencerAttackSound(ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK)
-				.setHurtSound(ModSounds.ENTITY_MAID_BRAVERY_HURT)
-				.build(ModSounds.ENTITY_MAID_BRAVERY_SIT,
+				.build(ModSounds.ENTITY_MAID_BRAVERY_AMBIENT,
+						ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_BRAVERY_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_BRAVERY_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_BRAVERY_KILLED,
+						ModSounds.ENTITY_MAID_BRAVERY_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_BRAVERY_HURT,
+						ModSounds.ENTITY_MAID_BRAVERY_DEATH,
+						ModSounds.ENTITY_MAID_BRAVERY_EAT,
+						ModSounds.ENTITY_MAID_BRAVERY_CONTRACT,
+						ModSounds.ENTITY_MAID_BRAVERY_SIT,
 						ModSounds.ENTITY_MAID_BRAVERY_ENGAGE);
 		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_DILIGENT_HOSTILES))
-				.setContractSound(ModSounds.ENTITY_MAID_DILIGENT_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_DILIGENT_SIT,
+				.build(ModSounds.ENTITY_MAID_DILIGENT_AMBIENT,
+						ModSounds.ENTITY_MAID_DILIGENT_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_DILIGENT_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_DILIGENT_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_DILIGENT_KILLED,
+						ModSounds.ENTITY_MAID_DILIGENT_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_DILIGENT_HURT,
+						ModSounds.ENTITY_MAID_DILIGENT_DEATH,
+						ModSounds.ENTITY_MAID_DILIGENT_EAT,
+						ModSounds.ENTITY_MAID_DILIGENT_CONTRACT,
+						ModSounds.ENTITY_MAID_DILIGENT_SIT,
 						ModSounds.ENTITY_MAID_DILIGENT_ENGAGE);
 		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_AUDACIOUS_HOSTILES))
-				.setDeathSound(ModSounds.ENTITY_MAID_AUDACIOUS_DEATH)
-				.setContractSound(ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_AUDACIOUS_SIT,
+				.build(ModSounds.ENTITY_MAID_AUDACIOUS_AMBIENT,
+						ModSounds.ENTITY_MAID_AUDACIOUS_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_AUDACIOUS_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_AUDACIOUS_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_AUDACIOUS_KILLED,
+						ModSounds.ENTITY_MAID_AUDACIOUS_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_AUDACIOUS_HURT,
+						ModSounds.ENTITY_MAID_AUDACIOUS_DEATH,
+						ModSounds.ENTITY_MAID_AUDACIOUS_EAT,
+						ModSounds.ENTITY_MAID_AUDACIOUS_CONTRACT,
+						ModSounds.ENTITY_MAID_AUDACIOUS_SIT,
 						ModSounds.ENTITY_MAID_AUDACIOUS_ENGAGE);
 		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_GENTLE_HOSTILES))
-				.setContractSound(ModSounds.ENTITY_MAID_GENTLE_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_GENTLE_SIT,
+				.build(ModSounds.ENTITY_MAID_GENTLE_AMBIENT,
+						ModSounds.ENTITY_MAID_GENTLE_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_GENTLE_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_GENTLE_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_GENTLE_KILLED,
+						ModSounds.ENTITY_MAID_GENTLE_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_GENTLE_HURT,
+						ModSounds.ENTITY_MAID_GENTLE_DEATH,
+						ModSounds.ENTITY_MAID_GENTLE_EAT,
+						ModSounds.ENTITY_MAID_GENTLE_CONTRACT,
+						ModSounds.ENTITY_MAID_GENTLE_SIT,
 						ModSounds.ENTITY_MAID_GENTLE_ENGAGE);
 		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_SHY_HOSTILES))
-				.setContractSound(ModSounds.ENTITY_MAID_SHY_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_SHY_SIT,
+				.build(ModSounds.ENTITY_MAID_SHY_AMBIENT,
+						ModSounds.ENTITY_MAID_SHY_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_SHY_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_SHY_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_SHY_KILLED,
+						ModSounds.ENTITY_MAID_SHY_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_SHY_HURT,
+						ModSounds.ENTITY_MAID_SHY_DEATH,
+						ModSounds.ENTITY_MAID_SHY_EAT,
+						ModSounds.ENTITY_MAID_SHY_CONTRACT,
+						ModSounds.ENTITY_MAID_SHY_SIT,
 						ModSounds.ENTITY_MAID_SHY_ENGAGE);
 		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_LAZY_HOSTILES))
-				.setAmbientSound(ModSounds.ENTITY_MAID_LAZY_AMBIENT)
-				.setDeathSound(ModSounds.ENTITY_MAID_LAZY_DEATH)
-				.setContractSound(ModSounds.ENTITY_MAID_LAZY_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_LAZY_SIT,
+				.build(ModSounds.ENTITY_MAID_LAZY_AMBIENT,
+						ModSounds.ENTITY_MAID_LAZY_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_LAZY_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_LAZY_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_LAZY_KILLED,
+						ModSounds.ENTITY_MAID_LAZY_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_LAZY_HURT,
+						ModSounds.ENTITY_MAID_LAZY_DEATH,
+						ModSounds.ENTITY_MAID_LAZY_EAT,
+						ModSounds.ENTITY_MAID_LAZY_CONTRACT,
+						ModSounds.ENTITY_MAID_LAZY_SIT,
 						ModSounds.ENTITY_MAID_LAZY_ENGAGE);
 		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_TSUNDERE_HOSTILES))
-				.setContractSound(ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT)
-				.build(ModSounds.ENTITY_MAID_TSUNDERE_SIT,
+				.build(ModSounds.ENTITY_MAID_TSUNDERE_AMBIENT,
+						ModSounds.ENTITY_MAID_TSUNDERE_FENCER_ATTACK,
+						ModSounds.ENTITY_MAID_TSUNDERE_CRACKER_ATTACK,
+						ModSounds.ENTITY_MAID_TSUNDERE_ARCHER_ATTACK,
+						ModSounds.ENTITY_MAID_TSUNDERE_KILLED,
+						ModSounds.ENTITY_MAID_TSUNDERE_KILLED_BARELY,
+						ModSounds.ENTITY_MAID_TSUNDERE_HURT,
+						ModSounds.ENTITY_MAID_TSUNDERE_DEATH,
+						ModSounds.ENTITY_MAID_TSUNDERE_EAT,
+						ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT,
+						ModSounds.ENTITY_MAID_TSUNDERE_SIT,
 						ModSounds.ENTITY_MAID_TSUNDERE_ENGAGE);
 
 		JOB_NONE = new MaidJob(itemStack -> false,
