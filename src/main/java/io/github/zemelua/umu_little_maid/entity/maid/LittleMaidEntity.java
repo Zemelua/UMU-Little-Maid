@@ -13,7 +13,7 @@ import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccesso
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import io.github.zemelua.umu_little_maid.tag.ModTags;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;

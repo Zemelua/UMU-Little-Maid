@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.tag;
+package io.github.zemelua.umu_little_maid.data.tag;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.minecraft.block.Block;

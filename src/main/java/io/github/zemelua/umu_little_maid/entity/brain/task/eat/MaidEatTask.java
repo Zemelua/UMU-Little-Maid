@@ -3,7 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.eat;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.tag.ModTags;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ai.brain.MemoryModuleState;

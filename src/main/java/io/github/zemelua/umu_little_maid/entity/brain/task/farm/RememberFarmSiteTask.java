@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
-import io.github.zemelua.umu_little_maid.tag.ModTags;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;

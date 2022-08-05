@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
-import io.github.zemelua.umu_little_maid.tag.ModTags;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvent;
 
