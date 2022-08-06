@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.client;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
+import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.LittleMaidEntityRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -38,6 +39,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Start initializing mod client!");
+
+		ClientNetworkHandler.initializeClient();
 
 		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntityRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
