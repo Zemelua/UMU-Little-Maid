@@ -87,6 +87,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
+	public static final int MAX_INTIMACY = 300;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
@@ -112,6 +113,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
+	private static final TrackedData<Integer> INTIMACY;
 
 	private final EntityNavigation landNavigation = new MobNavigation(this, this.world);
 	private final EntityNavigation canSwimNavigation = new AxolotlSwimNavigation(this, this.world);
@@ -452,6 +454,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					}
 
 					return ActionResult.success(this.world.isClient());
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
+					if (!this.world.isClient()) {
+						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
+						this.eatFood(food, foodArg -> this.heal(6.5F));
+					}
+
+					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
 					if (!this.world.isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
@@ -464,10 +473,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 								}
 							}
 						});
-
-						if (!player.getAbilities().creativeMode) {
-							interactItem.decrement(1);
-						}
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1088,13 +1093,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.dataTracker.get(LittleMaidEntity.IS_VARIABLE_COSTUME);
 	}
 
-	public void setVariableCostume(boolean value) {
+	private void setVariableCostume(boolean value) {
 		this.dataTracker.set(LittleMaidEntity.IS_VARIABLE_COSTUME, value);
 	}
 
-	@SuppressWarnings("unused")
-	public double getIntimacy() {
-		return 0;
+	public int getIntimacy() {
+		return this.dataTracker.get(LittleMaidEntity.INTIMACY);
+	}
+
+	private void setIntimacy(int value) {
+		this.dataTracker.set(LittleMaidEntity.INTIMACY, value);
+	}
+
+	public void increaseIntimacy(int value) {
+		this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
 	}
 
 	public float getSitProgress(float tickDelta) {
@@ -1346,5 +1358,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		INTIMACY = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	}
 }
