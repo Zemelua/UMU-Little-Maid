@@ -1,6 +1,8 @@
 package io.github.zemelua.umu_little_maid.data.tag;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
+import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -49,6 +51,9 @@ public final class ModTags {
 	public static final TagKey<PointOfInterestType> POI_MAID_HEALER_SITE;
 	public static final TagKey<PointOfInterestType> POI_MAID_POSEIDON_SITE;
 
+	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KILLS;
+	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_WAKE_UPS;
+
 	private static boolean initialized = false;
 	public static void initialize() {
 		if (ModTags.initialized) throw new IllegalStateException("Tags are already initialized!");
@@ -95,5 +100,8 @@ public final class ModTags {
 		POI_MAID_FARMER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_farmer_site"));
 		POI_MAID_HEALER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_healer_site"));
 		POI_MAID_POSEIDON_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_poseidon_site"));
+
+		PERSONALITY_FLUTTER_WHEN_KILLS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kills"));
+		PERSONALITY_FLUTTER_WHEN_WAKE_UPS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_wake_ups"));
 	}
 }

@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
@@ -11,7 +12,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,11 +23,6 @@ import java.util.function.Predicate;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
-	@Unique private static final MaidPersonality[] LOVE_ON_KILLS = new MaidPersonality[] {
-			ModEntities.PERSONALITY_BRAVERY,
-			ModEntities.PERSONALITY_AUDACIOUS,
-			ModEntities.PERSONALITY_TSUNDERE
-	};
 	@Unique private static final MaidPersonality[] LOVE_ON_WAKE_UPS = new MaidPersonality[] {
 			ModEntities.PERSONALITY_LAZY
 	};
@@ -37,7 +32,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 		if (!this.world.isClient() && target instanceof LivingEntity targetLiving && ModUtils.isMonster(targetLiving) && targetLiving.isDead()) {
 			Box box = this.getBoundingBox().expand(10, 3, 10);
 			Predicate<LittleMaidEntity> filter = maid -> {
-				if (ArrayUtils.contains(LOVE_ON_KILLS, maid.getPersonality())) {
+				if (maid.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KILLS)) {
 					return maid.getOwner() == this;
 				}
 
@@ -46,7 +41,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
-				maid.increaseIntimacy(5);
+				maid.increaseIntimacy(3);
 			}
 		}
 	}
@@ -56,7 +51,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 		if (!this.world.isClient()) {
 			Box box = this.getBoundingBox().expand(10, 3, 10);
 			Predicate<LittleMaidEntity> filter = maid -> {
-				if (ArrayUtils.contains(LOVE_ON_WAKE_UPS, maid.getPersonality())) {
+				if (maid.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_WAKE_UPS)) {
 					return maid.getOwner() == this;
 				}
 
@@ -65,7 +60,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
-				maid.increaseIntimacy(6);
+				maid.increaseIntimacy(20);
 			}
 		}
 	}

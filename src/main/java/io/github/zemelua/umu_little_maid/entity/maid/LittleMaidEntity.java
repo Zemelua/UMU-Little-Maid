@@ -537,6 +537,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						this.setOwner(player);
 						this.spawnContractParticles();
 						this.playContractSound();
+
+						UMULittleMaid.LOGGER.info(ModRegistries.MAID_PERSONALITY.getId(this.getPersonality()));
 					});
 					this.brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(player, true));
 				}
@@ -1124,6 +1126,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void increaseIntimacy(int value) {
 		this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
+
+		UMULittleMaid.LOGGER.info(this.getIntimacy());
 	}
 
 	public float getSitProgress(float tickDelta) {

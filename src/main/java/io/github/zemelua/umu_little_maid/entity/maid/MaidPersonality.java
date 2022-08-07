@@ -1,12 +1,17 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.register.ModRegistries;
+import io.github.zemelua.umu_little_maid.util.ICanTagObject;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class MaidPersonality {
+public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 	private final double maxHealth;
 	private final double movementSpeed;
 	private final double attackDamage;
@@ -147,6 +152,16 @@ public class MaidPersonality {
 
 	public SoundEvent getEngageSound() {
 		return this.engageSound;
+	}
+
+	@Override
+	public boolean isIn(TagKey<MaidPersonality> tag) {
+		return ModRegistries.MAID_PERSONALITY.getEntryList(tag)
+				.map(list -> list.stream()
+						.map(RegistryEntry::value)
+						.collect(Collectors.toSet())
+						.contains(this))
+				.orElse(false);
 	}
 
 	@SuppressWarnings("unused")
