@@ -4,6 +4,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -18,6 +19,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class ModUtils {
+	public static boolean isMonster(LivingEntity living) {
+		return living.getType().getSpawnGroup() == SpawnGroup.MONSTER;
+	}
+
 	public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
 		return EnchantmentHelper.getLevel(enchantment, itemStack) > 0;
 	}

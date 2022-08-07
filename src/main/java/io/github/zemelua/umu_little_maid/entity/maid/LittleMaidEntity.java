@@ -47,13 +47,11 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermissi
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
@@ -73,6 +71,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -118,6 +117,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private final EntityNavigation landNavigation = new MobNavigation(this, this.world);
 	private final EntityNavigation canSwimNavigation = new AxolotlSwimNavigation(this, this.world);
 	private final SimpleInventory inventory = new SimpleInventory(15);
+	private final List<Item> givenFoods = new ArrayList<>();
 	private final AnimationState eatAnimation = new AnimationState();
 	private final AnimationState healAnimation = new AnimationState();
 	private final AnimationState useDripleafAnimation = new AnimationState();
@@ -199,6 +199,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
+		this.dataTracker.startTracking(INTIMACY, 0);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -327,7 +328,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 	//</editor-fold>
 
-
 	@Override
 	public void tick() {
 		super.tick();
@@ -398,6 +398,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.setPose(EntityPose.STANDING);
 			this.changingCostumeTicks = 0;
 		}
+
+		if (this.world.getTimeOfDay() % 24000L == 0L) {
+			this.givenFoods.clear();
+			this.increaseIntimacy(9);
+		}
 	}
 
 	private void updatePose() {
@@ -458,6 +463,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					if (!this.world.isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, foodArg -> this.heal(6.5F));
+
+						Item foodType = food.getItem();
+						if (!this.givenFoods.contains(foodType)) {
+							this.increaseIntimacy(5);
+							this.givenFoods.add(foodType);
+						}
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -473,6 +484,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 								}
 							}
 						});
+
+						Item foodType = food.getItem();
+						if (!this.givenFoods.contains(foodType)) {
+							this.increaseIntimacy(50);
+							this.givenFoods.add(foodType);
+						}
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1220,6 +1237,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	//<editor-fold desc="Save/Load">
 	private static final String KEY_INVENTORY = "Inventory";
 	private static final String KEY_SLOT = "Slot";
+	private static final String KEY_GIVEN_FOODS = "GivenFoods";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_IS_SITTING = "IsSitting";
 	private static final String KEY_IS_ENGAGING = "IsEngaging";
@@ -1231,7 +1249,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 
-		NbtList nbtList = new NbtList();
+		NbtList inventoryNbt = new NbtList();
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
 
@@ -1239,10 +1257,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putInt(LittleMaidEntity.KEY_SLOT, i);
 				itemStack.writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				inventoryNbt.add(nbtCompound);
 			}
 		}
-		nbt.put(LittleMaidEntity.KEY_INVENTORY, nbtList);
+		nbt.put(LittleMaidEntity.KEY_INVENTORY, inventoryNbt);
+
+		NbtList givenFoodsNbt = new NbtList();
+		for (Item givenFood : this.givenFoods) {
+			givenFoodsNbt.add(NbtString.of(Registry.ITEM.getId(givenFood).toString()));
+		}
+		nbt.put(KEY_GIVEN_FOODS, givenFoodsNbt);
 
 		UUID uuid = this.getOwnerUuid();
 		if (uuid != null) {
@@ -1269,10 +1293,18 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 
-		NbtList nbtList = nbt.getList(LittleMaidEntity.KEY_INVENTORY, NbtElement.COMPOUND_TYPE);
-		for (int i = 0; i < nbtList.size(); i++) {
-			NbtCompound nbtCompound = nbtList.getCompound(i);
+		NbtList inventoryNbt = nbt.getList(LittleMaidEntity.KEY_INVENTORY, NbtElement.COMPOUND_TYPE);
+		for (int i = 0; i < inventoryNbt.size(); i++) {
+			NbtCompound nbtCompound = inventoryNbt.getCompound(i);
 			this.inventory.setStack(nbtCompound.getInt("Slot"), ItemStack.fromNbt(nbtCompound));
+		}
+
+		NbtList givenFoodsNbt = nbt.getList(KEY_GIVEN_FOODS, NbtElement.STRING_TYPE);
+		for (int i = 0; i < givenFoodsNbt.size(); i++) {
+			Item foodType = Registry.ITEM.get(Identifier.tryParse(givenFoodsNbt.getString(i)));
+			if (foodType != Items.AIR) {
+				this.givenFoods.add(foodType);
+			}
 		}
 
 		UUID uuid;
