@@ -586,7 +586,19 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		if (target instanceof LivingEntity living) {
 			damage += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), living.getGroup());
 			knockback += EnchantmentHelper.getKnockback(this);
+
+			if (living instanceof MobEntity mob) {
+				@Nullable LivingEntity targetTarget = mob.getTarget();
+				@Nullable Entity owner = this.getOwner();
+
+				if ((targetTarget != null && owner != null)
+						&& targetTarget.equals(owner)
+						&& this.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_ATTACK_OWNERS_ENEMIES)) {
+					damage *= 1.0D + this.getIntimacy() / 500.0D;
+				}
+			}
 		}
+
 
 		if (fireLevel > 0) {
 			target.setOnFireFor(fireLevel * 4);
