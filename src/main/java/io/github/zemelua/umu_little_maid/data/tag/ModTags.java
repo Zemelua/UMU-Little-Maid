@@ -52,6 +52,8 @@ public final class ModTags {
 	public static final TagKey<PointOfInterestType> POI_MAID_POSEIDON_SITE;
 
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KILLS;
+	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_CRAFTS;
+	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KINDS;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_WAKE_UPS;
 
 	private static boolean initialized = false;
@@ -102,6 +104,8 @@ public final class ModTags {
 		POI_MAID_POSEIDON_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_poseidon_site"));
 
 		PERSONALITY_FLUTTER_WHEN_KILLS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kills"));
+		PERSONALITY_FLUTTER_WHEN_CRAFTS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_crafts"));
+		PERSONALITY_FLUTTER_WHEN_KINDS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kinds"));
 		PERSONALITY_FLUTTER_WHEN_WAKE_UPS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_wake_ups"));
 	}
 }

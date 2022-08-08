@@ -1,0 +1,8 @@
+# Increases the increase in intimacy when maids receive foods from them owner.
+
+{
+	"values": [
+		"umu_little_maid:gentle",
+		"umu_little_maid:shy"
+	]
+}

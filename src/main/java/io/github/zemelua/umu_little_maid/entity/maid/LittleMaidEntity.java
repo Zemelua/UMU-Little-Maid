@@ -87,6 +87,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
 	public static final int MAX_INTIMACY = 300;
+	public static final int DAY_MAX_INTIMACY = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
@@ -131,10 +132,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
+	private long lastClearIntimacyDayTime;
+	private int increasedIntimacy;
 
 	private float sitProgress;
 	private float lastSitProgress;
-
 	private float begProgress;
 	private float lastBegProgress;
 
@@ -399,9 +401,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.changingCostumeTicks = 0;
 		}
 
-		if (this.world.getTimeOfDay() % 24000L == 0L) {
+		long dayTime = this.world.getTimeOfDay();
+		long currentDay = dayTime / 24000L;
+		long lastDay = this.lastClearIntimacyDayTime / 24000L;
+		if (currentDay > lastDay) {
 			this.givenFoods.clear();
-			this.increaseIntimacy(9);
+			this.increaseIntimacy(9, true);
+			this.increasedIntimacy = 0;
+
+			this.lastClearIntimacyDayTime = dayTime;
 		}
 	}
 
@@ -466,7 +474,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 						Item foodType = food.getItem();
 						if (!this.givenFoods.contains(foodType)) {
-							this.increaseIntimacy(5);
+							this.increaseIntimacy(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 6 : 11, true);
 							this.givenFoods.add(foodType);
 						}
 					}
@@ -487,7 +495,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 						Item foodType = food.getItem();
 						if (!this.givenFoods.contains(foodType)) {
-							this.increaseIntimacy(50);
+							this.increaseIntimacy(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 50 : 70, true);
 							this.givenFoods.add(foodType);
 						}
 					}
@@ -1124,9 +1132,16 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.INTIMACY, value);
 	}
 
-	public void increaseIntimacy(int value) {
-		this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
+	public void increaseIntimacy(int value, boolean force) {
+		if (force) {
+			if (this.increasedIntimacy + value > DAY_MAX_INTIMACY) {
+				value = value - (this.increasedIntimacy + value - DAY_MAX_INTIMACY);
+			}
 
+			this.increasedIntimacy += value;
+		}
+
+		this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
 		UMULittleMaid.LOGGER.info(this.getIntimacy());
 	}
 

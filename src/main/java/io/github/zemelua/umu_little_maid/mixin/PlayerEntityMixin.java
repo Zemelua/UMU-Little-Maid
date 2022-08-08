@@ -41,7 +41,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
-				maid.increaseIntimacy(3);
+				maid.increaseIntimacy(3, false);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
-				maid.increaseIntimacy(20);
+				maid.increaseIntimacy(20, false);
 			}
 		}
 	}
