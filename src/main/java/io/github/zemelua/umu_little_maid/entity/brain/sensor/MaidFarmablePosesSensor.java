@@ -30,7 +30,7 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 					for (int z = -5; z < 6; z++) {
 						BlockPos pos = maid.getBlockPos().add(x, y, z);
 
-						if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {
+						if (canAnyFarm(world, maid, pos)) {
 							list.add(pos);
 						}
 					}
@@ -42,7 +42,7 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 					for (int z = -16; z < 17; z++) {
 						BlockPos pos = sitePos.get().getPos().add(x, y, z);
 
-						if (MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty() || MaidFarmTask.isHarvestable(pos, world)) {
+						if (canAnyFarm(world, maid, pos)) {
 							list.add(pos);
 						}
 					}
@@ -60,5 +60,11 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(ModEntities.MEMORY_FARMABLE_POS);
+	}
+
+	public static boolean canAnyFarm(ServerWorld world, LittleMaidEntity maid, BlockPos pos) {
+		return MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty()
+				|| MaidFarmTask.isHarvestable(pos, world)
+				|| MaidFarmTask.isGourd(pos, world) && maid.canBreakGourd();
 	}
 }

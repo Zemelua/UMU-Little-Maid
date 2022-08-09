@@ -16,6 +16,7 @@ public final class ModTags {
 	public static final Marker MARKER = MarkerManager.getMarker("TAG").addParents(UMULittleMaid.MARKER);
 
 	public static final TagKey<Block> BLOCK_MAID_HARVESTS;
+	public static final TagKey<Block> BLOCK_MAID_GOURDS;
 	public static final TagKey<Block> BLOCK_SCARECROW_HEAD;
 
 	public static final TagKey<Item> ITEM_MAID_FENCER_TOOLS;
@@ -69,6 +70,7 @@ public final class ModTags {
 
 	static {
 		BLOCK_MAID_HARVESTS = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_harvests"));
+		BLOCK_MAID_GOURDS = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_gourds"));
 		BLOCK_SCARECROW_HEAD = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("scarecrow_head"));
 
 		ITEM_MAID_FENCER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_fencer_tools"));

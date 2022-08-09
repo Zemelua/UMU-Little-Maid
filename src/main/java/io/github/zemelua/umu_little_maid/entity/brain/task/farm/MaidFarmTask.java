@@ -1,13 +1,11 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.data.tag.ModTags;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropBlock;
-import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -20,6 +18,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.Map;
@@ -58,7 +57,9 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 				}
 			}
 
-			if (MaidFarmTask.isHarvestable(pos.get(), world)) {
+			if (MaidFarmTask.isHarvestable(pos.get(), world) || MaidFarmTask.isGourd(pos.get(), world) && maid.canBreakGourd()) {
+
+				UMULittleMaid.LOGGER.info("harv");
 				world.breakBlock(pos.get(), true, maid);
 				maid.swingHand(Hand.MAIN_HAND);
 
@@ -100,6 +101,35 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		if (blockState.isIn(ModTags.BLOCK_MAID_HARVESTS)) {
 			if (block instanceof CropBlock crop) {
 				return crop.isMature(blockState);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isGourd(BlockPos pos, ServerWorld world) {
+		BlockState blockState = world.getBlockState(pos);
+		Block block = blockState.getBlock();
+
+		if (blockState.isIn(ModTags.BLOCK_MAID_GOURDS)) {
+			if (block instanceof GourdBlock gourd) {
+				for (int i = 0; i < 4; i++) {
+					Direction direction = Direction.fromHorizontal(i);
+					BlockState sideState = world.getBlockState(pos.offset(direction));
+					if (sideState.isOf(gourd.getAttachedStem())) {
+						try {
+							if (sideState.get(AttachedStemBlock.FACING).equals(direction.getOpposite())) {
+								return true;
+							}
+						} catch (IllegalArgumentException exception) {
+							UMULittleMaid.LOGGER.info(ModEntities.MARKER, "不明な原因でBlockからFACINGを得られなかったよ！");
+						}
+					}
+				}
+
+				return false;
 			}
 
 			return true;

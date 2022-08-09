@@ -867,6 +867,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return ItemStack.EMPTY;
 	}
 
+	public boolean canBreakGourd() {
+		return this.getIntimacy() >= 75;
+	}
+
 	public boolean hasDripleaf() {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.getStack(i).isIn(ModTags.ITEM_MAID_DRIPLEAFS)) {
@@ -1275,6 +1279,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
+	private static final String KEY_INTIMACY = "Intimacy";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -1318,6 +1323,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
+		nbt.putInt(KEY_INTIMACY, this.getIntimacy());
 	}
 
 	@Override
@@ -1359,6 +1365,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
+		this.setIntimacy(nbt.getInt(KEY_INTIMACY));
 	}
 	//</editor-fold>
 
