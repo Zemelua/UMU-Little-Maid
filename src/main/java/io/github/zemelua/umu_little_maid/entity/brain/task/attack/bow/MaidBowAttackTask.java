@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
@@ -110,7 +111,10 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 			} else if (canSeeTarget && itemUseTime >= 20) {
 				maid.clearActiveItem();
 				maid.attack(target.get(), BowItem.getPullProgress(itemUseTime));
-				maid.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, this.interval);
+				int interval = maid.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_BOW_ATTACK)
+						? (int) Math.ceil((double) this.interval - maid.getIntimacy() * 0.03D)
+						: this.interval;
+				maid.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, interval);
 			}
 		} else if (!maid.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_COOLING_DOWN) && this.targetSeeingTicker >= -60) {
 			maid.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(maid, Items.BOW));
