@@ -19,7 +19,7 @@ public class MaidHealOwnerTask extends HealOwnerTask<LittleMaidEntity> {
 		super.keepRunning(world, maid, time);
 
 		if (this.cooldown < 10 && maid.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS)) {
-			this.cooldown += maid.getIntimacy() * 1.0D / 30.0D;
+			this.cooldown += maid.getCommitment() * 1.0D / 30.0D;
 		}
 	}
 

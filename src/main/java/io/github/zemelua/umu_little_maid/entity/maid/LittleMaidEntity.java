@@ -86,8 +86,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
-	public static final int MAX_INTIMACY = 300;
-	public static final int DAY_MAX_INTIMACY = 30;
+	public static final int MAX_COMMITMENT = 300;
+	public static final int DAY_MAX_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
@@ -113,7 +113,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
-	private static final TrackedData<Integer> INTIMACY;
+	private static final TrackedData<Integer> COMMITMENT;
 
 	private final EntityNavigation landNavigation = new MobNavigation(this, this.world);
 	private final EntityNavigation canSwimNavigation = new AxolotlSwimNavigation(this, this.world);
@@ -132,8 +132,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
-	private long lastClearIntimacyDayTime;
-	private int increasedIntimacy;
+	private long lastClearCommitmentDayTime;
+	private int increasedCommitment;
 
 	private float sitProgress;
 	private float lastSitProgress;
@@ -201,7 +201,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
-		this.dataTracker.startTracking(INTIMACY, 0);
+		this.dataTracker.startTracking(COMMITMENT, 0);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -403,13 +403,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		long dayTime = this.world.getTimeOfDay();
 		long currentDay = dayTime / 24000L;
-		long lastDay = this.lastClearIntimacyDayTime / 24000L;
+		long lastDay = this.lastClearCommitmentDayTime / 24000L;
 		if (currentDay > lastDay) {
 			this.givenFoods.clear();
-			this.increaseIntimacy(9, true);
-			this.increasedIntimacy = 0;
+			this.increaseCommitment(9, true);
+			this.increasedCommitment = 0;
 
-			this.lastClearIntimacyDayTime = dayTime;
+			this.lastClearCommitmentDayTime = dayTime;
 		}
 	}
 
@@ -474,7 +474,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 						Item foodType = food.getItem();
 						if (!this.givenFoods.contains(foodType)) {
-							this.increaseIntimacy(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 6 : 11, true);
+							this.increaseCommitment(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 6 : 11, true);
 							this.givenFoods.add(foodType);
 						}
 					}
@@ -495,7 +495,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 						Item foodType = food.getItem();
 						if (!this.givenFoods.contains(foodType)) {
-							this.increaseIntimacy(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 50 : 70, true);
+							this.increaseCommitment(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 50 : 70, true);
 							this.givenFoods.add(foodType);
 						}
 					}
@@ -592,7 +592,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				if ((targetTarget != null && owner != null)
 						&& targetTarget.equals(owner)
 						&& this.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_ATTACK_OWNERS_ENEMIES)) {
-					damage *= 1.0D + this.getIntimacy() / 500.0D;
+					damage *= 1.0D + this.getCommitment() / 500.0D;
 				}
 			}
 		}
@@ -866,7 +866,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	public boolean canBreakGourd() {
-		return this.getIntimacy() >= 75;
+		return this.getCommitment() >= 75;
 	}
 
 	public boolean hasDripleaf() {
@@ -1138,25 +1138,25 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.dataTracker.set(LittleMaidEntity.IS_VARIABLE_COSTUME, value);
 	}
 
-	public int getIntimacy() {
-		return this.dataTracker.get(LittleMaidEntity.INTIMACY);
+	public int getCommitment() {
+		return this.dataTracker.get(LittleMaidEntity.COMMITMENT);
 	}
 
-	private void setIntimacy(int value) {
-		this.dataTracker.set(LittleMaidEntity.INTIMACY, value);
+	private void setCommitment(int value) {
+		this.dataTracker.set(LittleMaidEntity.COMMITMENT, value);
 	}
 
-	public void increaseIntimacy(int value, boolean force) {
+	public void increaseCommitment(int value, boolean force) {
 		if (force) {
-			if (this.increasedIntimacy + value > DAY_MAX_INTIMACY) {
-				value = value - (this.increasedIntimacy + value - DAY_MAX_INTIMACY);
+			if (this.increasedCommitment + value > DAY_MAX_COMMITMENT) {
+				value = value - (this.increasedCommitment + value - DAY_MAX_COMMITMENT);
 			}
 
-			this.increasedIntimacy += value;
+			this.increasedCommitment += value;
 		}
 
 		if (value > 0) {
-			this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
+			this.setCommitment(Math.min(this.getCommitment() + value, LittleMaidEntity.MAX_COMMITMENT));
 			this.spawnSingleParticle(ParticleTypes.HEART);
 		}
 	}
@@ -1279,7 +1279,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
-	private static final String KEY_INTIMACY = "Intimacy";
+	private static final String KEY_COMMITMENT = "Commitment";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -1323,7 +1323,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
-		nbt.putInt(KEY_INTIMACY, this.getIntimacy());
+		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
 	}
 
 	@Override
@@ -1365,7 +1365,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
-		this.setIntimacy(nbt.getInt(KEY_INTIMACY));
+		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
 	}
 	//</editor-fold>
 
@@ -1428,6 +1428,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-		INTIMACY = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	}
 }

@@ -33,7 +33,7 @@ public abstract class CraftingResultSlotMixin extends Slot {
 
 			List<LittleMaidEntity> maids = player.getWorld().getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
-				maid.increaseIntimacy(2, false);
+				maid.increaseCommitment(2, false);
 			}
 		}
 	}
