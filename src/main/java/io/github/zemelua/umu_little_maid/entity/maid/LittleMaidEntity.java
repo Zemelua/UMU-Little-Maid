@@ -1157,7 +1157,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.increasedIntimacy += value;
 		}
 
-		this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
+		if (value > 0) {
+			this.setIntimacy(Math.min(this.getIntimacy() + value, LittleMaidEntity.MAX_INTIMACY));
+			this.spawnSingleParticle(ParticleTypes.HEART);
+		}
 		UMULittleMaid.LOGGER.info(this.getIntimacy());
 	}
 
