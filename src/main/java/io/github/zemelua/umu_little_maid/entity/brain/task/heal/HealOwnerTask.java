@@ -24,7 +24,7 @@ import java.util.Map;
 public class HealOwnerTask<E extends LivingEntity & Tameable> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
-	private int cooldown;
+	protected int cooldown;
 
 	public HealOwnerTask() {
 		super(HealOwnerTask.REQUIRED_MEMORIES);

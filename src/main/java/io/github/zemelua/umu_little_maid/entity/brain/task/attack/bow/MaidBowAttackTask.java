@@ -111,7 +111,7 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 			} else if (canSeeTarget && itemUseTime >= 20) {
 				maid.clearActiveItem();
 				maid.attack(target.get(), BowItem.getPullProgress(itemUseTime));
-				int interval = maid.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_BOW_ATTACK)
+				int interval = maid.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_BOW_ATTACKS)
 						? (int) Math.ceil((double) this.interval - maid.getIntimacy() * 0.03D)
 						: this.interval;
 				maid.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, interval);

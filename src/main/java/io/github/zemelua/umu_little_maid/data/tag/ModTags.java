@@ -57,7 +57,8 @@ public final class ModTags {
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KINDS;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_WAKE_UPS;
 	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_ATTACK_OWNERS_ENEMIES;
-	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_BOW_ATTACK;
+	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_BOW_ATTACKS;
+	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -112,6 +113,7 @@ public final class ModTags {
 		PERSONALITY_FLUTTER_WHEN_KINDS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kinds"));
 		PERSONALITY_FLUTTER_WHEN_WAKE_UPS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_wake_ups"));
 		PERSONALITY_DEVOTE_WHEN_ATTACK_OWNERS_ENEMIES = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("devote_when_attack_owners_enemies"));
-		PERSONALITY_DEVOTE_WHEN_BOW_ATTACK = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("devote_when_bow_attack"));
+		PERSONALITY_DEVOTE_WHEN_BOW_ATTACKS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("devote_when_bow_attacks"));
+		PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("devote_when_heal_owners"));
 	}
 }
