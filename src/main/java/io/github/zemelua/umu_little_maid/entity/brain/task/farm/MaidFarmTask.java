@@ -58,8 +58,6 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 			}
 
 			if (MaidFarmTask.isHarvestable(pos.get(), world) || MaidFarmTask.isGourd(pos.get(), world) && maid.canBreakGourd()) {
-
-				UMULittleMaid.LOGGER.info("harv");
 				world.breakBlock(pos.get(), true, maid);
 				maid.swingHand(Hand.MAIN_HAND);
 
