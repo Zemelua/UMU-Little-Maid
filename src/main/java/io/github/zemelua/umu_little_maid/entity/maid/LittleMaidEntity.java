@@ -44,6 +44,7 @@ import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -82,7 +83,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob {
+public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -358,6 +359,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	 */
 	@Override
 	protected void mobTick() {
+		// UMULittleMaid.LOGGER.info(this.isHolding(Items.CROSSBOW));
+		// UMULittleMaid.LOGGER.info(this.getMainHandStack());
+
 		this.updateJob();
 		if (!this.getJob().equals(this.lastJob)) {
 			this.onJobChanged((ServerWorld) this.world);
@@ -650,27 +654,32 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
 		ItemStack mainStack = this.getMainHandStack();
-		ItemStack arrow = this.getArrowType(mainStack);
-		if (arrow.isEmpty()) return;
 
-		boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
+		if (this.getJob() == ModEntities.JOB_ARCHER) {
+			ItemStack arrow = this.getArrowType(mainStack);
+			if (arrow.isEmpty()) return;
 
-		PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
-		double xVelocity = target.getX() - this.getX();
-		double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
-		double zVelocity = target.getZ() - this.getZ();
-		double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
-		projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
-		projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
+			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
 
-		this.world.spawnEntity(projectile);
+			PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
+			double xVelocity = target.getX() - this.getX();
+			double yVelocity = target.getBodyY(1.0D / 3.0D) - projectile.getY();
+			double zVelocity = target.getZ() - this.getZ();
+			double power = Math.sqrt(xVelocity * xVelocity + zVelocity * zVelocity);
+			projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
+			projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
 
-		this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.playArcherAttackSound();
+			this.world.spawnEntity(projectile);
 
-		mainStack.damage(1, this, entity -> {});
-		if (!consumeArrow) {
-			arrow.decrement(1);
+			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			this.playArcherAttackSound();
+
+			mainStack.damage(1, this, entity -> {});
+			if (!consumeArrow) {
+				arrow.decrement(1);
+			}
+		} else if (this.getJob() == ModEntities.JOB_HUNTER){
+			this.shoot(this, 1.6F);
 		}
 	}
 
@@ -711,6 +720,28 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	protected void attackLivingEntity(LivingEntity target) {
 		this.tryAttack(target);
+	}
+
+	@Override
+	public void setCharging(boolean charging) {}
+
+	@Override
+	public void shoot(LivingEntity target, ItemStack crossbow, ProjectileEntity projectile, float multiShotSpray) {
+		this.shoot(this, target, projectile, multiShotSpray, 1.6F);
+	}
+
+	@Override
+	public void postShoot() {}
+
+	@Override
+	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
+		return this.getJob() == ModEntities.JOB_ARCHER || this.getJob() == ModEntities.JOB_POSEIDON || this.getJob() == ModEntities.JOB_HUNTER;
+	}
+
+	@Override
+	@Nullable
+	public LivingEntity getTarget() {
+		return this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 	}
 
 	@Override

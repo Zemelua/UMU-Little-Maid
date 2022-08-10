@@ -113,6 +113,7 @@ public final class ModEntities {
 	public static final MaidJob JOB_FARMER;
 	public static final MaidJob JOB_HEALER;
 	public static final MaidJob JOB_POSEIDON;
+	public static final MaidJob JOB_HUNTER;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -195,6 +196,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), ModEntities.JOB_FARMER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("heal"), ModEntities.JOB_HEALER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("poseidon"), ModEntities.JOB_POSEIDON);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("hunter"), JOB_HUNTER);
 
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
@@ -408,5 +410,10 @@ public final class ModEntities {
 				MaidPoseidonBrainManager::tickBrain,
 				poi -> poi.isIn(ModTags.POI_MAID_POSEIDON_SITE),
 				LittleMaidEntity.TEXTURE_POSEIDON);
+		JOB_HUNTER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_HUNTER_TOOLS),
+				MaidHunterBrainManager::initializeBrain,
+				MaidHunterBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_HUNTER_SITE),
+				LittleMaidEntity.TEXTURE_NONE);
 	}
 }
