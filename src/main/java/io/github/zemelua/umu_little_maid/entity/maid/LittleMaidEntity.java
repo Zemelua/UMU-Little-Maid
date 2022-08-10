@@ -359,9 +359,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	 */
 	@Override
 	protected void mobTick() {
-		// UMULittleMaid.LOGGER.info(this.isHolding(Items.CROSSBOW));
-		// UMULittleMaid.LOGGER.info(this.getMainHandStack());
-
 		this.updateJob();
 		if (!this.getJob().equals(this.lastJob)) {
 			this.onJobChanged((ServerWorld) this.world);
