@@ -4,7 +4,7 @@
 	"package": "io.github.zemelua.umu_little_maid.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"ConduitBlockEntityMixin", "CraftingResultSlotMixin", "LivingEntityAccessor",
+		"ConduitBlockEntityMixin", "CraftingResultSlotMixin", "GoatHornItemMixin", "LivingEntityAccessor",
 		"MobEntityAccessor", "MoveControlAccessor", "PersistentProjectileEntityAccessor", "PlayerEntityMixin",
 		"SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TaskAccessor", "TridentEntityAccessor"
 	],

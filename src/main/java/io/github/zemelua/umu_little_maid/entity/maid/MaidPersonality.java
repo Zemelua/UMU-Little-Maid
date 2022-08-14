@@ -21,6 +21,7 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 	private final double knockbackResistance;
 	private final double luck;
 	private final Predicate<LivingEntity> hostiles;
+	private final Predicate<LivingEntity> chases;
 	private final SoundEvent ambientSound;
 	private final SoundEvent fencerAttackSound;
 	private final SoundEvent crackerAttackSound;
@@ -35,6 +36,7 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 	private final SoundEvent engageSound;
 
 	public MaidPersonality(Builder builder,
+						   Predicate<LivingEntity> chases,
 	                       SoundEvent ambientSound,
 	                       SoundEvent fencerAttackSound,
 	                       SoundEvent crackerAttackSound,
@@ -56,6 +58,7 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 		this.knockbackResistance = builder.knockbackResistance;
 		this.luck = builder.luck;
 		this.hostiles = builder.hostiles;
+		this.chases = chases;
 		this.ambientSound = ambientSound;
 		this.fencerAttackSound = fencerAttackSound;
 		this.crackerAttackSound = crackerAttackSound;
@@ -104,6 +107,10 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 
 	public boolean isHostile(LivingEntity living) {
 		return this.hostiles.test(living);
+	}
+
+	public boolean isChase(LivingEntity target) {
+		return this.chases.test(target);
 	}
 
 	public SoundEvent getAmbientSound() {
@@ -230,7 +237,8 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 			return this;
 		}
 
-		public MaidPersonality build(SoundEvent ambientSound,
+		public MaidPersonality build(Predicate<LivingEntity> chases,
+		                             SoundEvent ambientSound,
 		                             SoundEvent fencerAttackSound,
 		                             SoundEvent crackerAttackSound,
 		                             SoundEvent archerAttackSound,
@@ -243,6 +251,7 @@ public class MaidPersonality implements ICanTagObject<MaidPersonality> {
 		                             SoundEvent sitSound,
 		                             SoundEvent engageSound) {
 			return new MaidPersonality(this,
+					chases,
 					ambientSound,
 					fencerAttackSound,
 					crackerAttackSound,

@@ -83,6 +83,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static io.github.zemelua.umu_little_maid.entity.ModEntities.MEMORY_IS_HUNTING;
+
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
@@ -1436,7 +1438,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_JOB_SITE_CANDIDATE,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
-				ModEntities.MEMORY_SHOULD_BREATH
+				ModEntities.MEMORY_SHOULD_BREATH,
+				MEMORY_IS_HUNTING
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

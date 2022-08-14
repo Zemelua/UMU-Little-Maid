@@ -70,6 +70,7 @@ public final class ModEntities {
 	public static final MemoryModuleType<TridentEntity> MEMORY_THROWN_TRIDENT;
 	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH;
+	public static final MemoryModuleType<Unit> MEMORY_IS_HUNTING;
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
@@ -141,8 +142,9 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident"), ModEntities.MEMORY_THROWN_TRIDENT);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident_cooldown"), ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_breath"), ModEntities.MEMORY_SHOULD_BREATH);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_hunting"), MEMORY_IS_HUNTING);
 
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModEntities.SENSOR_MAID_ATTACKABLE);
+		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
@@ -244,6 +246,7 @@ public final class ModEntities {
 		MEMORY_THROWN_TRIDENT = new MemoryModuleType<>(Optional.empty());
 		MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+		MEMORY_IS_HUNTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
@@ -273,7 +276,8 @@ public final class ModEntities {
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_BRAVERY_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_CHASES),
+						ModSounds.ENTITY_MAID_BRAVERY_AMBIENT,
 						ModSounds.ENTITY_MAID_BRAVERY_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_BRAVERY_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_BRAVERY_ARCHER_ATTACK,
@@ -287,7 +291,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_BRAVERY_ENGAGE);
 		PERSONALITY_DILIGENT = new MaidPersonality.Builder().setArmorToughness(1.0D).setLuck(2.0D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_DILIGENT_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_DILIGENT_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_DILIGENT_CHASES),
+						ModSounds.ENTITY_MAID_DILIGENT_AMBIENT,
 						ModSounds.ENTITY_MAID_DILIGENT_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_DILIGENT_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_DILIGENT_ARCHER_ATTACK,
@@ -301,7 +306,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_DILIGENT_ENGAGE);
 		PERSONALITY_AUDACIOUS = new MaidPersonality.Builder().setMovementSpeed(0.24D).setArmor(2.0D).setKnockbackResistance(0.5D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_AUDACIOUS_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_AUDACIOUS_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_AUDACIOUS_CHASES),
+						ModSounds.ENTITY_MAID_AUDACIOUS_AMBIENT,
 						ModSounds.ENTITY_MAID_AUDACIOUS_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_AUDACIOUS_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_AUDACIOUS_ARCHER_ATTACK,
@@ -315,7 +321,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_AUDACIOUS_ENGAGE);
 		PERSONALITY_GENTLE = new MaidPersonality.Builder().setMaxHealth(26.0D).setLuck(1.5D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_GENTLE_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_GENTLE_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_GENTLE_CHASES),
+						ModSounds.ENTITY_MAID_GENTLE_AMBIENT,
 						ModSounds.ENTITY_MAID_GENTLE_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_GENTLE_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_GENTLE_ARCHER_ATTACK,
@@ -329,7 +336,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_GENTLE_ENGAGE);
 		PERSONALITY_SHY = new MaidPersonality.Builder().setMaxHealth(24.0D).setMovementSpeed(0.42D).setKnockbackResistance(-0.4D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_SHY_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_SHY_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_SHY_CHASES),
+						ModSounds.ENTITY_MAID_SHY_AMBIENT,
 						ModSounds.ENTITY_MAID_SHY_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_SHY_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_SHY_ARCHER_ATTACK,
@@ -343,7 +351,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_SHY_ENGAGE);
 		PERSONALITY_LAZY = new MaidPersonality.Builder().setMovementSpeed(0.25D).setAttackDamage(0.8D).setLuck(-0.8D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_LAZY_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_LAZY_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_LAZY_CHASES),
+						ModSounds.ENTITY_MAID_LAZY_AMBIENT,
 						ModSounds.ENTITY_MAID_LAZY_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_LAZY_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_LAZY_ARCHER_ATTACK,
@@ -357,7 +366,8 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_LAZY_ENGAGE);
 		PERSONALITY_TSUNDERE = new MaidPersonality.Builder().setAttackDamage(1.2D).setMovementSpeed(0.35D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_TSUNDERE_HOSTILES))
-				.build(ModSounds.ENTITY_MAID_TSUNDERE_AMBIENT,
+				.build(living -> living.getType().isIn(ModTags.ENTITY_MAID_TSUNDERE_CHASES),
+						ModSounds.ENTITY_MAID_TSUNDERE_AMBIENT,
 						ModSounds.ENTITY_MAID_TSUNDERE_FENCER_ATTACK,
 						ModSounds.ENTITY_MAID_TSUNDERE_CRACKER_ATTACK,
 						ModSounds.ENTITY_MAID_TSUNDERE_ARCHER_ATTACK,
