@@ -21,6 +21,7 @@ import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleState.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
+@SuppressWarnings("unused")
 public class EatChorusFruitTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MEMORY_JOB_SITE, VALUE_ABSENT

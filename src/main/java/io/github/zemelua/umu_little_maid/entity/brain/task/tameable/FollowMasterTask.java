@@ -18,7 +18,6 @@ import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
 public class FollowMasterTask<E extends PathAwareEntity & IHasMaster> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			// WALK_TARGET, VALUE_ABSENT,
 			MEMORY_JOB_SITE, VALUE_ABSENT
 	);
 
@@ -31,23 +30,23 @@ public class FollowMasterTask<E extends PathAwareEntity & IHasMaster> extends Ta
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, E mob) {
-		if (mob.isLeashed()) return false;
-		if (mob.hasVehicle()) return false;
+	protected boolean shouldRun(ServerWorld world, E pet) {
+		if (pet.isLeashed()) return false;
+		if (pet.hasVehicle()) return false;
 
-		Optional<PlayerEntity> master = mob.getMaster();
+		Optional<PlayerEntity> master = pet.getMaster();
 
 		return master
-				.filter(masterValue -> !masterValue.isSpectator() && mob.distanceTo(masterValue) >= this.startDistance)
+				.filter(masterValue -> !masterValue.isSpectator() && pet.distanceTo(masterValue) >= this.startDistance)
 				.isPresent();
 	}
 
 	@Override
-	protected void run(ServerWorld world, E mob, long time) {
-		Optional<PlayerEntity> master = mob.getMaster();
+	protected void run(ServerWorld world, E pet, long time) {
+		Optional<PlayerEntity> master = pet.getMaster();
 
 		master.ifPresent(masterValue -> {
-			Brain<?> brain = mob.getBrain();
+			Brain<?> brain = pet.getBrain();
 
 			brain.remember(WALK_TARGET, new WalkTarget(masterValue, 1.2F, 2));
 			brain.remember(LOOK_TARGET, new EntityLookTarget(masterValue, true));

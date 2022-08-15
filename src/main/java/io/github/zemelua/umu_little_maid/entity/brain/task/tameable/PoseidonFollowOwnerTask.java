@@ -5,6 +5,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.util.math.BlockPos;
 
+@SuppressWarnings("unused")
 public class PoseidonFollowOwnerTask extends FollowOwnerTask {
 	public PoseidonFollowOwnerTask(float minDistance, float maxDistance) {
 		super(minDistance, maxDistance);

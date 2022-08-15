@@ -17,8 +17,9 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSit
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.PoseidonFollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -82,9 +83,8 @@ public final class MaidPoseidonBrainManager {
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
-				Pair.of(0, new PoseidonFollowOwnerTask(10.0F, 2.0F))
-//				Pair.of(0, new FollowMasterTask<>(10.0F)),
-//				Pair.of(0, new EatChorusFruitTask(15.0F))
+				Pair.of(0, new FollowMasterTask<>(10.0F)),
+				Pair.of(0, new TeleportToMasterTask<>(15.0F))
 		));
 	}
 

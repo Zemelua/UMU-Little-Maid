@@ -19,6 +19,7 @@ import io.github.zemelua.umu_little_maid.util.ITameable;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -30,6 +31,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -334,37 +336,36 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 	//</editor-fold>
 
+	@Override
+	public boolean teleport(double x, double y, double z, boolean spawnParticles) {
+		if (this.canTeleport(new BlockPos(x, y, z))) {
+			this.navigation.stop();
+			this.requestTeleport(x, y, z);
 
-//	@Override
-//	public boolean teleport(double x, double y, double z, boolean particleEffects) {
-//		if (this.canTeleport(new BlockPos(x, y, z))) {
-//			this.navigation.stop();
-//			this.requestTeleport(x, y, z);
-//
-//			if (particleEffects) {
-//				this.spawnTeleportParticles(x, y, z);
-//			}
-//
-//			return true;
-//		} else {
-//			return super.teleport(x, y, z, particleEffects);
-//		}
-//	}
-//
-//	public boolean canTeleport(BlockPos toPos) {
-//		if (this.getJob() == JOB_POSEIDON) {
-//			PathNodeType pathType = this.getNavigation().getNodeMaker()
-//					.getDefaultNodeType(this.getWorld(), toPos.getX(), toPos.getY(), toPos.getZ());
-//			if (pathType != PathNodeType.WALKABLE && pathType != PathNodeType.WATER) return false;
-//			if (pathType != PathNodeType.WATER && this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
-//		} else {
-//			PathNodeType pathType = LandPathNodeMaker.getLandNodeType(this.getWorld(), toPos.mutableCopy());
-//			if (pathType != PathNodeType.WALKABLE) return false;
-//			if (this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
-//		}
-//
-//		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(toPos.subtract(this.getBlockPos())));
-//	}
+			if (spawnParticles) {
+				this.spawnTeleportParticles(x, y, z);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean canTeleport(BlockPos toPos) {
+		if (this.getJob() == JOB_POSEIDON) {
+			PathNodeType pathType = this.getNavigation().getNodeMaker()
+					.getDefaultNodeType(this.getWorld(), toPos.getX(), toPos.getY(), toPos.getZ());
+			if (pathType != PathNodeType.WALKABLE && pathType != PathNodeType.WATER) return false;
+			if (pathType != PathNodeType.WATER && this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
+		} else {
+			PathNodeType pathType = LandPathNodeMaker.getLandNodeType(this.getWorld(), toPos.mutableCopy());
+			if (pathType != PathNodeType.WALKABLE) return false;
+			if (this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
+		}
+
+		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(toPos.subtract(this.getBlockPos())));
+	}
 
 	@Override
 	public void tick() {

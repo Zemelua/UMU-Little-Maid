@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class FollowOwnerTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModEntities.MEMORY_JOB_SITE, MemoryModuleState.VALUE_ABSENT
