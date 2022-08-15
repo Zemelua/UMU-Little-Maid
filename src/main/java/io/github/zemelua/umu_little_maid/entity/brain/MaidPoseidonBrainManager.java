@@ -83,6 +83,8 @@ public final class MaidPoseidonBrainManager {
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
 				Pair.of(0, new PoseidonFollowOwnerTask(10.0F, 2.0F))
+//				Pair.of(0, new FollowMasterTask<>(10.0F)),
+//				Pair.of(0, new EatChorusFruitTask(15.0F))
 		));
 	}
 

@@ -15,6 +15,7 @@ import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
+import io.github.zemelua.umu_little_maid.util.ITameable;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -83,9 +84,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.MEMORY_IS_HUNTING;
+import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser {
+public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -243,14 +244,14 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	@Override
 	public float getPathfindingPenalty(PathNodeType nodeType) {
 		if (nodeType == PathNodeType.WATER) {
-			return this.getJob() == ModEntities.JOB_POSEIDON ? 0.0F : 0.8F;
+			return this.getJob() == JOB_POSEIDON ? 0.0F : 0.8F;
 		}
 
 		return super.getPathfindingPenalty(nodeType);
 	}
 
 	public boolean canSwim() {
-		return this.isTouchingWater() && this.getJob() == ModEntities.JOB_POSEIDON;
+		return this.isTouchingWater() && this.getJob() == JOB_POSEIDON;
 	}
 
 	@Override
@@ -297,7 +298,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public void updateSwimming() {
-		if (this.getJob() == ModEntities.JOB_POSEIDON) {
+		if (this.getJob() == JOB_POSEIDON) {
 			this.navigation = this.canSwimNavigation;
 		} else {
 			this.navigation = this.landNavigation;
@@ -332,6 +333,38 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 	//</editor-fold>
+
+
+//	@Override
+//	public boolean teleport(double x, double y, double z, boolean particleEffects) {
+//		if (this.canTeleport(new BlockPos(x, y, z))) {
+//			this.navigation.stop();
+//			this.requestTeleport(x, y, z);
+//
+//			if (particleEffects) {
+//				this.spawnTeleportParticles(x, y, z);
+//			}
+//
+//			return true;
+//		} else {
+//			return super.teleport(x, y, z, particleEffects);
+//		}
+//	}
+//
+//	public boolean canTeleport(BlockPos toPos) {
+//		if (this.getJob() == JOB_POSEIDON) {
+//			PathNodeType pathType = this.getNavigation().getNodeMaker()
+//					.getDefaultNodeType(this.getWorld(), toPos.getX(), toPos.getY(), toPos.getZ());
+//			if (pathType != PathNodeType.WALKABLE && pathType != PathNodeType.WATER) return false;
+//			if (pathType != PathNodeType.WATER && this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
+//		} else {
+//			PathNodeType pathType = LandPathNodeMaker.getLandNodeType(this.getWorld(), toPos.mutableCopy());
+//			if (pathType != PathNodeType.WALKABLE) return false;
+//			if (this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
+//		}
+//
+//		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(toPos.subtract(this.getBlockPos())));
+//	}
 
 	@Override
 	public void tick() {
@@ -372,7 +405,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		this.updatePose();
 
-		if (this.getPose() == ModEntities.POSE_EATING) {
+		if (this.getPose() == POSE_EATING) {
 			this.eatingTicks++;
 			if (this.eatingTicks % 5 == 0) {
 				this.spawnEatingParticles();
@@ -418,7 +451,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private void updatePose() {
 		EntityPose pose = this.getPose();
-		if (pose == ModEntities.POSE_EATING || pose == ModEntities.POSE_CHANGING_COSTUME || pose == ModEntities.POSE_HEALING) {
+		if (pose == POSE_EATING || pose == ModEntities.POSE_CHANGING_COSTUME || pose == ModEntities.POSE_HEALING) {
 			return;
 		}
 
@@ -470,7 +503,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.getPose() != POSE_EATING) {
 					if (!this.world.isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, foodArg -> this.heal(6.5F));
@@ -483,7 +516,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != POSE_EATING) {
 					if (!this.world.isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, (foodArg) -> {
@@ -541,7 +574,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				}
 			}
 		} else {
-			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != ModEntities.POSE_EATING) {
+			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != POSE_EATING) {
 				if (!this.world.isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 					this.eatFood(food, (foodArg) -> {
@@ -565,7 +598,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.playEatSound(food);
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
-		this.setPose(ModEntities.POSE_EATING);
+		this.setPose(POSE_EATING);
 	}
 
 	/**
@@ -734,7 +767,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
-		return this.getJob() == ModEntities.JOB_ARCHER || this.getJob() == ModEntities.JOB_POSEIDON || this.getJob() == ModEntities.JOB_HUNTER;
+		return this.getJob() == ModEntities.JOB_ARCHER || this.getJob() == JOB_POSEIDON || this.getJob() == ModEntities.JOB_HUNTER;
 	}
 
 	@Override
@@ -895,6 +928,22 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return ItemStack.EMPTY;
 	}
 
+	public ItemStack getHasChorusFruit() {
+		if (this.getOffHandStack().isIn(ModTags.ITEM_MAID_CROPS)) {
+			return this.getOffHandStack();
+		}
+
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
+
+			if (itemStack.isIn(ModTags.ITEM_MAID_CHORUS_FRUITS)) {
+				return itemStack;
+			}
+		}
+
+		return ItemStack.EMPTY;
+	}
+
 	public boolean canBreakGourd() {
 		return this.getCommitment() >= 75;
 	}
@@ -980,6 +1029,22 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
+	public void spawnTeleportParticles(double x, double y, double z) {
+		if (!this.world.isClient()) {
+			for (int i = 0; i < 128; i++) {
+				double delta = i / 127.0D;
+				double xPos = MathHelper.lerp(delta, this.prevX, this.getX()) + (this.random.nextDouble() - 0.5D) * this.getWidth() * 2.0D;
+				double yPos = MathHelper.lerp(delta, this.prevY, this.getY()) + this.random.nextDouble() * this.getHeight();
+				double zPos = MathHelper.lerp(delta, this.prevZ, this.getZ()) + (this.random.nextDouble() - 0.5D) * this.getWidth() * 2.0D;
+				float xDelta = (this.random.nextFloat() - 0.5F) * 0.2F;
+				float yDelta = (this.random.nextFloat() - 0.5F) * 0.2F;
+				float zDelta = (this.random.nextFloat() - 0.5F) * 0.2F;
+
+				((ServerWorld) this.world).spawnParticles(ParticleTypes.PORTAL, xPos, yPos, zPos, 0, xDelta, yDelta, zDelta, 1.0D);
+			}
+		}
+	}
+
 	private void spawnSingleParticle(@SuppressWarnings("SameParameterValue") ParticleEffect particle) {
 		if (!this.world.isClient()) {
 			((ServerWorld) this.world).spawnParticles(particle, this.getX(), this.getY() + 1.2D, this.getZ(), 0, 1.0D, 0.0D, 0.0D, 1.0D);
@@ -1041,7 +1106,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (data.equals(Entity.POSE)) {
 			EntityPose pose = this.getPose();
-			if (pose == ModEntities.POSE_EATING) {
+			if (pose == POSE_EATING) {
 				this.eatAnimation.start(this.age);
 			} else {
 				this.eatAnimation.stop();
@@ -1103,6 +1168,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void setOwner(PlayerEntity player) {
 		this.setOwnerUuid(player.getUuid());
+	}
+
+	@Override
+	public Optional<PlayerEntity> getMaster() {
+		Optional<UUID> masterID = this.dataTracker.get(LittleMaidEntity.OWNER);
+
+		return masterID.map(value -> this.world.getPlayerByUuid(value));
 	}
 
 	public boolean isTamed() {

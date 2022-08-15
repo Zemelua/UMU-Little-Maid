@@ -35,6 +35,7 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_CHANGE_COSTUMES;
 	public static final TagKey<Item> ITEM_MAID_CROPS;
 	public static final TagKey<Item> ITEM_MAID_PRODUCTS;
+	public static final TagKey<Item> ITEM_MAID_CHORUS_FRUITS;
 
 	public static final TagKey<EntityType<?>> ENTITY_MAID_GENERAL_HOSTILES;
 	public static final TagKey<EntityType<?>> ENTITY_MAID_BRAVERY_HOSTILES;
@@ -100,6 +101,7 @@ public final class ModTags {
 		ITEM_MAID_CHANGE_COSTUMES = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_change_costumes"));
 		ITEM_MAID_CROPS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_crops"));
 		ITEM_MAID_PRODUCTS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_products"));
+		ITEM_MAID_CHORUS_FRUITS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_chorus_fruits"));
 
 		ENTITY_MAID_GENERAL_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_general_hostiles"));
 		ENTITY_MAID_BRAVERY_HOSTILES = TagKey.of(Registry.ENTITY_TYPE_KEY, UMULittleMaid.identifier("maid_bravery_hostiles"));

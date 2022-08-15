@@ -4,19 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToHomeTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.*;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetHomeTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberHomeTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowOwnerTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -68,6 +63,8 @@ public final class MaidFarmerBrainManager {
 	private static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
 				Pair.of(0, new FollowOwnerTask(10.0F, 2.0F)),
+//				Pair.of(0, new FollowMasterTask<>(10.0F)),
+//				Pair.of(0, new EatChorusFruitTask(15.0F)),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(new StrollTask(0.8F), 2),
