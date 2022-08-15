@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
@@ -20,6 +21,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldS
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.wander.AvoidRainStrollTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -71,9 +73,10 @@ public final class MaidGuardBrainManager {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
 				Pair.of(0, new FollowMasterTask<>(10.0F)),
 				Pair.of(0, new TeleportToMasterTask<>(15.0F)),
+				Pair.of(0, new ShelterFromRainTask<>()),
 				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
-						Pair.of(new StrollTask(0.8F), 2),
+						Pair.of(new AvoidRainStrollTask(0.8F), 2),
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				)))

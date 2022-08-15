@@ -14,9 +14,7 @@ import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccesso
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
-import io.github.zemelua.umu_little_maid.util.ITameable;
-import io.github.zemelua.umu_little_maid.util.ModUtils;
+import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -88,7 +86,7 @@ import java.util.function.Predicate;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable {
+public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -240,7 +238,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new MobNavigation(this, world);
+		return this.landNavigation;
 	}
 
 	@Override
@@ -365,6 +363,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(toPos.subtract(this.getBlockPos())));
+	}
+
+	@Override
+	public boolean shouldAvoidRain() {
+		return this.getJob() != JOB_POSEIDON;
 	}
 
 	@Override
