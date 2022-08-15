@@ -91,7 +91,7 @@ public final class MaidCrackerBrainManager {
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, new MeleeAttackTask(20)),
+				Pair.of(0, new MeleeAttackTask(30)),
 				Pair.of(1, new RangedApproachTask(1.0F))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT)

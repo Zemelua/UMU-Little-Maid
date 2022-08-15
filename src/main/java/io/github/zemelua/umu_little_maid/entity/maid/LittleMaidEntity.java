@@ -33,6 +33,9 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -286,6 +289,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			}
 		}
 
+		this.updateAttributes();
+
 		Vec3d velocity = this.getVelocity();
 		if (this.isUsingDripleaf() && velocity.getY() < 0.0D) {
 			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
@@ -294,6 +299,37 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.pickUpTridents();
 
 		this.tickHandSwing();
+	}
+
+	private static final UUID ATTRIBUTE_ID_CRACKER_SLOW = UUID.fromString("7ED8E765-F4D0-4428-BCBE-654FFF51BAF0");
+	private static final UUID ATTRIBUTE_ID_CRACKER_DAMAGE = UUID.fromString("56A32427-E09D-BA9C-EC1C-A1C7BAD8E88A");
+
+	private void updateAttributes() {
+		MaidJob job = this.getJob();
+		EntityAttributeInstance speedAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+		EntityAttributeInstance attackAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+
+		if (job == JOB_CRACKER) {
+			if (speedAttribute.getModifier(ATTRIBUTE_ID_CRACKER_SLOW) == null) {
+				speedAttribute.addTemporaryModifier(
+						new EntityAttributeModifier(ATTRIBUTE_ID_CRACKER_SLOW, "Cracker slow", -0.25D, Operation.MULTIPLY_TOTAL)
+				);
+			}
+
+			if (attackAttribute.getModifier(ATTRIBUTE_ID_CRACKER_DAMAGE) == null) {
+				attackAttribute.addTemporaryModifier(
+						new EntityAttributeModifier(ATTRIBUTE_ID_CRACKER_DAMAGE, "Cracker attack", 0.4D, Operation.MULTIPLY_TOTAL)
+				);
+			}
+		} else {
+			if (speedAttribute.getModifier(ATTRIBUTE_ID_CRACKER_SLOW) != null) {
+				speedAttribute.removeModifier(ATTRIBUTE_ID_CRACKER_SLOW);
+			}
+
+			if (attackAttribute.getModifier(ATTRIBUTE_ID_CRACKER_DAMAGE) != null) {
+				attackAttribute.removeModifier(ATTRIBUTE_ID_CRACKER_DAMAGE);
+			}
+		}
 	}
 
 	@Override
