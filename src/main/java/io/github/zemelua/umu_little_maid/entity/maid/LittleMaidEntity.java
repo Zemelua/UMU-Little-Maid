@@ -241,7 +241,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return this.landNavigation;
+		return new MobNavigation(this, world);
 	}
 
 	@Override
