@@ -44,6 +44,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -86,6 +87,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleBiFunction;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
@@ -96,6 +98,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final int MAX_COMMITMENT = 300;
 	public static final int DAY_MAX_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
+	public static final ToDoubleBiFunction<LittleMaidEntity, LivingEntity> INTEREST_SCORER = (self, target) -> {
+		if (target.equals(self.getOwner())) return 2.0F;
+		else if (target instanceof AnimalEntity) return 1.0F;
+		else return 0.0F;
+	};
 	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
 			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
 			EntityPose.SLEEPING, EntityDimensions.fixed(0.2F, 0.2F),

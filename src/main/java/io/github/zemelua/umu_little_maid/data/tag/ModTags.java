@@ -27,6 +27,7 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_HEALER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_POSEIDON_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_HUNTER_TOOLS;
+	public static final TagKey<Item> ITEM_MAID_SHEPHERD_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_CONTRACT_FOODS;
 	public static final TagKey<Item> ITEM_MAID_ENGAGE_BATONS;
 	public static final TagKey<Item> ITEM_MAID_HEAL_FOODS;
@@ -61,6 +62,7 @@ public final class ModTags {
 	public static final TagKey<PointOfInterestType> POI_MAID_HEALER_SITE;
 	public static final TagKey<PointOfInterestType> POI_MAID_POSEIDON_SITE;
 	public static final TagKey<PointOfInterestType> POI_MAID_HUNTER_SITE;
+	public static final TagKey<PointOfInterestType> POI_MAID_SHEPHERD_SITE;
 
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KILLS;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_CRAFTS;
@@ -93,6 +95,7 @@ public final class ModTags {
 		ITEM_MAID_HEALER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_healer_tools"));
 		ITEM_MAID_POSEIDON_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_poseidon_tools"));
 		ITEM_MAID_HUNTER_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_hunter_tools"));
+		ITEM_MAID_SHEPHERD_TOOLS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_shepherd_tools"));
 		ITEM_MAID_CONTRACT_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_contract_foods"));
 		ITEM_MAID_ENGAGE_BATONS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_engage_batons"));
 		ITEM_MAID_HEAL_FOODS = TagKey.of(Registry.ITEM_KEY, UMULittleMaid.identifier("maid_heal_foods"));
@@ -127,6 +130,7 @@ public final class ModTags {
 		POI_MAID_HEALER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_healer_site"));
 		POI_MAID_POSEIDON_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_poseidon_site"));
 		POI_MAID_HUNTER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_hunter_site"));
+		POI_MAID_SHEPHERD_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_shepherd_site"));
 
 		PERSONALITY_FLUTTER_WHEN_KILLS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kills"));
 		PERSONALITY_FLUTTER_WHEN_CRAFTS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_crafts"));

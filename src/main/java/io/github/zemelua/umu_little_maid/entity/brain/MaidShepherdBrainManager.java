@@ -3,11 +3,18 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.heal.ForgetShouldHealTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.heal.RememberShouldHealTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtBlockTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
@@ -22,15 +29,18 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public final class MaidNoneBrainManager {
+import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
+
+public final class MaidShepherdBrainManager {
 	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
-		MaidNoneBrainManager.addCoreTasks(brain);
-		MaidNoneBrainManager.addIdleTasks(brain);
-		MaidNoneBrainManager.addSitTasks(brain);
-		MaidNoneBrainManager.addEatTasks(brain);
-		MaidNoneBrainManager.addSleepTasks(brain);
+		addCoreTasks(brain);
+		addIdleTasks(brain);
+		addSitTasks(brain);
+		addEatTasks(brain);
+		addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -46,15 +56,19 @@ public final class MaidNoneBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
-				Pair.of(1, new WalkTask(1.0F)),
-				Pair.of(2, new LookAroundTask(45, 90)),
-				Pair.of(3, new WanderAroundTask()),
+				Pair.of(1, new LookAroundTask(45, 90)),
+				Pair.of(2, new WanderAroundTask()),
+				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask()),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
+				Pair.of(98, new RememberShouldHealTask<>()),
+				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask()),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetHomeTask<>())
+				Pair.of(99, new ForgetHomeTask<>()),
+				Pair.of(99, new ForgetShouldHealTask<>()),
+				Pair.of(99, new ForgetJobSiteTask())
 		));
 	}
 
@@ -67,13 +81,19 @@ public final class MaidNoneBrainManager {
 				Pair.of(3, new RandomTask<>(ImmutableList.of(
 						Pair.of(new AvoidRainStrollTask(0.8F), 2),
 						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
-						Pair.of(new WaitTask(30, 60), 1)
+						Pair.of(new WaitTask(30, 60), 4)
 				))),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(
 						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 1),
+						Pair.of(new LookAtEntityTask<>((self, target) -> target instanceof SheepEntity), 1),
+						Pair.of(new LookAtBlockTask<>(POI_BANNER), 2),
 						Pair.of(new WaitTask(30, 60), 4)
 				)))
 		));
+	}
+
+	public static void addShearSheepTasks(Brain<LittleMaidEntity> brain) {
+
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
@@ -99,11 +119,13 @@ public final class MaidNoneBrainManager {
 				Pair.of(1, new WalkToHomeTask<>(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_ABSENT)
 		));
 	}
 
-	private MaidNoneBrainManager() throws IllegalAccessException {
-		throw new IllegalAccessException();
+	@Deprecated
+	private MaidShepherdBrainManager() {
+		UMULittleMaid.LOGGER.warn(ModEntities.MARKER, "MaidShepherdBrainManager はインスタンス化しても意味ないよ！");
 	}
 }

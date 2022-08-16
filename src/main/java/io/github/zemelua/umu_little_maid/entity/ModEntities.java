@@ -87,6 +87,7 @@ public final class ModEntities {
 	public static final Activity ACTIVITY_HEAL;
 	public static final Activity ACTIVITY_GO_GET_TRIDENT;
 	public static final Activity ACTIVITY_BREATH;
+	public static final Activity ACTIVITY_SHEAR_SHEEP;
 
 	public static final EntityPose POSE_EATING;
 	public static final EntityPose POSE_USING_DRIPLEAF;
@@ -97,6 +98,7 @@ public final class ModEntities {
 	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
 	public static final RegistryKey<PointOfInterestType> POI_AMETHYST_BLOCK;
 	public static final RegistryKey<PointOfInterestType> POI_CONDUIT;
+	public static final RegistryKey<PointOfInterestType> POI_BANNER;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -115,6 +117,7 @@ public final class ModEntities {
 	public static final MaidJob JOB_HEALER;
 	public static final MaidJob JOB_POSEIDON;
 	public static final MaidJob JOB_HUNTER;
+	public static final MaidJob JOB_SHEPHERD;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -159,6 +162,7 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModEntities.ACTIVITY_HEAL);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModEntities.ACTIVITY_GO_GET_TRIDENT);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModEntities.ACTIVITY_BREATH);
+		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("shear_sheep"), ModEntities.ACTIVITY_SHEAR_SHEEP);
 
 		//noinspection ConstantConditions
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
@@ -181,6 +185,41 @@ public final class ModEntities {
 				PointOfInterestTypes.getStatesOfBlock(Blocks.AMETHYST_BLOCK), 1, 1);
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_CONDUIT,
 				PointOfInterestTypes.getStatesOfBlock(Blocks.CONDUIT), 1, 1);
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, POI_BANNER,
+				ImmutableSet.<BlockState>builder()
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WHITE_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ORANGE_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MAGENTA_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_BLUE_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.YELLOW_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIME_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PINK_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GRAY_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_GRAY_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CYAN_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PURPLE_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLUE_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BROWN_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GREEN_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.RED_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLACK_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WHITE_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ORANGE_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MAGENTA_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_BLUE_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.YELLOW_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIME_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PINK_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GRAY_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_GRAY_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CYAN_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PURPLE_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLUE_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BROWN_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GREEN_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.RED_WALL_BANNER))
+						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLACK_WALL_BANNER))
+						.build(), 1, 1);
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
@@ -199,6 +238,7 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("heal"), ModEntities.JOB_HEALER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("poseidon"), ModEntities.JOB_POSEIDON);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("hunter"), JOB_HUNTER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("shepherd"), JOB_SHEPHERD);
 
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
@@ -263,6 +303,7 @@ public final class ModEntities {
 		ACTIVITY_HEAL = new Activity("heal");
 		ACTIVITY_GO_GET_TRIDENT = new Activity("go_get_trident");
 		ACTIVITY_BREATH = new Activity("breath");
+		ACTIVITY_SHEAR_SHEEP = new Activity("shear_sheep");
 
 		POSE_EATING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_EATING);
 		POSE_USING_DRIPLEAF = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_USING_DRIPLEAF);
@@ -273,6 +314,7 @@ public final class ModEntities {
 		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
 		POI_AMETHYST_BLOCK = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("amethyst_block"));
 		POI_CONDUIT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("conduit"));
+		POI_BANNER = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("banner"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
@@ -424,6 +466,11 @@ public final class ModEntities {
 				MaidHunterBrainManager::initializeBrain,
 				MaidHunterBrainManager::tickBrain,
 				poi -> poi.isIn(ModTags.POI_MAID_HUNTER_SITE),
+				LittleMaidEntity.TEXTURE_NONE);
+		JOB_SHEPHERD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_SHEPHERD_TOOLS),
+				MaidShepherdBrainManager::initializeBrain,
+				MaidShepherdBrainManager::tickBrain,
+				poi -> poi.isIn(ModTags.POI_MAID_SHEPHERD_SITE),
 				LittleMaidEntity.TEXTURE_NONE);
 	}
 }
