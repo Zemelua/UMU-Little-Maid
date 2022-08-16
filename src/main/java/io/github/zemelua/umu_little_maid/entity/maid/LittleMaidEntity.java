@@ -405,7 +405,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			if (this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
 		}
 
-		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(toPos.subtract(this.getBlockPos())));
+		return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(Vec3d.of(toPos).subtract(this.getPos())));
 	}
 
 	@Override
