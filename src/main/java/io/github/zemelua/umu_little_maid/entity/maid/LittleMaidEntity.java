@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
@@ -15,7 +14,10 @@ import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccesso
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import io.github.zemelua.umu_little_maid.util.*;
+import io.github.zemelua.umu_little_maid.util.IAvoidRain;
+import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
+import io.github.zemelua.umu_little_maid.util.ITameable;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -45,11 +47,13 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
@@ -85,7 +89,6 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleBiFunction;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
@@ -96,19 +99,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final int MAX_COMMITMENT = 300;
 	public static final int DAY_MAX_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
-	public static final ToDoubleBiFunction<LittleMaidEntity, LivingEntity> INTEREST_SCORER = (self, target) -> {
-		if (target.equals(self.getOwner())) return 2.0F;
-		else if (target instanceof AnimalEntity) return 1.0F;
-		else return 0.0F;
-	};
-	private static final Map<EntityPose, EntityDimensions> DIMENSIONS = ImmutableMap.of(
-			EntityPose.STANDING, EntityDimensions.fixed(0.6F, 1.5F),
-			EntityPose.SLEEPING, EntityDimensions.fixed(0.2F, 0.2F),
-			EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.4F),
-			EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.4F),
-			EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.4F),
-			EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F),
-			EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F));
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
 	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
@@ -271,22 +261,31 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		return this.isTouchingWater() && this.getJob() == JOB_POSEIDON;
 	}
 
+	private static final EntityDimensions DIMENSIONS_SLEEPING = EntityDimensions.fixed(0.2F, 0.2F);
+	private static final EntityDimensions DIMENSIONS_CRAWLING = EntityDimensions.changing(0.6F, 0.6F);
+
 	@Override
 	public EntityDimensions getDimensions(EntityPose pose) {
-		return LittleMaidEntity.DIMENSIONS.getOrDefault(pose, EntityDimensions.fixed(0.6F, 1.5F));
+		return switch (pose) {
+			case SLEEPING -> DIMENSIONS_SLEEPING;
+			case SWIMMING, SPIN_ATTACK -> DIMENSIONS_CRAWLING;
+
+			default -> this.getType().getDimensions();
+		};
 	}
+
+	private static final float EYE_HEIGHT_STANDING = 1.2F;
+	private static final float EYE_HEIGHT_SLEEPING = 0.2F;
+	private static final float EYE_HEIGHT_CRAWLING = 0.4F;
 
 	@Override
 	public float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		switch (pose) {
-			case SWIMMING, FALL_FLYING, SPIN_ATTACK -> {
-				return 0.4F;
-			}
-			case CROUCHING -> {
-				return 1.27F;
-			}
-		}
-		return 1.62F;
+		return switch (pose) {
+			case SLEEPING -> EYE_HEIGHT_SLEEPING;
+			case SWIMMING, SPIN_ATTACK -> EYE_HEIGHT_CRAWLING;
+
+			default -> EYE_HEIGHT_STANDING;
+		};
 	}
 
 	@Override
@@ -439,7 +438,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			PathNodeType pathType = this.getNavigation().getNodeMaker()
 					.getDefaultNodeType(this.getWorld(), toPos.getX(), toPos.getY(), toPos.getZ());
 			if (pathType != PathNodeType.WALKABLE && pathType != PathNodeType.WATER) return false;
-			if (pathType != PathNodeType.WATER && this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock) return false;
+			if (pathType != PathNodeType.WATER && this.getWorld().getBlockState(toPos.down()).getBlock() instanceof LeavesBlock)
+				return false;
 		} else {
 			PathNodeType pathType = LandPathNodeMaker.getLandNodeType(this.getWorld(), toPos.mutableCopy());
 			if (pathType != PathNodeType.WALKABLE) return false;
@@ -800,7 +800,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			if (consumeArrow) {
 				arrow.decrement(1);
 			}
-		} else if (this.getJob() == ModEntities.JOB_HUNTER){
+		} else if (this.getJob() == ModEntities.JOB_HUNTER) {
 			this.shoot(this, 1.6F);
 		}
 	}
