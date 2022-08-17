@@ -747,7 +747,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			ItemStack arrow = this.getArrowType(mainStack);
 			if (arrow.isEmpty()) return;
 
-			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack);
+			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack)
+					|| arrow.isOf(Items.TIPPED_ARROW)
+					|| arrow.isOf(Items.SPECTRAL_ARROW);
 
 			PersistentProjectileEntity projectile = ProjectileUtil.createArrowProjectile(this, arrow, pullProgress);
 			double xVelocity = target.getX() - this.getX();
@@ -763,7 +765,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.playArcherAttackSound();
 
 			mainStack.damage(1, this, entity -> {});
-			if (!consumeArrow) {
+			if (consumeArrow) {
 				arrow.decrement(1);
 			}
 		} else if (this.getJob() == ModEntities.JOB_HUNTER){

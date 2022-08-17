@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.mixin;
 @SuppressWarnings("SpellCheckingInspection")
 public final class MixinUtils {
 	public static final String VALUE_INVOKE = "INVOKE";
+	public static final String VALUE_TAIL = "TAIL";
 
 	public static final String METHOD_GOAT_HORN_ITEM_USE = "use";
 
