@@ -100,7 +100,7 @@ public final class MaidFarmerBrainManager {
 				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT),
+				// Pair.of(ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
 		), ImmutableSet.of(ModEntities.MEMORY_FARM_POS, ModEntities.MEMORY_FARM_COOLDOWN));
 	}

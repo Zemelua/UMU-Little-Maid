@@ -129,8 +129,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
 
-	private final EntityNavigation landNavigation = new MobNavigation(this, this.world);
-	private final EntityNavigation canSwimNavigation = new AxolotlSwimNavigation(this, this.world);
+	private final EntityNavigation landNavigation;
+	private final EntityNavigation canSwimNavigation;
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final List<Item> givenFoods = new ArrayList<>();
 	private final AnimationState eatAnimation = new AnimationState();
@@ -168,6 +168,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.lastSitProgress = 0.0F;
 
 		this.moveControl = new MaidControl(this);
+
+		this.landNavigation = new MobNavigation(this, world);
+		this.canSwimNavigation = new AxolotlSwimNavigation(this, world);
+		((MobNavigation) this.landNavigation).setCanPathThroughDoors(true);
+		((MobNavigation) this.landNavigation).setCanEnterOpenDoors(true);
 	}
 
 	@Nullable
@@ -248,7 +253,11 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new MobNavigation(this, world);
+		MobNavigation navigation = new MobNavigation(this, world);
+		navigation.setCanPathThroughDoors(true);
+		navigation.setCanEnterOpenDoors(true);
+
+		return navigation;
 	}
 
 	@Override
@@ -1550,7 +1559,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.MEMORY_GUARDABLE_LIVING,
 				ModEntities.MEMORY_GUARD_TARGET,
 				ModEntities.MEMORY_SHOULD_HEAL,
-				ModEntities.MEMORY_FARMABLE_POS,
+				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
 				ModEntities.MEMORY_JOB_SITE,

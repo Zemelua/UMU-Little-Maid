@@ -59,7 +59,7 @@ public final class ModEntities {
 	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
 	public static final MemoryModuleType<LivingEntity> MEMORY_GUARD_TARGET;
-	public static final MemoryModuleType<BlockPos> MEMORY_FARMABLE_POS;
+	public static final MemoryModuleType<List<BlockPos>> MEMORY_FARMABLE_POSES;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
 	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN;
 	public static final MemoryModuleType<GlobalPos> MEMORY_JOB_SITE;
@@ -134,7 +134,7 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attractable_livings"), ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guard_target"), ModEntities.MEMORY_GUARD_TARGET);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POS);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("job_site"), ModEntities.MEMORY_JOB_SITE);
@@ -275,7 +275,7 @@ public final class ModEntities {
 		MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 		MEMORY_GUARD_TARGET = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARMABLE_POS = new MemoryModuleType<>(Optional.empty());
+		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_JOB_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));

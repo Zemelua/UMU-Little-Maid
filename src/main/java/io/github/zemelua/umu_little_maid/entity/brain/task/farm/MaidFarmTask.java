@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidFarmablePosesSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.brain.Brain;
@@ -48,22 +49,26 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		Optional<BlockPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_POS);
 
-		if (pos.isPresent()) {
+		pos.ifPresent(posValue -> {
 			ItemStack crop = maid.getHasCrop();
 
-			if (MaidFarmTask.isPlantable(pos.get(), world) && !crop.isEmpty()) {
+			if (MaidFarmTask.isPlantable(posValue, world) && !crop.isEmpty()) {
 				if (crop.getItem() instanceof BlockItem cropItem) {
-					MaidFarmTask.plant(world, maid, pos.get(), cropItem.getBlock().getDefaultState(), crop);
+					MaidFarmTask.plant(world, maid, posValue, cropItem.getBlock().getDefaultState(), crop);
 				}
 			}
 
-			if (MaidFarmTask.isHarvestable(pos.get(), world) || MaidFarmTask.isGourd(pos.get(), world) && maid.canBreakGourd()) {
-				world.breakBlock(pos.get(), true, maid);
+			if (MaidFarmTask.isHarvestable(posValue, world) || MaidFarmTask.isGourd(posValue, world) && maid.canBreakGourd()) {
+				world.breakBlock(posValue, true, maid);
 				maid.swingHand(Hand.MAIN_HAND);
 
-				MaidFarmTask.resetMemories(brain);
+				MaidFarmTask.resetMemories(brain, posValue);
 			}
-		}
+
+			if (MaidFarmablePosesSensor.canAnyFarm(world, maid, posValue)) {
+				brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POSES).ifPresent(poses -> poses.add(posValue));
+			}
+		});
 	}
 
 	private static void plant(ServerWorld world, LittleMaidEntity maid, BlockPos pos, BlockState farmland, ItemStack crop) {
@@ -74,13 +79,13 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 		maid.swingHand(Hand.OFF_HAND);
 
 		Brain<LittleMaidEntity> brain = maid.getBrain();
-		MaidFarmTask.resetMemories(brain);
+		MaidFarmTask.resetMemories(brain, pos);
 	}
 
-	private static void resetMemories(Brain<LittleMaidEntity> brain) {
+	private static void resetMemories(Brain<LittleMaidEntity> brain, BlockPos pos) {
 		brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, Unit.INSTANCE, 20L);
+		brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POSES).ifPresent(poses -> poses.remove(pos));
 		brain.forget(ModEntities.MEMORY_FARM_POS);
-		brain.forget(ModEntities.MEMORY_FARMABLE_POS);
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		brain.forget(MemoryModuleType.LOOK_TARGET);
 	}
