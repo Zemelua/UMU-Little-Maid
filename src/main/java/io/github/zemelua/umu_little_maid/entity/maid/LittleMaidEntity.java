@@ -358,22 +358,21 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		super.updateSwimming();
 	}
 
-	private final Predicate<? super PersistentProjectileEntity> pickUpArrowFilter = arrow -> {
-		@Nullable Entity owner = arrow.getOwner();
-
-		return owner != null && owner.equals(this)
-				&& arrow.pickupType == PickupPermission.ALLOWED
-				&& (((PersistentProjectileEntityAccessor) arrow).isInGround() || arrow.isNoClip())
-				&& arrow.shake <= 0;
-	};
-
 	private void pickUpArrows() {
 		if (!this.world.isClient()) {
 			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
+			Predicate<? super PersistentProjectileEntity> filter = arrow -> {
+				@Nullable Entity owner = arrow.getOwner();
+
+				return owner != null && owner.equals(this)
+						&& arrow.pickupType == PickupPermission.ALLOWED
+						&& (((PersistentProjectileEntityAccessor) arrow).isInGround() || arrow.isNoClip())
+						&& arrow.shake <= 0;
+			};
 
 			List<? extends PersistentProjectileEntity> collideArrows = ImmutableList.<PersistentProjectileEntity>builder()
-					.addAll(this.world.getEntitiesByType(EntityType.ARROW, box, this.pickUpArrowFilter))
-					.addAll(this.world.getEntitiesByType(EntityType.SPECTRAL_ARROW, box, this.pickUpArrowFilter)).build();
+					.addAll(this.world.getEntitiesByType(EntityType.ARROW, box, filter))
+					.addAll(this.world.getEntitiesByType(EntityType.SPECTRAL_ARROW, box, filter)).build();
 
 			for (PersistentProjectileEntity arrow : collideArrows) {
 				ItemStack arrowStack = ((PersistentProjectileEntityAccessor) arrow).callAsItemStack();
@@ -387,20 +386,20 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-	private final Predicate<TridentEntity> pickUpTridentFilter = trident -> {
-		@Nullable Entity owner = trident.getOwner();
-
-		return owner != null && owner.equals(this)
-				&& trident.pickupType == PickupPermission.ALLOWED
-				&& (((PersistentProjectileEntityAccessor) trident).isInGround() || trident.isNoClip())
-				&& trident.shake <= 0
-				&& ((TridentEntityAccessor) trident).isDealtDamage();
-	};
-
 	private void pickUpTridents() {
 		if (!this.world.isClient()) {
 			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
-			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, this.pickUpTridentFilter);
+			Predicate<TridentEntity> filter = trident -> {
+				@Nullable Entity owner = trident.getOwner();
+
+				return owner != null && owner.equals(this)
+						&& trident.pickupType == PickupPermission.ALLOWED
+						&& (((PersistentProjectileEntityAccessor) trident).isInGround() || trident.isNoClip())
+						&& trident.shake <= 0
+						&& ((TridentEntityAccessor) trident).isDealtDamage();
+			};
+
+			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, filter);
 
 			for (TridentEntity trident : collideTridents) {
 				ItemStack tridentStack = ((PersistentProjectileEntityAccessor) trident).callAsItemStack();
