@@ -91,6 +91,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
 public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
@@ -705,6 +706,15 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 
 		return super.interactMob(player, hand);
+	}
+
+	@Override
+	public void takeKnockback(double strength, double x, double z) {
+		if (this.getPersonality().isIn(PERSONALITY_PERSISTENCES)) {
+			return;
+		}
+
+		super.takeKnockback(strength, x, z);
 	}
 
 	public void eatFood(ItemStack food, Consumer<ItemStack> onFinishEating) {

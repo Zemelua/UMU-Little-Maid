@@ -12,6 +12,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+@SuppressWarnings("SpellCheckingInspection")
 public final class ModTags {
 	public static final Marker MARKER = MarkerManager.getMarker("TAG").addParents(UMULittleMaid.MARKER);
 
@@ -64,6 +65,7 @@ public final class ModTags {
 	public static final TagKey<PointOfInterestType> POI_MAID_HUNTER_SITE;
 	public static final TagKey<PointOfInterestType> POI_MAID_SHEPHERD_SITE;
 
+	public static final TagKey<MaidPersonality> PERSONALITY_PERSISTENCES;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KILLS;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_CRAFTS;
 	public static final TagKey<MaidPersonality> PERSONALITY_FLUTTER_WHEN_KINDS;
@@ -132,6 +134,7 @@ public final class ModTags {
 		POI_MAID_HUNTER_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_hunter_site"));
 		POI_MAID_SHEPHERD_SITE = TagKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("maid_shepherd_site"));
 
+		PERSONALITY_PERSISTENCES = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("persistences"));
 		PERSONALITY_FLUTTER_WHEN_KILLS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kills"));
 		PERSONALITY_FLUTTER_WHEN_CRAFTS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_crafts"));
 		PERSONALITY_FLUTTER_WHEN_KINDS = TagKey.of(ModRegistries.MAID_PERSONALITY.getKey(), UMULittleMaid.identifier("flutter_when_kinds"));
