@@ -166,25 +166,12 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Nullable
 	@Override
-	@SuppressWarnings("ConstantConditions")
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound nbt) {
 		Random random = world.getRandom();
 
 		MaidPersonality personality = MaidSpawnHandler.randomPersonality(random, world.getBiome(this.getBlockPos()));
 		this.setPersonality(personality);
-
-		try {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(personality.getMaxHealth());
-			this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(personality.getMovementSpeed());
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(personality.getAttackDamage());
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK).setBaseValue(personality.getAttackKnockback());
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(personality.getArmor());
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).setBaseValue(personality.getArmorToughness());
-			this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(personality.getKnockbackResistance());
-			this.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(personality.getLuck());
-		} catch (NullPointerException exception) {
-			UMULittleMaid.LOGGER.error("メイドさんにAttributeが登録されてないよ～");
-		}
+		this.initializeAttributes();
 
 		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
@@ -196,6 +183,24 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		this.setCanPickUpLoot(true);
 
 		return entityData;
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	private void initializeAttributes() {
+		try {
+			MaidPersonality personality = this.getPersonality();
+
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(personality.getMaxHealth());
+			this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(personality.getMovementSpeed());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(personality.getAttackDamage());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK).setBaseValue(personality.getAttackKnockback());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(personality.getArmor());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).setBaseValue(personality.getArmorToughness());
+			this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(personality.getKnockbackResistance());
+			this.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(personality.getLuck());
+		} catch (NullPointerException exception) {
+			UMULittleMaid.LOGGER.error("メイドさんにAttributeが登録されてないよ～");
+		}
 	}
 
 	@Override
@@ -663,6 +668,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						} else {
 							this.setPersonality(allPersonalities.get(0));
 						}
+
+						this.initializeAttributes();
 
 						((ServerPlayerEntity) player).sendMessageToClient(Text.translatable(
 								Items.DEBUG_STICK.getTranslationKey() + ".select",
