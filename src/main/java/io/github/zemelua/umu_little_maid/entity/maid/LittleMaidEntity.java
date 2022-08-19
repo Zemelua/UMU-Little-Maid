@@ -70,6 +70,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -649,6 +650,25 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 						}
 
 						this.playEngageSound();
+					}
+
+					return ActionResult.success(this.world.isClient());
+				} else if (interactItem.isOf(Items.DEBUG_STICK)) {
+					if (!this.world.isClient()) {
+						List<MaidPersonality> allPersonalities = ModRegistries.MAID_PERSONALITY.stream().toList();
+						int currentIndex = allPersonalities.indexOf(this.getPersonality());
+
+						if (currentIndex + 1 < allPersonalities.size()) {
+							this.setPersonality(allPersonalities.get(currentIndex + 1));
+						} else {
+							this.setPersonality(allPersonalities.get(0));
+						}
+
+						((ServerPlayerEntity) player).sendMessageToClient(Text.translatable(
+								Items.DEBUG_STICK.getTranslationKey() + ".select",
+								"Personality",
+								ModRegistries.MAID_PERSONALITY.getId(this.getPersonality())
+						), true);
 					}
 
 					return ActionResult.success(this.world.isClient());
