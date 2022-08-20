@@ -10,3 +10,4 @@ accessible method net/minecraft/world/poi/PointOfInterestTypes getStatesOfBlock 
 accessible method net/minecraft/entity/LivingEntity setLivingFlag (IZ)V
 accessible method net/minecraft/entity/Entity isBeingRainedOn ()Z
 accessible method net/minecraft/entity/projectile/TridentEntity asItemStack ()Lnet/minecraft/item/ItemStack;
+accessible class net/minecraft/entity/ai/brain/task/CrossbowAttackTask$CrossbowState

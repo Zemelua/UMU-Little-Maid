@@ -6,8 +6,9 @@ import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.ForgetHasArrowsTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.RememberHasArrowsTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow.HunterForgetHasArrowsTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow.HunterRememberHasArrowsTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow.SucceedCrossbowAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
@@ -60,13 +61,13 @@ public final class MaidHunterBrainManager {
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(98, new RememberHasArrowsTask<>()),
+				Pair.of(98, new HunterRememberHasArrowsTask<>()),
 				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetHomeTask<>()),
 				Pair.of(99, new ForgetAttackTargetTask<>()),
-				Pair.of(99, new ForgetHasArrowsTask<>()),
+				Pair.of(99, new HunterForgetHasArrowsTask<>()),
 				Pair.of(99, new ForgetJobSiteTask())
 		));
 	}
@@ -105,7 +106,7 @@ public final class MaidHunterBrainManager {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
 				Pair.of(0, new AttackTask<>(5, 0.75F)),
 				Pair.of(1, new RangedApproachTask(1.0F)),
-				Pair.of(2, new CrossbowAttackTask<LittleMaidEntity, LittleMaidEntity>())
+				Pair.of(2, new SucceedCrossbowAttackTask<LittleMaidEntity, LittleMaidEntity>())
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_PRESENT)

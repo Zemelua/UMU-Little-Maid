@@ -17,7 +17,7 @@ public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
 	);
 
 	public ForgetHasArrowsTask() {
-		super(ForgetHasArrowsTask.REQUIRED_MEMORIES);
+		super(ForgetHasArrowsTask.REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
