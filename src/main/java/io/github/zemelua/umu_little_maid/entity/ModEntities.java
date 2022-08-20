@@ -466,7 +466,7 @@ public final class ModEntities {
 				MaidHunterBrainManager::initializeBrain,
 				MaidHunterBrainManager::tickBrain,
 				poi -> poi.isIn(ModTags.POI_MAID_HUNTER_SITE),
-				LittleMaidEntity.TEXTURE_NONE);
+				LittleMaidEntity.TEXTURE_HUNTER);
 		JOB_SHEPHERD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_SHEPHERD_TOOLS),
 				MaidShepherdBrainManager::initializeBrain,
 				MaidShepherdBrainManager::tickBrain,
