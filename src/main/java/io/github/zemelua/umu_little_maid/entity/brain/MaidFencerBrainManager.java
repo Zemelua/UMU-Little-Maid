@@ -76,7 +76,7 @@ public final class MaidFencerBrainManager {
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
-				Pair.of(0, new SitTask<>())
+				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));

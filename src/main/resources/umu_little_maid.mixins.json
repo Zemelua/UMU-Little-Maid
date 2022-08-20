@@ -7,7 +7,7 @@
 		"ConduitBlockEntityMixin", "CraftingResultSlotMixin", "CrossbowAttackTaskAccessor", "GoatHornItemMixin",
 		"LivingEntityAccessor", "MobEntityAccessor", "MoveControlAccessor", "PersistentProjectileEntityAccessor",
 		"PersistentProjectileEntityMixin", "PlayerEntityMixin", "SpawnEggItemAccessor", "SpawnRestrictionAccessor",
-		"TaskAccessor", "TridentEntityAccessor"
+		"TaskAccessor", "TridentEntityAccessor", "TridentEntityMixin"
 	],
 	"client": [
 		"CrackParticleMixin"
