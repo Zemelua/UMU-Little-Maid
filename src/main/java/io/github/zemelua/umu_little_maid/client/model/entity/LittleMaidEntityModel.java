@@ -364,7 +364,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 					this.rightArm.pitch += Math.toRadians(-90.0D);
 				}
 				this.leftArm.yaw = 0.0F;
-				this.rightArm.roll = (float) Math.toRadians(20.0F);
+				this.leftArm.roll = (float) Math.toRadians(20.0F);
 			}
 			case BOW_AND_ARROW -> {
 				this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
