@@ -5,14 +5,14 @@
 
 	"subtitles.umu_little_maid.entity.maid.ambient": "女仆：自言自语",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "女仆：攻击",
-	"subtitles.umu_little_maid.entity.maid.cracker_attack": "女仆：攻击",
-	"subtitles.umu_little_maid.entity.maid.archer_attack": "女仆：攻击",
+	"subtitles.umu_little_maid.entity.maid.cracker_attack": "女仆：砍杀",
+	"subtitles.umu_little_maid.entity.maid.archer_attack": "女仆：射箭",
 	"subtitles.umu_little_maid.entity.maid.killed": "女仆：杀死敌人",
 	"subtitles.umu_little_maid.entity.maid.hurt": "女仆：受伤",
 	"subtitles.umu_little_maid.entity.maid.death": "女仆：死亡",
 	"subtitles.umu_little_maid.entity.maid.eat": "女仆：进食",
 	"subtitles.umu_little_maid.entity.maid.contract": "女仆：签订契约",
-	"subtitles.umu_little_maid.entity.maid.sit": "女仆：服从",
-	"subtitles.umu_little_maid.entity.maid.engage": "女仆：服从"
+	"subtitles.umu_little_maid.entity.maid.sit": "女仆：服从命令",
+	"subtitles.umu_little_maid.entity.maid.engage": "女仆：服从命令"
 
 }
