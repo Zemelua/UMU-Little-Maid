@@ -35,6 +35,7 @@ public interface IPoseidonMob extends IMob {
 
 		((LivingEntityAccessor) self).setRiptideTicks(20);
 		self.setLivingFlag(4, true);
+		mainStack.damage(1, self, selfValue -> selfValue.sendToolBreakStatus(self.getActiveHand()));
 
 		SoundEvent sound = switch (riptide) {
 			case 1 -> SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
@@ -59,8 +60,9 @@ public interface IPoseidonMob extends IMob {
 		trident.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 
 		self.getWorld().spawnEntity(trident);
+		mainStack.damage(1, self, selfValue -> selfValue.sendToolBreakStatus(self.getActiveHand()));
+		mainStack.decrement(1);
 
 		self.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (self.getRandom().nextFloat() * 0.4F + 0.8F));
-		mainStack.decrement(1);
 	}
 }

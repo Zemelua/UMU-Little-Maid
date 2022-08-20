@@ -857,9 +857,10 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		trident.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 
 		this.getWorld().spawnEntity(trident);
+		mainStack.damage(1, this, selfValue -> selfValue.sendToolBreakStatus(this.getActiveHand()));
+		mainStack.decrement(1);
 
 		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		mainStack.decrement(1);
 
 		if (mainStack.getCount() <= 0) {
 			this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
