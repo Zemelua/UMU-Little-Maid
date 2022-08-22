@@ -71,6 +71,8 @@ public final class ModEntities {
 	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH;
 	public static final MemoryModuleType<Unit> MEMORY_IS_HUNTING;
+	public static final MemoryModuleType<List<LivingEntity>> MEMORY_SHEARABLE_SHEEP;
+	public static final MemoryModuleType<LivingEntity> MEMORY_SHEAR_SHEEP;
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
@@ -146,6 +148,8 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident_cooldown"), ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_breath"), ModEntities.MEMORY_SHOULD_BREATH);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_hunting"), MEMORY_IS_HUNTING);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shearable_sheep"), MEMORY_SHEARABLE_SHEEP);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shear_sheep"), MEMORY_SHEAR_SHEEP);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
@@ -287,6 +291,8 @@ public final class ModEntities {
 		MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
 		MEMORY_IS_HUNTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+		MEMORY_SHEARABLE_SHEEP = new MemoryModuleType<>(Optional.empty());
+		MEMORY_SHEAR_SHEEP = new MemoryModuleType<>(Optional.empty());
 
 		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
