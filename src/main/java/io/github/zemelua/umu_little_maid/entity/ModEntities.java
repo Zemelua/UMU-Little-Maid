@@ -101,6 +101,7 @@ public final class ModEntities {
 	public static final RegistryKey<PointOfInterestType> POI_AMETHYST_BLOCK;
 	public static final RegistryKey<PointOfInterestType> POI_CONDUIT;
 	public static final RegistryKey<PointOfInterestType> POI_BANNER;
+	public static final RegistryKey<PointOfInterestType> POI_DESSERT;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -224,6 +225,8 @@ public final class ModEntities {
 						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.RED_WALL_BANNER))
 						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLACK_WALL_BANNER))
 						.build(), 1, 1);
+		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, POI_DESSERT,
+				PointOfInterestTypes.getStatesOfBlock(Blocks.CAKE), 1, 1);
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
@@ -321,6 +324,7 @@ public final class ModEntities {
 		POI_AMETHYST_BLOCK = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("amethyst_block"));
 		POI_CONDUIT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("conduit"));
 		POI_BANNER = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("banner"));
+		POI_DESSERT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("dessert"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))
