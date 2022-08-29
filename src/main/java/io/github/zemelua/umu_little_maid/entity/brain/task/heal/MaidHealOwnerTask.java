@@ -8,18 +8,18 @@ import net.minecraft.server.world.ServerWorld;
 
 public class MaidHealOwnerTask extends HealOwnerTask<LittleMaidEntity> {
 	@Override
-	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
-		super.run(world, maid, time);
+	protected void run(ServerWorld world, LittleMaidEntity living, long time) {
+		super.run(world, living, time);
 
-		maid.setPose(ModEntities.POSE_HEALING);
+		living.setPose(ModEntities.POSE_HEALING);
 	}
 
 	@Override
-	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		super.keepRunning(world, maid, time);
+	protected void keepRunning(ServerWorld world, LittleMaidEntity living, long time) {
+		super.keepRunning(world, living, time);
 
-		if (this.cooldown < 10 && maid.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS)) {
-			this.cooldown += maid.getCommitment() * 1.0D / 30.0D;
+		if (this.cooldown < 10 && living.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS)) {
+			this.cooldown += living.getCommitment() * 1.0D / 30.0D;
 		}
 	}
 

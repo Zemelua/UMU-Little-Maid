@@ -2,17 +2,17 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import net.minecraft.entity.Entity;
+import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Optional;
 
-public class ApproachToHealTask<E extends LivingEntity & Tameable> extends Task<E> {
+public class ApproachToHealTask<E extends LivingEntity & IHasMaster> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
@@ -28,21 +28,21 @@ public class ApproachToHealTask<E extends LivingEntity & Tameable> extends Task<
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, E tameable) {
-		@Nullable Entity owner = tameable.getOwner();
-		if (owner == null) return false;
+	protected boolean shouldRun(ServerWorld world, E living) {
+		Optional<PlayerEntity> master = living.getMaster();
+		if (master.isEmpty()) return false;
 
-		return tameable.distanceTo(owner) > 4.0D;
+		return living.distanceTo(master.get()) > 4.0D;
 	}
 
 	@Override
-	protected void run(ServerWorld world, E tameable, long time) {
-		Brain<?> brain = tameable.getBrain();
-		@Nullable Entity owner = tameable.getOwner();
+	protected void run(ServerWorld world, E living, long time) {
+		Brain<?> brain = living.getBrain();
+		Optional<PlayerEntity> master = living.getMaster();
 
-		if (owner != null) {
-			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(owner, this.speed, 3));
-			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(owner, true));
+		if (master.isPresent()) {
+			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(master.get(), this.speed, 3));
+			brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(master.get(), true));
 		}
 	}
 }

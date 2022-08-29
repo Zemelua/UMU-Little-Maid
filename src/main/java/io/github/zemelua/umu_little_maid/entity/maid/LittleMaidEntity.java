@@ -94,12 +94,12 @@ import java.util.function.Predicate;
 import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements Tameable, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
 	public static final int MAX_COMMITMENT = 300;
-	public static final int DAY_MAX_COMMITMENT = 30;
+	public static final int DAY_CEIL_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
@@ -111,7 +111,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	public static final Identifier TEXTURE_POSEIDON = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_poseidon.png");
 	public static final Identifier TEXTURE_HUNTER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_hunter.png");
 
-	private static final TrackedData<Optional<UUID>> OWNER;
+	private static final TrackedData<Optional<UUID>> MASTER;
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<Boolean> IS_ENGAGING;
 	private static final TrackedData<MaidJob> JOB;
@@ -133,7 +133,6 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	private int eatingTicks;
 	@Nullable private Consumer<ItemStack> onFinishEating;
-	// TODO: もぐもぐをクラスにまとめるかなんかしてきれいにする！
 
 	private int changingCostumeTicks;
 	private boolean damageBlocked;
@@ -209,13 +208,13 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	protected void initDataTracker() {
 		super.initDataTracker();
 
-		this.dataTracker.startTracking(LittleMaidEntity.OWNER, Optional.empty());
-		this.dataTracker.startTracking(LittleMaidEntity.IS_SITTING, false);
-		this.dataTracker.startTracking(LittleMaidEntity.IS_ENGAGING, false);
-		this.dataTracker.startTracking(LittleMaidEntity.JOB, ModEntities.JOB_NONE);
-		this.dataTracker.startTracking(LittleMaidEntity.PERSONALITY, ModEntities.PERSONALITY_BRAVERY);
-		this.dataTracker.startTracking(LittleMaidEntity.IS_USING_DRIPLEAF, false);
-		this.dataTracker.startTracking(LittleMaidEntity.IS_VARIABLE_COSTUME, true);
+		this.dataTracker.startTracking(MASTER, Optional.empty());
+		this.dataTracker.startTracking(IS_SITTING, false);
+		this.dataTracker.startTracking(IS_ENGAGING, false);
+		this.dataTracker.startTracking(JOB, JOB_NONE);
+		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
+		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
+		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(COMMITMENT, 0);
 	}
 
@@ -231,10 +230,9 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				.add(EntityAttributes.GENERIC_LUCK, 0.0D);
 	}
 
-	// <editor-fold desc="Brain">
 	@Override
 	protected Brain.Profile<LittleMaidEntity> createBrainProfile() {
-		return Brain.createProfile(LittleMaidEntity.MEMORY_MODULES, LittleMaidEntity.SENSORS);
+		return Brain.createProfile(MEMORY_MODULES, SENSORS);
 	}
 
 	@Override
@@ -244,9 +242,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 		return brain;
 	}
-	// </editor-fold>
 
-	//<editor-fold desc="Movement">
 	@Override
 	protected EntityNavigation createNavigation(World world) {
 		MobNavigation navigation = new MobNavigation(this, world);
@@ -432,7 +428,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			this.requestTeleport(x, y, z);
 
 			if (spawnParticles) {
-				this.spawnTeleportParticles(x, y, z);
+				this.spawnTeleportParticles();
 			}
 
 			return true;
@@ -695,7 +691,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				if (!this.world.isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 					this.eatFood(food, (foodArg) -> {
-						this.setOwner(player);
+						this.setMaster(player);
 						this.spawnContractParticles();
 						this.playContractSound();
 					});
@@ -907,7 +903,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource source) {
-		@Nullable UUID owner = this.getOwnerUuid();
+		@Nullable UUID owner = this.getMasterUuid();
 		@Nullable Entity attacker = source.getAttacker();
 
 		if (owner != null && attacker instanceof PlayerEntity player) {
@@ -1158,7 +1154,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 	}
 
-	public void spawnTeleportParticles(double x, double y, double z) {
+	public void spawnTeleportParticles() {
 		if (!this.world.isClient()) {
 			for (int i = 0; i < 128; i++) {
 				double delta = i / 127.0D;
@@ -1275,41 +1271,37 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 	}
 
 	@Nullable
-	@Override
-	public UUID getOwnerUuid() {
-		return this.dataTracker.get(LittleMaidEntity.OWNER).orElse(null);
+	private UUID getMasterUuid() {
+		return this.dataTracker.get(LittleMaidEntity.MASTER).orElse(null);
 	}
 
-	private void setOwnerUuid(@Nullable UUID uuid) {
-		this.dataTracker.set(LittleMaidEntity.OWNER, Optional.ofNullable(uuid));
-		this.getBrain().remember(ModEntities.MEMORY_OWNER, uuid);
+	private void setMasterUuid(@Nullable UUID uuid) {
+		this.dataTracker.set(LittleMaidEntity.MASTER, Optional.ofNullable(uuid));
 	}
 
 	@Nullable
-	@Override
 	public Entity getOwner() {
-		UUID uuid = this.getOwnerUuid();
+		UUID uuid = this.getMasterUuid();
 
 		if (uuid == null) return null;
 
 		return this.world.getPlayerByUuid(uuid);
 	}
 
-	public void setOwner(PlayerEntity player) {
-		this.setOwnerUuid(player.getUuid());
-	}
-
 	@Override
 	public Optional<PlayerEntity> getMaster() {
-		Optional<UUID> masterID = this.dataTracker.get(LittleMaidEntity.OWNER);
+		return Optional.ofNullable(this.getMasterUuid()).map(id -> this.world.getPlayerByUuid(id));
+	}
 
-		return masterID.map(value -> this.world.getPlayerByUuid(value));
+	private void setMaster(PlayerEntity master) {
+		this.setMasterUuid(master.getUuid());
 	}
 
 	public boolean isTamed() {
-		return this.getOwnerUuid() != null;
+		return this.getMasterUuid() != null;
 	}
 
+	@Override
 	public boolean isSitting() {
 		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
 	}
@@ -1379,8 +1371,8 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 
 	public void increaseCommitment(int value, boolean force) {
 		if (force) {
-			if (this.increasedCommitment + value > DAY_MAX_COMMITMENT) {
-				value = value - (this.increasedCommitment + value - DAY_MAX_COMMITMENT);
+			if (this.increasedCommitment + value > DAY_CEIL_COMMITMENT) {
+				value = value - (this.increasedCommitment + value - DAY_CEIL_COMMITMENT);
 			}
 
 			this.increasedCommitment += value;
@@ -1535,7 +1527,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 		}
 		nbt.put(KEY_GIVEN_FOODS, givenFoodsNbt);
 
-		UUID uuid = this.getOwnerUuid();
+		UUID uuid = this.getMasterUuid();
 		if (uuid != null) {
 			nbt.putUuid(LittleMaidEntity.KEY_OWNER, uuid);
 		}
@@ -1582,7 +1574,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 			String string = nbt.getString(LittleMaidEntity.KEY_OWNER);
 			uuid = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
-		this.setOwnerUuid(uuid);
+		this.setMasterUuid(uuid);
 
 		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
 		this.setEngaging(nbt.getBoolean(LittleMaidEntity.KEY_IS_ENGAGING));
@@ -1653,7 +1645,7 @@ public class LittleMaidEntity extends PathAwareEntity implements Tameable, Inven
 				ModEntities.SENSOR_JOB_SITE_CANDIDATE
 		);
 
-		OWNER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_ENGAGING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
