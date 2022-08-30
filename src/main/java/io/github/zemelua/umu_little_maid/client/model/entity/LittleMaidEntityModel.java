@@ -6,10 +6,14 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.render.entity.model.BipedEntityModel.ArmPose;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.model.ModelWithArms;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.AnimationState;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -83,7 +87,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.isUsingDripleaf = false;
 	}
 
-	@SuppressWarnings("unused")
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData root = modelData.getRoot();
@@ -91,38 +94,31 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		root.addChild(KEY_HEAD, ModelPartBuilder.create()
 						.uv(0, 0).cuboid(KEY_HEAD, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F))
 						.uv(0, 32).cuboid(KEY_HAT, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.5F)),
-				ModelTransform.pivot(0.0F, 8.0F, 0.0F)
-		);
+				ModelTransform.pivot(0.0F, 8.0F, 0.0F));
 		root.addChild(KEY_BODY, ModelPartBuilder.create()
 						.uv(0, 16).cuboid(KEY_BODY, -3.0F, 0.0F, -2.0F, 6.0F, 9.0F, 4.0F, new Dilation(0.0F))
 						.uv(0, 48).cuboid(KEY_JACKET, -3.0F, 0.0F, -2.0F, 6.0F, 9.0F, 4.0F, new Dilation(0.25F)),
-				ModelTransform.pivot(0.0F, 8.0F, 0.0F)
-		);
+				ModelTransform.pivot(0.0F, 8.0F, 0.0F));
 		root.addChild(KEY_SKIRT, ModelPartBuilder.create()
 						.uv(32, 0).cuboid(KEY_SKIRT, -4.0F, 0.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F))
 						.uv(32, 33).cuboid(KEY_APRON, -4.0F, 0.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.5F)),
-				ModelTransform.pivot(0.0F, 14.0F, 0.0F)
-		);
+				ModelTransform.pivot(0.0F, 14.0F, 0.0F));
 		root.addChild(KEY_LEFT_ARM, ModelPartBuilder.create()
 						.uv(28, 16).cuboid(KEY_LEFT_ARM, -1.0F, -1.5F, -1.5F, 2.0F, 9.0F, 2.0F, new Dilation(0.0F))
 						.uv(28, 50).cuboid(KEY_LEFT_SLEEVE, -1.0F, -1.5F, -1.5F, 2.0F, 9.0F, 2.0F, new Dilation(0.25F)),
-				ModelTransform.pivot(4.0F, 9.5F, 0.5F)
-		);
+				ModelTransform.pivot(4.0F, 9.5F, 0.5F));
 		root.addChild(KEY_RIGHT_ARM, ModelPartBuilder.create()
 						.uv(20, 16).cuboid(KEY_RIGHT_ARM, -1.0F, -1.5F, -1.5F, 2.0F, 9.0F, 2.0F, new Dilation(0.0F))
 						.uv(20, 50).cuboid(KEY_RIGHT_SLEEVE, -1.0F, -1.5F, -1.5F, 2.0F, 9.0F, 2.0F, new Dilation(0.25F)),
-				ModelTransform.pivot(-4.0F, 9.5F, 0.5F)
-		);
+				ModelTransform.pivot(-4.0F, 9.5F, 0.5F));
 		root.addChild(KEY_LEFT_LEG, ModelPartBuilder.create()
 						.uv(50, 16).cuboid(KEY_LEFT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.0F))
 						.uv(50, 50).cuboid(KEY_LEFT_PANTS, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.25F)),
-				ModelTransform.pivot(1.5F, 17.0F, 0.0F)
-		);
+				ModelTransform.pivot(1.5F, 17.0F, 0.0F));
 		root.addChild(KEY_RIGHT_LEG, ModelPartBuilder.create()
 						.uv(36, 16).cuboid(KEY_RIGHT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.0F))
 						.uv(36, 50).cuboid(KEY_RIGHT_PANTS, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.25F)),
-				ModelTransform.pivot(-1.5F, 17.0F, 0.0F)
-		);
+				ModelTransform.pivot(-1.5F, 17.0F, 0.0F));
 
 		root.addChild(KEY_BONE_USING_DRIPLEAF, ModelPartBuilder.create(), ModelTransform.NONE);
 		root.addChild(KEY_BONE_CHANGING_COSTUME, ModelPartBuilder.create(), ModelTransform.NONE);
@@ -132,26 +128,17 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 	@Override
 	public void animateModel(LittleMaidEntity maid, float limbAngle, float limbDistance, float tickDelta) {
-		this.initializeCubes();
-
 		this.leaningPitch = maid.getLeaningPitch(tickDelta);
 
-		this.rightArmPose = ArmPose.EMPTY;
-		this.leftArmPose = ArmPose.EMPTY;
+		this.initializeCubes();
 
 		ArmPose mainPose = getArmPose(maid, Hand.MAIN_HAND);
-		ArmPose offPose = getArmPose(maid, Hand.OFF_HAND);
-		if (mainPose.isTwoHanded()) {
-			offPose = maid.getOffHandStack().isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM;
-		}
+		ArmPose offPose = mainPose.isTwoHanded()
+				? maid.getOffHandStack().isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM
+				: getArmPose(maid, Hand.OFF_HAND);
 
-		if (maid.getMainArm() == Arm.RIGHT) {
-			this.rightArmPose = mainPose;
-			this.leftArmPose = offPose;
-		} else {
-			this.rightArmPose = offPose;
-			this.leftArmPose = mainPose;
-		}
+		this.leftArmPose = maid.getMainArm().equals(Arm.LEFT) ? mainPose : offPose;
+		this.rightArmPose = maid.getMainArm().equals(Arm.RIGHT) ? mainPose : offPose;
 
 		float sitProgress = maid.getSitProgress(tickDelta);
 		this.leftArm.pitch = (float) Math.toRadians(-42.0F * sitProgress);
@@ -251,25 +238,13 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	}
 
 	private void setStandingAngle(float limbAngle, float limbDistance) {
-		// this.head.roll = (float) Math.toRadians(0.0F);
 		this.leftArm.pitch += MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
-//		this.leftArm.yaw = (float) Math.toRadians(0.0F);
-//		this.leftArm.roll = (float) Math.toRadians(-15.0F);
 		this.rightArm.pitch += MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
-//		this.rightArm.yaw = (float) Math.toRadians(0.0F);
-//		this.rightArm.roll = (float) Math.toRadians(15.0F);
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 	}
 
 	private void setSittingAngle() {
-		// this.head.roll = (float) Math.toRadians(13.7F);
-//		this.leftArm.pitch = (float) Math.toRadians(-42.0F);
-//		this.leftArm.yaw = (float) Math.toRadians(0.0F);
-//		this.leftArm.roll = (float) Math.toRadians(25.0F);
-//		this.rightArm.pitch = (float) Math.toRadians(-42.0);
-//		this.rightArm.yaw = (float) Math.toRadians(0.0F);
-//		this.rightArm.roll = (float) Math.toRadians(-25.0F);
 	}
 
 	private void setArmAngleByItem(LittleMaidEntity maid) {
@@ -392,12 +367,12 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		if (maid.getActiveHand() == hand && maid.getItemUseTimeLeft() > 0) {
 			UseAction useAction = mainStack.getUseAction();
 			switch (useAction) {
-				case BLOCK     -> {return ArmPose.BLOCK;}
-				case BOW       -> {return ArmPose.BOW_AND_ARROW;}
-				case SPEAR     -> {return ArmPose.THROW_SPEAR;}
-				case SPYGLASS  -> {return ArmPose.SPYGLASS;}
+				case BLOCK -> {return ArmPose.BLOCK;}
+				case BOW -> {return ArmPose.BOW_AND_ARROW;}
+				case SPEAR -> {return ArmPose.THROW_SPEAR;}
+				case SPYGLASS -> {return ArmPose.SPYGLASS;}
 				case TOOT_HORN -> {return ArmPose.TOOT_HORN;}
-				case CROSSBOW  -> {return ArmPose.CROSSBOW_CHARGE;}
+				case CROSSBOW -> {return ArmPose.CROSSBOW_CHARGE;}
 			}
 		} else if (!maid.handSwinging && mainStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(mainStack)) {
 			return ArmPose.CROSSBOW_HOLD;
@@ -427,7 +402,51 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		return this.rightArm;
 	}
 
+	public void copyStateTo(LittleMaidEntityModel model) {
+		super.copyStateTo(model);
+
+		model.head.copyTransform(this.head);
+		model.body.copyTransform(this.body);
+		model.skirt.copyTransform(this.body);
+		model.rightArm.copyTransform(this.rightArm);
+		model.leftArm.copyTransform(this.leftArm);
+		model.rightLeg.copyTransform(this.rightLeg);
+		model.leftLeg.copyTransform(this.leftLeg);
+		model.boneUsingDripleaf.copyTransform(this.boneUsingDripleaf);
+		model.boneChangingCostume.copyTransform(this.boneChangingCostume);
+
+		model.leftArmPose = this.leftArmPose;
+		model.rightArmPose = this.rightArmPose;
+	}
+
 	public void setUsingDripleaf(boolean value) {
 		this.isUsingDripleaf = value;
+	}
+
+	public static void setVisible(LittleMaidEntityModel model, EquipmentSlot slot) {
+			model.head.visible = false;
+			model.body.visible = false;
+			model.rightArm.visible = false;
+			model.leftArm.visible = false;
+			model.rightLeg.visible = false;
+			model.leftLeg.visible = false;
+
+		switch (slot) {
+			case HEAD -> model.head.visible = true;
+			case CHEST -> {
+				model.body.visible = true;
+				model.rightArm.visible = true;
+				model.leftArm.visible = true;
+			}
+			case LEGS -> {
+				model.body.visible = true;
+				model.rightLeg.visible = true;
+				model.leftLeg.visible = true;
+			}
+			case FEET -> {
+				model.rightLeg.visible = true;
+				model.leftLeg.visible = true;
+			}
+		}
 	}
 }

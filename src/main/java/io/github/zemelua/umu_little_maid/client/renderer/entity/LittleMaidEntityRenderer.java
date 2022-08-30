@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.client.renderer.entity;
 
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
+import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidArmorRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidDripleafRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidHeldItemRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.RiptideRenderer;
@@ -21,12 +22,13 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 		this.addFeature(new MaidHeldItemRenderer<>(this, context.getHeldItemRenderer()));
 		this.addFeature(new MaidDripleafRenderer<>(this, context.getBlockRenderManager()));
 		this.addFeature(new RiptideRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new MaidArmorRenderer(this));
 	}
 
 	@Override
 	public void render(LittleMaidEntity maid, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		this.model.setUsingDripleaf(maid.isUsingDripleaf());
-		
+
 		super.render(maid, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
