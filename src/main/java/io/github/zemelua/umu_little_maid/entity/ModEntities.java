@@ -6,10 +6,7 @@ import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
-import io.github.zemelua.umu_little_maid.entity.maid.PoseidonJob;
+import io.github.zemelua.umu_little_maid.entity.maid.*;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
@@ -50,6 +47,7 @@ public final class ModEntities {
 
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
+	public static final TrackedDataHandler<MaidMode> MODE_HANDLER;
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
 	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
 
@@ -128,6 +126,7 @@ public final class ModEntities {
 
 		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), ModEntities.LITTLE_MAID);
 
+		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
@@ -273,6 +272,7 @@ public final class ModEntities {
 				.dimensions(EntityDimensions.fixed(0.6F, 1.5F))
 				.build();
 
+		MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB);
 

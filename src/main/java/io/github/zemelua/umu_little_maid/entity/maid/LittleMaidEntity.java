@@ -114,6 +114,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final TrackedData<Optional<UUID>> MASTER;
 	private static final TrackedData<Boolean> IS_SITTING;
 	private static final TrackedData<Boolean> IS_ENGAGING;
+	private static final TrackedData<MaidMode> MODE;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
@@ -209,6 +210,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		super.initDataTracker();
 
 		this.dataTracker.startTracking(MASTER, Optional.empty());
+		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
 		this.dataTracker.startTracking(IS_SITTING, false);
 		this.dataTracker.startTracking(IS_ENGAGING, false);
 		this.dataTracker.startTracking(JOB, JOB_NONE);
@@ -642,20 +644,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_ENGAGE_BATONS)) {
-					if (!this.world.isClient()) {
-						if (!this.isEngaging()) {
-							this.setEngaging(true);
-							this.spawnEngageParticle();
-						} else {
-							this.setEngaging(false);
-							this.spawnSingleParticle(ParticleTypes.ANGRY_VILLAGER);
-						}
-
-						this.playEngageSound();
-					}
-
-					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isOf(Items.DEBUG_STICK)) {
 					if (!this.world.isClient()) {
 						List<MaidPersonality> allPersonalities = ModRegistries.MAID_PERSONALITY.stream().toList();
@@ -679,8 +667,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					return ActionResult.success(this.world.isClient());
 				} else {
 					if (!this.world.isClient()) {
-						this.setSitting(!this.isSitting());
-						this.playSitSound();
+						this.setMode(this.getMode().getNext());
+						player.sendMessage(this.getMode().getMessage(), true);
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1301,9 +1289,23 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.getMasterUuid() != null;
 	}
 
+	private void setMode(MaidMode value) {
+		this.dataTracker.set(LittleMaidEntity.MODE, value);
+
+		if (value == MaidMode.WAIT) {
+			this.brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
+		} else {
+			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
+		}
+	}
+
+	private MaidMode getMode() {
+		return this.dataTracker.get(LittleMaidEntity.MODE);
+	}
+
 	@Override
 	public boolean isSitting() {
-		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
+		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
 	}
 
 	private void setSitting(boolean value) {
@@ -1648,6 +1650,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_ENGAGING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
