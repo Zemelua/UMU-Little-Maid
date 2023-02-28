@@ -8,9 +8,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
@@ -55,17 +52,14 @@ public final class MaidGuardBrainManager {
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new RememberGuardTargetTask()),
-				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetHomeTask<>()),
-				Pair.of(99, new ForgetGuardTargetTask<>()),
-				Pair.of(99, new ForgetJobSiteTask())
+				Pair.of(99, new ForgetGuardTargetTask<>())
 		));
 	}
 

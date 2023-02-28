@@ -112,8 +112,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	public static final Identifier TEXTURE_HUNTER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_hunter.png");
 
 	private static final TrackedData<Optional<UUID>> MASTER;
-	private static final TrackedData<Boolean> IS_SITTING;
-	private static final TrackedData<Boolean> IS_ENGAGING;
 	private static final TrackedData<MaidMode> MODE;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
@@ -211,8 +209,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.dataTracker.startTracking(MASTER, Optional.empty());
 		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
-		this.dataTracker.startTracking(IS_SITTING, false);
-		this.dataTracker.startTracking(IS_ENGAGING, false);
 		this.dataTracker.startTracking(JOB, JOB_NONE);
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
@@ -912,7 +908,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.damageBlocked = false;
 
 		if (!this.world.isClient() && this.isSitting()) {
-			this.setSitting(false);
+			this.setMode(MaidMode.FREE);
 		}
 
 		return result;
@@ -1164,13 +1160,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 	}
 
-	private void spawnEngageParticle() {
-		if (!this.world.isClient()) {
-			double color = MathHelper.clamp(0.3D, 0.0D, 1.0D);
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.NOTE, this.getX(), this.getY() + 1.2D, this.getZ(), 0, color, 0.0D, 0.0D, 1.0D);
-		}
-	}
-
 	@Override
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
@@ -1289,6 +1278,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.getMasterUuid() != null;
 	}
 
+	private MaidMode getMode() {
+		return this.dataTracker.get(LittleMaidEntity.MODE);
+	}
+
 	private void setMode(MaidMode value) {
 		this.dataTracker.set(LittleMaidEntity.MODE, value);
 
@@ -1299,31 +1292,9 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 	}
 
-	private MaidMode getMode() {
-		return this.dataTracker.get(LittleMaidEntity.MODE);
-	}
-
 	@Override
 	public boolean isSitting() {
 		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
-	}
-
-	private void setSitting(boolean value) {
-		this.dataTracker.set(LittleMaidEntity.IS_SITTING, value);
-
-		if (value) {
-			this.brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
-		} else {
-			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
-		}
-	}
-
-	public boolean isEngaging() {
-		return this.dataTracker.get(LittleMaidEntity.IS_ENGAGING);
-	}
-
-	private void setEngaging(boolean value) {
-		this.dataTracker.set(LittleMaidEntity.IS_ENGAGING, value);
 	}
 
 	public MaidJob getJob() {
@@ -1499,8 +1470,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_GIVEN_FOODS = "GivenFoods";
 	private static final String KEY_OWNER = "Owner";
-	private static final String KEY_IS_SITTING = "IsSitting";
-	private static final String KEY_IS_ENGAGING = "IsEngaging";
+	private static final String KEY_MODE = "Mode";
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
@@ -1534,8 +1504,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			nbt.putUuid(LittleMaidEntity.KEY_OWNER, uuid);
 		}
 
-		nbt.putBoolean(LittleMaidEntity.KEY_IS_SITTING, this.isSitting());
-		nbt.putBoolean(LittleMaidEntity.KEY_IS_ENGAGING, this.isEngaging());
+		nbt.putInt(LittleMaidEntity.KEY_MODE, this.getMode().getId());
 
 		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
 		if (job != null) {
@@ -1578,8 +1547,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 		this.setMasterUuid(uuid);
 
-		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
-		this.setEngaging(nbt.getBoolean(LittleMaidEntity.KEY_IS_ENGAGING));
+		this.setMode(MaidMode.fromId(nbt.getInt(LittleMaidEntity.KEY_MODE)));
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
 			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
@@ -1648,8 +1616,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		);
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_ENGAGING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
