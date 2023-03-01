@@ -4,13 +4,13 @@ import com.chocohead.mm.api.ClassTinkerers;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
 import io.github.zemelua.umu_little_maid.entity.maid.*;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
-import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.EarlyRiser;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -28,7 +28,6 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
@@ -60,8 +59,6 @@ public final class ModEntities {
 	public static final MemoryModuleType<List<BlockPos>> MEMORY_FARMABLE_POSES;
 	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
 	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN;
-	public static final MemoryModuleType<GlobalPos> MEMORY_JOB_SITE;
-	public static final MemoryModuleType<GlobalPos> MEMORY_JOB_SITE_CANDIDATE;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
 	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP;
@@ -76,7 +73,6 @@ public final class ModEntities {
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
 	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
 	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES;
-	public static final SensorType<JobSiteCandidateSensor> SENSOR_JOB_SITE_CANDIDATE;
 	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
 	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE;
 
@@ -139,8 +135,6 @@ public final class ModEntities {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("job_site"), ModEntities.MEMORY_JOB_SITE);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("job_site_candidate"), ModEntities.MEMORY_JOB_SITE_CANDIDATE);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), ModEntities.MEMORY_SHOULD_HEAL);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_sleep"), ModEntities.MEMORY_SHOULD_SLEEP);
@@ -155,7 +149,6 @@ public final class ModEntities {
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("farm_site_candidate"), ModEntities.SENSOR_JOB_SITE_CANDIDATE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("home"), ModEntities.SENSOR_HOME_CANDIDATE);
 
@@ -285,8 +278,6 @@ public final class ModEntities {
 		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
 		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_JOB_SITE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
-		MEMORY_JOB_SITE_CANDIDATE = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
 		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
@@ -301,7 +292,6 @@ public final class ModEntities {
 		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
 		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
 		SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
-		SENSOR_JOB_SITE_CANDIDATE = new SensorType<>(JobSiteCandidateSensor::new);
 		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
 		SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
 

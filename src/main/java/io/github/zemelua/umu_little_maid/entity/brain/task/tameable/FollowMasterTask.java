@@ -11,14 +11,11 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
-import static net.minecraft.entity.ai.brain.MemoryModuleState.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
 
 public class FollowMasterTask<E extends PathAwareEntity & IHasMaster> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			MEMORY_JOB_SITE, VALUE_ABSENT
 	);
 
 	private final float startDistance;

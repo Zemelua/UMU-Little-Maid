@@ -75,10 +75,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
@@ -118,6 +115,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
+	private static final TrackedData<Optional<GlobalPos>> HOME;
+	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
 
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
@@ -214,6 +213,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(COMMITMENT, 0);
+		this.dataTracker.startTracking(HOME, Optional.empty());
+		this.dataTracker.startTracking(ANCHOR, Optional.empty());
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -577,8 +578,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.brain = brain.copy();
 		this.getJob().initializeBrain(this.getBrain());
-		this.brain.forget(ModEntities.MEMORY_JOB_SITE);
-		this.brain.forget(ModEntities.MEMORY_JOB_SITE_CANDIDATE);
 	}
 
 	@Override
@@ -640,6 +639,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					}
 
 					return ActionResult.success(this.world.isClient());
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
+					player.sendMessage(Text.of("test"), true);
+
+					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isOf(Items.DEBUG_STICK)) {
 					if (!this.world.isClient()) {
 						List<MaidPersonality> allPersonalities = ModRegistries.MAID_PERSONALITY.stream().toList();
@@ -665,6 +668,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					if (!this.world.isClient()) {
 						this.setMode(this.getMode().getNext());
 						player.sendMessage(this.getMode().getMessage(), true);
+						player.sendMessage(Text.of("arf"));
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1290,6 +1294,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
+
+		if (value == MaidMode.FREE) {
+
+		}
 	}
 
 	@Override
@@ -1597,8 +1605,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
-				ModEntities.MEMORY_JOB_SITE,
-				ModEntities.MEMORY_JOB_SITE_CANDIDATE,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
 				ModEntities.MEMORY_SHOULD_BREATH,
@@ -1611,8 +1617,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.SENSOR_MAID_ATTACKABLE,
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
-				ModEntities.SENSOR_MAID_FARMABLE_POSES,
-				ModEntities.SENSOR_JOB_SITE_CANDIDATE
+				ModEntities.SENSOR_MAID_FARMABLE_POSES
 		);
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
@@ -1622,5 +1627,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
+		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 	}
 }
