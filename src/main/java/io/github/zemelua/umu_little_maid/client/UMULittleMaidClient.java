@@ -69,6 +69,11 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_UP);
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_LEFT);
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_RIGHT);
+			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE);
+			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_DOWN);
+			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_UP);
+			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_LEFT);
+			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_RIGHT);
 		});
 
 		WorldRenderEvents.BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {
@@ -83,7 +88,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			return true;
 		});
 
-		WorldRenderEvents.LAST.register(InstructionRenderer::renderSitesOverlay);
+		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::onRenderWorldLast);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Succeeded initializing mod client!");
 	}

@@ -1,6 +1,9 @@
 package io.github.zemelua.umu_little_maid.client.renderer;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.c_component.Components;
+import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutlineContext;
 import net.minecraft.block.BlockState;
@@ -11,6 +14,8 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
@@ -19,9 +24,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class InstructionRenderer {
 	public static final Identifier OVERLAY_AVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_available");
@@ -34,6 +42,11 @@ public final class InstructionRenderer {
 	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_up");
 	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_left");
 	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_right");
+	public static final Identifier OVERLAY_HOME_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_home");
+	public static final Identifier OVERLAY_HOME_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_home_down");
+	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_home_up");
+	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_home_left");
+	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_home_right");
 
 	private static final Overlay OVERLAY_AVAILABLE = new Overlay(
 			ModRenderLayers.INSTRUCTION_TARGET,
@@ -53,6 +66,15 @@ public final class InstructionRenderer {
 			OVERLAY_UNAVAILABLE_TEXTURE_LEFT,
 			OVERLAY_UNAVAILABLE_TEXTURE_RIGHT
 	);
+	private static final Overlay OVERLAY_HOME = new Overlay(
+			ModRenderLayers.INSTRUCTION_SITE,
+			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+			OVERLAY_HOME_TEXTURE,
+			OVERLAY_HOME_TEXTURE_DOWN,
+			OVERLAY_HOME_TEXTURE_UP,
+			OVERLAY_HOME_TEXTURE_LEFT,
+			OVERLAY_HOME_TEXTURE_RIGHT
+	);
 
 	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext) {
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(worldRenderContext.consumers());
@@ -69,7 +91,22 @@ public final class InstructionRenderer {
 	}
 
 	public static void renderSitesOverlay(WorldRenderContext context) {
+		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
+		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
 
+		maid.flatMap(LittleMaidEntity::getHome).ifPresent(h -> {
+			RegistryKey<World> homeDimension = h.getDimension();
+			BlockPos homePos = h.getPos();
+			ClientWorld world = context.world();
+			VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
+			MatrixStack matrices = context.matrixStack();
+			Camera camera = context.camera();
+
+			if (homeDimension.equals(world.getRegistryKey()) && homePos.isWithinDistance(player.getPos(), 50)) {
+				renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos));
+			}
+		});
 	}
 
 	private static void renderOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera,
