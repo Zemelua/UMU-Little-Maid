@@ -1,6 +1,8 @@
 package io.github.zemelua.umu_little_maid.client;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.c_component.Components;
+import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
 import io.github.zemelua.umu_little_maid.client.renderer.InstructionRenderer;
@@ -15,6 +17,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.animation.Animation;
 import net.minecraft.client.render.entity.animation.AnimationHelper;
@@ -22,9 +25,12 @@ import net.minecraft.client.render.entity.animation.Keyframe;
 import net.minecraft.client.render.entity.animation.Transformation;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class UMULittleMaidClient implements ClientModInitializer {
@@ -66,9 +72,15 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		});
 
 		WorldRenderEvents.BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {
-			InstructionRenderer.renderTargetOverlay(worldRenderContext, blockOutlineContext);
+			PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
+			IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 
-			return false;
+			if (instructionComponent.isInstructing()) {
+				InstructionRenderer.renderTargetOverlay(worldRenderContext, blockOutlineContext);
+				return false;
+			}
+
+			return true;
 		});
 
 		WorldRenderEvents.LAST.register(InstructionRenderer::renderSitesOverlay);

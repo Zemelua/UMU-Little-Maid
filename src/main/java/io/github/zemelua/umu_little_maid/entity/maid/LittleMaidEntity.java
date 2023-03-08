@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.c_component.Components;
+import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
@@ -14,10 +16,7 @@ import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccesso
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import io.github.zemelua.umu_little_maid.util.IAvoidRain;
-import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
-import io.github.zemelua.umu_little_maid.util.ITameable;
-import io.github.zemelua.umu_little_maid.util.ModUtils;
+import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -91,7 +90,7 @@ import java.util.function.Predicate;
 import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -640,7 +639,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
-					player.sendMessage(Text.of("test"), true);
+					if (!this.world.isClient()) {
+						IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+						if (instructionComponent.isInstructing()) {
+							instructionComponent.cancelInstruction();
+						} else {
+							instructionComponent.startInstruction(this);
+						}
+					}
 
 					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isOf(Items.DEBUG_STICK)) {
@@ -668,7 +674,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					if (!this.world.isClient()) {
 						this.setMode(this.getMode().getNext());
 						player.sendMessage(this.getMode().getMessage(), true);
-						player.sendMessage(Text.of("arf"));
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -1294,15 +1299,28 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
-
-		if (value == MaidMode.FREE) {
-
-		}
 	}
 
 	@Override
 	public boolean isSitting() {
 		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
+	}
+
+	@Override
+	public Optional<GlobalPos> getHome() {
+		return this.dataTracker.get(HOME);
+	}
+
+	@Override
+	public void setHome(GlobalPos value) {
+		this.dataTracker.set(HOME, Optional.of(value));
+		this.brain.remember(MemoryModuleType.HOME, Optional.of(value));
+	}
+
+	@Override
+	public void removeHome() {
+		this.dataTracker.set(HOME, Optional.empty());
+		this.brain.forget(MemoryModuleType.HOME);
 	}
 
 	public MaidJob getJob() {

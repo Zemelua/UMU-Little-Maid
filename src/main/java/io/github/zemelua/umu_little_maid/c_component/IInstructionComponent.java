@@ -1,16 +1,27 @@
 package io.github.zemelua.umu_little_maid.c_component;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import net.minecraft.entity.Entity;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public interface IInstructionComponent extends ComponentV3 {
-	void startInstruction(Entity target);
+public interface IInstructionComponent extends ComponentV3, ServerTickingComponent {
+	 void startInstruction(LittleMaidEntity target);
+
+	ActionResult tryInstruction(World world, BlockHitResult target);
+
+	ActionResult tryInstruction(World world, EntityHitResult target);
 
 	void finishInstruction();
 
+	void cancelInstruction();
+
 	boolean isInstructing();
 
-	Optional<Entity> getTarget();
+	Optional<LittleMaidEntity> getTarget();
 }

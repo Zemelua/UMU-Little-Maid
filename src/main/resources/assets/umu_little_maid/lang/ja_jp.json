@@ -5,6 +5,12 @@
 	"message.actionbar.umu_little_maid.maid_follow": "メイドさんはあなたについていくよ！",
 	"message.actionbar.umu_little_maid.maid_wait": "メイドさんはじっとあなたを待ってるよ！",
 	"message.actionbar.umu_little_maid.maid_free": "メイドさんはこのあたりでお仕事をするよ！",
+	"message.actionbar.umu_little_maid.instruction_set_home": "メイドさんのおうちを%s%sに設定したよ！",
+	"message.actionbar.umu_little_maid.instruction_replace_home": "メイドさんのおうちを%s%sに変更したよ！",
+	"message.actionbar.umu_little_maid.instruction_remove_home": "メイドさんのおうちを削除したよ！",
+	"message.actionbar.umu_little_maid.instruction_pass_on_block": "このブロックは設定できないよ",
+	"message.actionbar.umu_little_maid.instruction_pass_on_entity": "このエンティティは設定できないよ",
+	"message.actionbar.umu_little_maid.instruction_cancel": "インストラクションはキャンセルされたよ！",
 
 	"subtitles.umu_little_maid.entity.maid.ambient": "メイドさんが独り言をつぶやく",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "メイドさんが攻撃する",
