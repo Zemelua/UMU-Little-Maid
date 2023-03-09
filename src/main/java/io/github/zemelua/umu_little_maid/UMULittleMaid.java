@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid;
 
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.item.ModItems;
@@ -28,6 +29,7 @@ public class UMULittleMaid implements ModInitializer {
 		ModRegistries.initialize();
 		ModItems.initialize();
 		ModEntities.initialize();
+		ModDataHandlers.init();
 		ModInventories.initialize();
 		ModSounds.initialize();
 		ModTags.initialize();

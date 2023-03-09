@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -12,9 +13,9 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -75,16 +76,35 @@ public final class ModUtils {
 			return pos1.offset(connectTo).equals(pos2)
 					&& state2.get(Properties.BED_PART) == connectWith
 					&& state2.get(Properties.HORIZONTAL_FACING) == facing;
-		} else if (state1.isIn(BlockTags.DOORS) && state2.isIn(BlockTags.DOORS)
-				&& state1.contains(Properties.DOUBLE_BLOCK_HALF) && state2.contains(Properties.DOUBLE_BLOCK_HALF)) {
+		} else if (state1.contains(Properties.DOUBLE_BLOCK_HALF) && state2.contains(Properties.DOUBLE_BLOCK_HALF)) {
 			Direction connectTo = state1.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? Direction.DOWN : Direction.UP;
 			DoubleBlockHalf connectWith = state1.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? DoubleBlockHalf.LOWER : DoubleBlockHalf.UPPER;
 
 			return pos1.offset(connectTo).equals(pos2)
 					&& state2.get(Properties.DOUBLE_BLOCK_HALF) == connectWith;
+		} else if (state1.contains(Properties.CHEST_TYPE) && state2.contains(Properties.CHEST_TYPE)
+				&& state1.contains(Properties.HORIZONTAL_FACING) && state2.contains(Properties.HORIZONTAL_FACING)
+		) {
+			Direction facing1 = state1.get(Properties.HORIZONTAL_FACING);
+			Direction facing2 = state2.get(Properties.HORIZONTAL_FACING);
+			ChestType type1 = state1.get(Properties.CHEST_TYPE);
+			ChestType type2 = state2.get(Properties.CHEST_TYPE);
+
+			Direction connectTo = type1 == ChestType.LEFT ? facing1.rotateYClockwise() : facing1.rotateYCounterclockwise();
+			ChestType connectWith = type1 == ChestType.LEFT ? ChestType.RIGHT : ChestType.LEFT;
+
+			return pos1.offset(connectTo).equals(pos2)
+					&& facing2 == facing1
+					&& type2 == connectWith;
 		}
 
 		return false;
+	}
+
+	public static boolean isSameObject(World world, BlockPos pos, GlobalPos globalPos) {
+		if (!world.getRegistryKey().equals(globalPos.getDimension())) return false;
+
+		return isSameObject(world, pos, globalPos.getPos());
 	}
 
 	public static float lerpAngle(float angle0, float angle1, float magnitude) {

@@ -25,7 +25,7 @@ public final class Callbacks {
 
 	public static ActionResult onUseEntity(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
 		IInstructionComponent instructionComponent = InstructionUtils.getComponent(player);
-		if (hitResult == null) return ActionResult.PASS;
+		if (hitResult == null) return ActionResult.FAIL;
 
 		if (instructionComponent.isInstructing()) {
 			return instructionComponent.tryInstruction(world, hitResult);

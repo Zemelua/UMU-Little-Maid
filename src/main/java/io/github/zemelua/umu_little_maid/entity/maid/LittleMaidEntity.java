@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -116,6 +117,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final TrackedData<Integer> COMMITMENT;
 	private static final TrackedData<Optional<GlobalPos>> HOME;
 	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
+	private static final TrackedData<Collection<GlobalPos>> DELIVERY_BOXES;
 
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
@@ -214,6 +216,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.dataTracker.startTracking(COMMITMENT, 0);
 		this.dataTracker.startTracking(HOME, Optional.empty());
 		this.dataTracker.startTracking(ANCHOR, Optional.empty());
+		this.dataTracker.startTracking(DELIVERY_BOXES, new HashSet<>());
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -1323,6 +1326,22 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.brain.forget(MemoryModuleType.HOME);
 	}
 
+	public Collection<GlobalPos> getDeliveryBoxes() {
+		return this.dataTracker.get(DELIVERY_BOXES);
+	}
+
+	public void addDeliveryBox(GlobalPos value) {
+		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		boxes.add(value);
+		this.dataTracker.set(DELIVERY_BOXES, boxes);
+	}
+
+	public void removeDeliveryBox(GlobalPos value) {
+		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		boxes.remove(value);
+		this.dataTracker.set(DELIVERY_BOXES, boxes);
+	}
+
 	public MaidJob getJob() {
 		return this.dataTracker.get(LittleMaidEntity.JOB);
 	}
@@ -1647,5 +1666,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
+		DELIVERY_BOXES = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.COLLECTION_GLOBAL_POS);
 	}
 }

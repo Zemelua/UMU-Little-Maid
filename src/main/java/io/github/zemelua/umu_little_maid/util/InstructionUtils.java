@@ -42,6 +42,20 @@ public final class InstructionUtils {
 		return Text.translatable("message.actionbar.umu_little_maid.instruction_remove_home");
 	}
 
+	public static Text addDeliveryBoxMessage(Block block, BlockPos pos) {
+		return Text.translatable("message.actionbar.umu_little_maid.instruction_add_delivery_box",
+				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
+				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
+		);
+	}
+
+	public static Text removeDeliveryBoxMessage(Block block, BlockPos pos) {
+		return Text.translatable("message.actionbar.umu_little_maid.instruction_remove_delivery_box",
+				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
+				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
+		);
+	}
+
 	public static Text passOnBlockMessage() {
 		return Text.translatable("message.actionbar.umu_little_maid.instruction_pass_on_block");
 	}

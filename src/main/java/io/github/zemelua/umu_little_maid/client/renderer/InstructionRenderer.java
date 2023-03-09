@@ -7,6 +7,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutlineContext;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
@@ -20,11 +21,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +44,11 @@ public final class InstructionRenderer {
 	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_home_up");
 	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_home_left");
 	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_home_right");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_down");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_up");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_left");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_right");
 
 	private static final Overlay OVERLAY_AVAILABLE = new Overlay(
 			ModRenderLayers.INSTRUCTION_TARGET,
@@ -75,6 +77,15 @@ public final class InstructionRenderer {
 			OVERLAY_HOME_TEXTURE_LEFT,
 			OVERLAY_HOME_TEXTURE_RIGHT
 	);
+	private static final Overlay OVERLAY_DELIVERY_BOX = new Overlay(
+			ModRenderLayers.INSTRUCTION_SITE,
+			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+			OVERLAY_DELIVERY_BOX_TEXTURE,
+			OVERLAY_DELIVERY_BOX_TEXTURE_DOWN,
+			OVERLAY_DELIVERY_BOX_TEXTURE_UP,
+			OVERLAY_DELIVERY_BOX_TEXTURE_LEFT,
+			OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT
+	);
 
 	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext) {
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(worldRenderContext.consumers());
@@ -83,7 +94,7 @@ public final class InstructionRenderer {
 		BlockPos pos = blockOutlineContext.blockPos();
 		BlockState state = blockOutlineContext.blockState();
 
-		if (state.isIn(BlockTags.BEDS)) {
+		if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_AVAILABLE, pos, state);
 		} else {
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_UNAVAILABLE, pos, state);
@@ -94,19 +105,27 @@ public final class InstructionRenderer {
 		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
+		ClientWorld world = context.world();
+		MatrixStack matrices = context.matrixStack();
+		Camera camera = context.camera();
+		VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
 
-		maid.flatMap(LittleMaidEntity::getHome).ifPresent(h -> {
-			RegistryKey<World> homeDimension = h.getDimension();
+		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRender(world, player, h)).ifPresent(h -> {
 			BlockPos homePos = h.getPos();
-			ClientWorld world = context.world();
-			VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
-			MatrixStack matrices = context.matrixStack();
-			Camera camera = context.camera();
 
-			if (homeDimension.equals(world.getRegistryKey()) && homePos.isWithinDistance(player.getPos(), 50)) {
-				renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos));
-			}
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos));
 		});
+
+		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRender(world, player, b)).forEach(b -> {
+			BlockPos boxPos = b.getPos();
+
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos));
+		}));
+	}
+
+	private static boolean shouldRender(World world, PlayerEntity player, GlobalPos pos) {
+		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
+		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
 	}
 
 	private static void renderOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera,
@@ -116,18 +135,33 @@ public final class InstructionRenderer {
 				case HEAD -> state.get(Properties.HORIZONTAL_FACING).getOpposite();
 				case FOOT -> state.get(Properties.HORIZONTAL_FACING);
 			};
-			overlay.render(verticesProvider, matrices, camera, pos, connectTo);
-			overlay.render(verticesProvider, matrices, camera, pos.offset(connectTo), connectTo.getOpposite());
-		} else if (state.isIn(BlockTags.DOORS) && state.contains(Properties.DOUBLE_BLOCK_HALF)) {
+			renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
+		} else if (state.contains(Properties.DOUBLE_BLOCK_HALF)) {
 			Direction connectTo = switch (state.get(Properties.DOUBLE_BLOCK_HALF)) {
 				case UPPER -> Direction.DOWN;
 				case LOWER -> Direction.UP;
 			};
-			overlay.render(verticesProvider, matrices, camera, pos, connectTo);
-			overlay.render(verticesProvider, matrices, camera, pos.offset(connectTo), connectTo.getOpposite());
+			renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
+		} else if (state.contains(Properties.HORIZONTAL_FACING) && state.contains(Properties.CHEST_TYPE)) {
+			@Nullable Direction connectTo = switch (state.get(Properties.CHEST_TYPE)) {
+				case LEFT -> state.get(Properties.HORIZONTAL_FACING).rotateYClockwise();
+				case RIGHT -> state.get(Properties.HORIZONTAL_FACING).rotateYCounterclockwise();
+				default -> null;
+			};
+			if (connectTo == null) {
+				overlay.render(verticesProvider, matrices, camera, pos, null);
+			}
+
+			renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
 		} else {
 			overlay.render(verticesProvider, matrices, camera, pos, null);
 		}
+	}
+
+	private static void renderDoubleOverlay(Overlay overlay, VertexConsumerProvider verticesProvider, MatrixStack matrices,
+	                                        Camera camera, BlockPos pos, Direction connectTo) {
+		overlay.render(verticesProvider, matrices, camera, pos, connectTo);
+		overlay.render(verticesProvider, matrices, camera, pos.offset(connectTo), connectTo.getOpposite());
 	}
 
 	private static class Overlay {
@@ -266,15 +300,15 @@ public final class InstructionRenderer {
 			Sprite left = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.left);
 			Sprite right = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.right);
 
-			if (connectTo == null) return new Sprite[] {base, base, base, base, base, base};
+			if (connectTo == null) return new Sprite[]{base, base, base, base, base, base};
 
 			return switch (connectTo) {
-				case DOWN -> new Sprite[] {base, base, up, up, up, up};
-				case UP -> new Sprite[] {base, base, down, down, down, down};
-				case NORTH -> new Sprite[] {up, down, base, base, right, left};
-				case SOUTH -> new Sprite[] {down, up, base, base, left, right};
-				case WEST -> new Sprite[] {left, right, left, right, base, base};
-				case EAST -> new Sprite[] {right, left, right, left, base, base};
+				case DOWN -> new Sprite[]{base, base, up, up, up, up};
+				case UP -> new Sprite[]{base, base, down, down, down, down};
+				case NORTH -> new Sprite[]{up, down, base, base, right, left};
+				case SOUTH -> new Sprite[]{down, up, base, base, left, right};
+				case WEST -> new Sprite[]{left, right, left, right, base, base};
+				case EAST -> new Sprite[]{right, left, right, left, base, base};
 			};
 		}
 	}

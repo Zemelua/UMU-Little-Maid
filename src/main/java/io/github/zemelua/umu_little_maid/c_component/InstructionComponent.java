@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -53,15 +54,24 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 		BlockPos pos = target.getBlockPos();
 		BlockState state = world.getBlockState(pos);
 		Optional<GlobalPos> home = this.target.getHome();
+		Collection<GlobalPos> boxes = this.target.getDeliveryBoxes();
+		Optional<GlobalPos> sameBox = boxes.stream().filter(b -> ModUtils.isSameObject(world, pos, b)).findAny();
 
-		home.ifPresent(globalPos -> owner.sendMessage(Text.of(world.isClient + globalPos.getPos().toShortString())));
-
-		if (home.isPresent() && ModUtils.isSameObject(world, pos, home.get().getPos())) {
+		if (home.isPresent() && ModUtils.isSameObject(world, pos, home.get())) {
 			if (!world.isClient()) {
 				this.target.removeHome();
 				this.finishInstruction();
 
 				this.owner.sendMessage(InstructionUtils.removeHomeMessage());
+			}
+
+			return ActionResult.success(world.isClient());
+		} else if (sameBox.isPresent()) {
+			if (!world.isClient()) {
+				this.target.removeDeliveryBox(sameBox.get());
+				this.finishInstruction();
+
+				this.owner.sendMessage(InstructionUtils.removeDeliveryBoxMessage(state.getBlock(), pos));
 			}
 
 			return ActionResult.success(world.isClient());
@@ -75,6 +85,15 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 				} else {
 					this.owner.sendMessage(InstructionUtils.setHomeMessage(state.getBlock(), pos));
 				}
+			}
+
+			return ActionResult.success(world.isClient());
+		} else if (world.getBlockState(target.getBlockPos()).isOf(Blocks.CHEST)) {
+			if (!world.isClient()) {
+				this.target.addDeliveryBox(GlobalPos.create(world.getRegistryKey(), pos));
+				this.finishInstruction();
+
+				this.owner.sendMessage(InstructionUtils.addDeliveryBoxMessage(state.getBlock(), pos));
 			}
 
 			return ActionResult.success(world.isClient());

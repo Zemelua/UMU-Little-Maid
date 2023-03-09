@@ -74,6 +74,11 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_UP);
 			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_LEFT);
 			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_RIGHT);
+			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE);
+			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_DOWN);
+			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_UP);
+			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_LEFT);
+			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT);
 		});
 
 		WorldRenderEvents.BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {

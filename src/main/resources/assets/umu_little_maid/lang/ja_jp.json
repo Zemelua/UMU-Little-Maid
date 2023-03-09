@@ -8,6 +8,8 @@
 	"message.actionbar.umu_little_maid.instruction_set_home": "メイドさんのおうちを%s%sに設定したよ！",
 	"message.actionbar.umu_little_maid.instruction_replace_home": "メイドさんのおうちを%s%sに変更したよ！",
 	"message.actionbar.umu_little_maid.instruction_remove_home": "メイドさんのおうちを削除したよ！",
+	"message.actionbar.umu_little_maid.instruction_add_delivery_box": "メイドさんの納品箱に%s%sを追加したよ！",
+	"message.actionbar.umu_little_maid.instruction_remove_delivery_box": "メイドさんの納品箱から%s%sを削除したよ！",
 	"message.actionbar.umu_little_maid.instruction_pass_on_block": "このブロックは設定できないよ",
 	"message.actionbar.umu_little_maid.instruction_pass_on_entity": "このエンティティは設定できないよ",
 	"message.actionbar.umu_little_maid.instruction_cancel": "インストラクションはキャンセルされたよ！",
