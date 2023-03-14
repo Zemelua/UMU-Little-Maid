@@ -1,5 +1,7 @@
 package io.github.zemelua.umu_little_maid.client.renderer;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
@@ -9,11 +11,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutli
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +29,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class InstructionRenderer {
+	public static final Identifier ATLAS_ID = UMULittleMaid.identifier("textures/atlas/instruction.png");
+	public static final SpriteAtlasTexture ATLAS = new SpriteAtlasTexture(ATLAS_ID);
 	public static final Identifier OVERLAY_AVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_available");
 	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_available_down");
 	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_available_up");
@@ -49,6 +51,7 @@ public final class InstructionRenderer {
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_up");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_left");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_right");
+	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("gui/hud/instruction_crosshair");
 
 	private static final Overlay OVERLAY_AVAILABLE = new Overlay(
 			ModRenderLayers.INSTRUCTION_TARGET,
@@ -311,5 +314,36 @@ public final class InstructionRenderer {
 				case EAST -> new Sprite[]{right, left, right, left, base, base};
 			};
 		}
+	}
+
+	public static void renderCrossHair(MinecraftClient client, MatrixStack matrices, int screenW, int screenH, float z) {
+		Sprite texture = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(CROSSHAIR);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+		Matrix4f matrix = matrices.peek().getPositionMatrix();
+		int textureW = texture.getWidth();
+		int textureH = texture.getHeight();
+		float x0 = (screenW - textureW) / 2.0F;
+		float y0 = (screenH - textureH) / 2.0F;
+		float x1 = x0 + textureW;
+		float y1 = y0 + textureH;
+		float u0 = texture.getMinU();
+		float v0 = texture.getMinV();
+		float u1 = texture.getMaxU();
+		float v1 = texture.getMaxV();
+
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.blendFuncSeparate(
+				GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR,
+				GlStateManager.SrcFactor.ONE,
+				GlStateManager.DstFactor.ZERO
+		);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(matrix, x0, y1, z).texture(u0, v1).next();
+		bufferBuilder.vertex(matrix, x1, y1, z).texture(u1, v1).next();
+		bufferBuilder.vertex(matrix, x1, y0, z).texture(u1, v0).next();
+		bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).next();
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 	}
 }
