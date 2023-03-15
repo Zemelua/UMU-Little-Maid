@@ -6,11 +6,14 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutlineContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -20,7 +23,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -345,5 +351,37 @@ public final class InstructionRenderer {
 		bufferBuilder.vertex(matrix, x1, y0, z).texture(u1, v0).next();
 		bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).next();
 		BufferRenderer.drawWithShader(bufferBuilder.end());
+	}
+
+	public static void renderGuideMessage(MatrixStack matrices, TextRenderer textRenderer, int screenW, int screenH, World world, HitResult target, IInstructionComponent component) {
+		float padding = 20;
+		float centerX = screenW / 2.0F;
+		float centerY = screenH / 2.0F;
+		float y = centerY - (textRenderer.fontHeight / 2.0F);
+
+		Text onLeftClick = InstructionUtils.guideCancelMessage();
+		float leftX = centerX - padding - textRenderer.getWidth(onLeftClick);
+		DrawableHelper.drawTextWithShadow(matrices, textRenderer, onLeftClick, Math.round(leftX), Math.round(y), 0xFFFFFF);
+
+		float rightX = centerX + padding;
+		if (target.getType() == HitResult.Type.BLOCK) {
+			BlockPos targetPos = ((BlockHitResult) target).getBlockPos();
+			BlockState targetState = world.getBlockState(targetPos);
+			Optional<LittleMaidEntity> maid = component.getTarget();
+
+			if (world.getWorldBorder().contains(targetPos)) {
+				Text onRightClick;
+
+				if (maid.filter(m -> m.isHome(world, targetPos) || m.isDeliveryBox(world, targetPos)).isPresent()) {
+					onRightClick = InstructionUtils.guideRemoveMessage();
+				} else if (targetState.isIn(BlockTags.BEDS) || targetState.isOf(Blocks.CHEST)) {
+					onRightClick = InstructionUtils.guideDecideMessage();
+				} else {
+					onRightClick = Text.empty();
+				}
+
+				DrawableHelper.drawTextWithShadow(matrices, textRenderer, onRightClick, Math.round(rightX), Math.round(y), 0xFFFFFF);
+			}
+		}
 	}
 }

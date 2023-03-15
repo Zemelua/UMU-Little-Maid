@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Objects;
 
 @Mixin(InGameHud.class)
-public abstract class MixinInGameHud extends DrawableHelper {
+public abstract class InGameHudMixin extends DrawableHelper {
 	@Shadow @Final private MinecraftClient client;
 	@Shadow private int scaledWidth;
 	@Shadow private int scaledHeight;

@@ -10,7 +10,7 @@
 		"SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TaskAccessor", "TridentEntityAccessor",
 		"TridentEntityMixin"
 	],
-	"client": [ "CrackParticleMixin", "MinecraftClientMixin", "MixinInGameHud", "PlayerInventoryMixin" ],
+	"client": [ "CrackParticleMixin", "MinecraftClientMixin", "InGameHudMixin", "PlayerInventoryMixin" ],
 	"injectors": {
 		"defaultRequire": 1
 	}

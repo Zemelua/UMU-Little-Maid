@@ -1,7 +1,10 @@
 {
 	"item.umu_little_maid.little_maid_spawn_egg": "メイドさんのスポーンエッグ",
+
 	"entity.umu_little_maid.little_maid": "メイドさん",
+
 	"container.umu_little_maid.little_maid": "メイドさんの秘密のポケット",
+
 	"message.actionbar.umu_little_maid.maid_follow": "メイドさんはあなたについていくよ！",
 	"message.actionbar.umu_little_maid.maid_wait": "メイドさんはじっとあなたを待ってるよ！",
 	"message.actionbar.umu_little_maid.maid_free": "メイドさんはこのあたりでお仕事をするよ！",
@@ -13,6 +16,11 @@
 	"message.actionbar.umu_little_maid.instruction_pass_on_block": "このブロックは設定できないよ",
 	"message.actionbar.umu_little_maid.instruction_pass_on_entity": "このエンティティは設定できないよ",
 	"message.actionbar.umu_little_maid.instruction_cancel": "インストラクションはキャンセルされたよ！",
+	"message.umu_little_maid.instruction_guide_cancel": "左クリックで%s",
+	"message.umu_little_maid.instruction_guide_decide": "右クリックで%s",
+	"message.umu_little_maid.instruction_guide_remove": "右クリックで%s",
+	"message.word.umu_little_maid.decide": "決定",
+	"message.word.umu_little_maid.remove": "削除",
 
 	"subtitles.umu_little_maid.entity.maid.ambient": "メイドさんが独り言をつぶやく",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "メイドさんが攻撃する",

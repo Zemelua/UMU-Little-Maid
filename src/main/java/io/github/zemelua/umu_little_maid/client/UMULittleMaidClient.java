@@ -15,6 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
@@ -94,7 +95,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			return true;
 		});
 
-		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::onRenderWorldLast);
+		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::beforeRenderDebug);
+		HudRenderCallback.EVENT.register(ClientCallbacks::onRenderHUD);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Succeeded initializing mod client!");
 	}

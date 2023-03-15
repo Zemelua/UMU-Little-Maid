@@ -1313,6 +1313,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.dataTracker.get(HOME);
 	}
 
+	public boolean isHome(World world, BlockPos pos) {
+		return this.getHome().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
+	}
+
 	public void setHome(GlobalPos value) {
 		this.dataTracker.set(HOME, Optional.of(value));
 		this.brain.remember(MemoryModuleType.HOME, Optional.of(value));
@@ -1325,6 +1329,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 	public Collection<GlobalPos> getDeliveryBoxes() {
 		return this.dataTracker.get(DELIVERY_BOXES);
+	}
+
+	public boolean isDeliveryBox(World world, BlockPos pos) {
+		return this.getDeliveryBoxes().stream().anyMatch(b -> ModUtils.isSameObject(world, pos, b));
 	}
 
 	public void addDeliveryBox(GlobalPos value) {

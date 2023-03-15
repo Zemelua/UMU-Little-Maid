@@ -8,15 +8,28 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.Block;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Optional;
+
 public final class InstructionUtils {
 	public static IInstructionComponent getComponent(PlayerEntity player) {
 		return player.getComponent(Components.INSTRUCTION);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static Optional<IInstructionComponent> getComponent(MinecraftClient client) {
+		return Optional.ofNullable(client.player).map(InstructionUtils::getComponent);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static boolean isInstructing(MinecraftClient client) {
+		return getComponent(client).map(IInstructionComponent::isInstructing).orElse(false);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -66,6 +79,24 @@ public final class InstructionUtils {
 
 	public static Text cancelMessage() {
 		return Text.translatable("message.actionbar.umu_little_maid.instruction_cancel");
+	}
+
+	public static Text guideCancelMessage() {
+		return Text.translatable("message.umu_little_maid.instruction_guide_cancel",
+				Text.translatable("gui.cancel")
+		);
+	}
+
+	public static Text guideDecideMessage() {
+		return Text.translatable("message.umu_little_maid.instruction_guide_decide",
+				Text.translatable("message.word.umu_little_maid.decide").styled(s -> s.withColor(Formatting.GREEN))
+		);
+	}
+
+	public static Text guideRemoveMessage() {
+		return Text.translatable("message.umu_little_maid.instruction_guide_remove",
+				Text.translatable("message.word.umu_little_maid.remove").styled(s -> s.withColor(Formatting.RED))
+		);
 	}
 
 	private InstructionUtils() {}
