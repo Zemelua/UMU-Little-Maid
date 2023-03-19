@@ -6,7 +6,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.util.InstructionUtils;
+import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutlineContext;
 import net.minecraft.block.BlockState;
@@ -17,8 +17,10 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
@@ -28,11 +30,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
+
+import static net.minecraft.world.RaycastContext.FluidHandling.*;
+import static net.minecraft.world.RaycastContext.ShapeType.*;
 
 public final class InstructionRenderer {
 	public static final Identifier ATLAS_ID = UMULittleMaid.identifier("textures/atlas/instruction.png");
@@ -58,9 +64,10 @@ public final class InstructionRenderer {
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_left");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_right");
 	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("gui/hud/instruction_crosshair");
-
+	public static final Identifier SITE_ICON = UMULittleMaid.identifier("instruction/site/icon");
+	public static final Identifier HEADDRESS = UMULittleMaid.identifier("instruction/site/headdress");
 	private static final Overlay OVERLAY_AVAILABLE = new Overlay(
-			ModRenderLayers.INSTRUCTION_TARGET,
+			ModRenderLayers.INSTRUCTION_OVERLAY_TARGET,
 			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 			OVERLAY_AVAILABLE_TEXTURE,
 			OVERLAY_AVAILABLE_TEXTURE_DOWN,
@@ -69,7 +76,7 @@ public final class InstructionRenderer {
 			OVERLAY_AVAILABLE_TEXTURE_RIGHT
 	);
 	private static final Overlay OVERLAY_UNAVAILABLE = new Overlay(
-			ModRenderLayers.INSTRUCTION_TARGET,
+			ModRenderLayers.INSTRUCTION_OVERLAY_TARGET,
 			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 			OVERLAY_UNAVAILABLE_TEXTURE,
 			OVERLAY_UNAVAILABLE_TEXTURE_DOWN,
@@ -78,7 +85,7 @@ public final class InstructionRenderer {
 			OVERLAY_UNAVAILABLE_TEXTURE_RIGHT
 	);
 	private static final Overlay OVERLAY_HOME = new Overlay(
-			ModRenderLayers.INSTRUCTION_SITE,
+			ModRenderLayers.INSTRUCTION_OVERLAY_SITE,
 			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 			OVERLAY_HOME_TEXTURE,
 			OVERLAY_HOME_TEXTURE_DOWN,
@@ -87,7 +94,7 @@ public final class InstructionRenderer {
 			OVERLAY_HOME_TEXTURE_RIGHT
 	);
 	private static final Overlay OVERLAY_DELIVERY_BOX = new Overlay(
-			ModRenderLayers.INSTRUCTION_SITE,
+			ModRenderLayers.INSTRUCTION_OVERLAY_SITE,
 			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
 			OVERLAY_DELIVERY_BOX_TEXTURE,
 			OVERLAY_DELIVERY_BOX_TEXTURE_DOWN,
@@ -95,6 +102,8 @@ public final class InstructionRenderer {
 			OVERLAY_DELIVERY_BOX_TEXTURE_LEFT,
 			OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT
 	);
+
+	// public static final
 
 	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext) {
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(worldRenderContext.consumers());
@@ -104,9 +113,9 @@ public final class InstructionRenderer {
 		BlockState state = blockOutlineContext.blockState();
 
 		if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_AVAILABLE, pos, state);
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_AVAILABLE, pos, state, false);
 		} else {
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_UNAVAILABLE, pos, state);
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_UNAVAILABLE, pos, state, false);
 		}
 	}
 
@@ -122,13 +131,13 @@ public final class InstructionRenderer {
 		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRender(world, player, h)).ifPresent(h -> {
 			BlockPos homePos = h.getPos();
 
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos));
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos), true);
 		});
 
 		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRender(world, player, b)).forEach(b -> {
 			BlockPos boxPos = b.getPos();
 
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos));
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos), true);
 		}));
 	}
 
@@ -138,7 +147,7 @@ public final class InstructionRenderer {
 	}
 
 	private static void renderOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera,
-	                                  Overlay overlay, BlockPos pos, BlockState state) {
+	                                  Overlay overlay, BlockPos pos, BlockState state, boolean drawIcon) {
 		if (state.contains(Properties.BED_PART)) {
 			Direction connectTo = switch (state.get(Properties.BED_PART)) {
 				case HEAD -> state.get(Properties.HORIZONTAL_FACING).getOpposite();
@@ -159,11 +168,39 @@ public final class InstructionRenderer {
 			};
 			if (connectTo == null) {
 				overlay.render(verticesProvider, matrices, camera, pos, null);
+			} else {
+				renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
 			}
-
-			renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
 		} else {
 			overlay.render(verticesProvider, matrices, camera, pos, null);
+		}
+	}
+
+	public static void renderSiteTooltip(MatrixStack matrices, Window window, World world, Camera camera, int screenW, int screenH) {
+		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
+		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
+
+		double length = 100;
+		Vec3d cameraPos = camera.getPos();
+		Vec3d cameraRot = ModMathUtils.rotationToVector(camera.getPitch(), camera.getYaw());
+		Vec3d endPos = cameraPos.add(cameraRot.multiply(length));
+		Entity cameraEntity = camera.getFocusedEntity();
+		RaycastContext raycast = new RaycastContext(cameraPos, endPos, OUTLINE, NONE, cameraEntity);
+		BlockHitResult hitHome =  ModWorldUtils.raycast(world, raycast, b -> maid
+				.flatMap(LittleMaidEntity::getHome)
+				.map(h -> ModUtils.isSameObject(world, b, h))
+				.orElse(false));
+
+		if (hitHome.getType() != HitResult.Type.MISS) {
+			// RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+			Sprite texture = MinecraftClient.getInstance().getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(SITE_ICON);
+			DrawableHelper.drawSprite(matrices, screenW / 2, screenH / 2, 0, texture.getWidth(), texture.getHeight(), texture);
+
+			int x = Math.round(screenW / 2.0F) + 12;
+			int y = Math.round(screenH / 2.0F) + 7;
+
+			ModGUIUtils.drawULMTooltip(MinecraftClient.getInstance(), matrices, MinecraftClient.getInstance().textRenderer, x, y, null, Text.literal("メイドさんのおうち").styled(s -> s.withBold(true)), Text.of("srthbrsthy\naer"), 120);
 		}
 	}
 
@@ -298,7 +335,6 @@ public final class InstructionRenderer {
 						.next();
 			}
 
-			matrices.translate(0, 0, 0);
 			matrices.pop();
 		}
 

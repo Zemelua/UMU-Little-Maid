@@ -22,6 +22,10 @@ public final class ClientCallbacks {
 		InstructionRenderer.renderSitesOverlay(context);
 	}
 
+	static void onRenderWorldLast(WorldRenderContext context) {
+
+	}
+
 	static void onRenderHUD(MatrixStack matrices, @SuppressWarnings("unused") float tickDelta) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		TextRenderer textRenderer = client.textRenderer;
@@ -34,6 +38,7 @@ public final class ClientCallbacks {
 
 		if (component.isPresent() && component.get().isInstructing()) {
 			InstructionRenderer.renderGuideMessage(matrices, textRenderer, screenW, screenH, world, target, component.get());
+			InstructionRenderer.renderSiteTooltip(matrices, window, world, client.gameRenderer.getCamera(), screenW, screenH);
 		}
 	}
 }
