@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.util;
 
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,6 +31,11 @@ public final class InstructionUtils {
 	@Environment(EnvType.CLIENT)
 	public static boolean isInstructing(MinecraftClient client) {
 		return getComponent(client).map(IInstructionComponent::isInstructing).orElse(false);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static Optional<LittleMaidEntity> getMaid(MinecraftClient client) {
+		return getComponent(client).flatMap(IInstructionComponent::getTarget);
 	}
 
 	@Environment(EnvType.CLIENT)

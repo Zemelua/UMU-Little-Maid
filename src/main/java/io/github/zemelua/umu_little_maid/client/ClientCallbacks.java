@@ -19,7 +19,9 @@ import java.util.Optional;
 @Environment(EnvType.CLIENT)
 public final class ClientCallbacks {
 	static void beforeRenderDebug(WorldRenderContext context) {
-		InstructionRenderer.renderSitesOverlay(context);
+		MinecraftClient client = MinecraftClient.getInstance();
+
+		InstructionRenderer.renderSitesOverlay(client, context);
 	}
 
 	static void onRenderWorldLast(WorldRenderContext context) {

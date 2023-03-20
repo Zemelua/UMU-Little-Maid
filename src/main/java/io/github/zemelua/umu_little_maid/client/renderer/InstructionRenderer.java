@@ -43,26 +43,31 @@ import static net.minecraft.world.RaycastContext.ShapeType.*;
 public final class InstructionRenderer {
 	public static final Identifier ATLAS_ID = UMULittleMaid.identifier("textures/atlas/instruction.png");
 	public static final SpriteAtlasTexture ATLAS = new SpriteAtlasTexture(ATLAS_ID);
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_available");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_available_down");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_available_up");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_available_left");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_available_right");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_unavailable");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_down");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_up");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_left");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_right");
-	public static final Identifier OVERLAY_HOME_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_home");
-	public static final Identifier OVERLAY_HOME_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_home_down");
-	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_home_up");
-	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_home_left");
-	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_home_right");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_down");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_up");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_left");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_right");
+	public static final Identifier OVERLAY_AVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_available");
+	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_available_down");
+	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_available_up");
+	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_available_left");
+	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_available_right");
+	public static final Identifier OVERLAY_DELETABLE_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_deletable");
+	public static final Identifier OVERLAY_DELETABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_deletable_down");
+	public static final Identifier OVERLAY_DELETABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_deletable_up");
+	public static final Identifier OVERLAY_DELETABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_deletable_left");
+	public static final Identifier OVERLAY_DELETABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_deletable_right");
+	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_unavailable");
+	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_unavailable_down");
+	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_unavailable_up");
+	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_unavailable_left");
+	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_unavailable_right");
+	public static final Identifier OVERLAY_HOME_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_home");
+	public static final Identifier OVERLAY_HOME_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_home_down");
+	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_home_up");
+	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_home_left");
+	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_home_right");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_down");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_up");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_left");
+	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_right");
 	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("gui/hud/instruction_crosshair");
 	public static final Identifier SITE_ICON = UMULittleMaid.identifier("instruction/site/icon");
 	public static final Identifier HEADDRESS = UMULittleMaid.identifier("instruction/site/headdress");
@@ -74,6 +79,15 @@ public final class InstructionRenderer {
 			OVERLAY_AVAILABLE_TEXTURE_UP,
 			OVERLAY_AVAILABLE_TEXTURE_LEFT,
 			OVERLAY_AVAILABLE_TEXTURE_RIGHT
+	);
+	private static final Overlay OVERLAY_DELETABLE = new Overlay(
+			ModRenderLayers.INSTRUCTION_OVERLAY_TARGET,
+			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+			OVERLAY_DELETABLE_TEXTURE,
+			OVERLAY_DELETABLE_TEXTURE_DOWN,
+			OVERLAY_DELETABLE_TEXTURE_UP,
+			OVERLAY_DELETABLE_TEXTURE_LEFT,
+			OVERLAY_DELETABLE_TEXTURE_RIGHT
 	);
 	private static final Overlay OVERLAY_UNAVAILABLE = new Overlay(
 			ModRenderLayers.INSTRUCTION_OVERLAY_TARGET,
@@ -105,21 +119,24 @@ public final class InstructionRenderer {
 
 	// public static final
 
-	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext) {
+	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext, LittleMaidEntity maid) {
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(worldRenderContext.consumers());
 		MatrixStack matrices = worldRenderContext.matrixStack();
 		Camera camera = worldRenderContext.camera();
+		World world = worldRenderContext.world();
 		BlockPos pos = blockOutlineContext.blockPos();
 		BlockState state = blockOutlineContext.blockState();
 
-		if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
+		if (maid.isHome(world, pos) || maid.isDeliveryBox(world, pos)) {
+			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELETABLE, pos, state, false);
+		} else if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_AVAILABLE, pos, state, false);
 		} else {
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_UNAVAILABLE, pos, state, false);
 		}
 	}
 
-	public static void renderSitesOverlay(WorldRenderContext context) {
+	public static void renderSitesOverlay(MinecraftClient client, WorldRenderContext context) {
 		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
@@ -128,20 +145,27 @@ public final class InstructionRenderer {
 		Camera camera = context.camera();
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
 
-		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRender(world, player, h)).ifPresent(h -> {
+		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
 			BlockPos homePos = h.getPos();
 
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos), true);
 		});
 
-		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRender(world, player, b)).forEach(b -> {
+		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRenderSiteOverlay(client, world, player, b)).forEach(b -> {
 			BlockPos boxPos = b.getPos();
 
 			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos), true);
 		}));
 	}
 
-	private static boolean shouldRender(World world, PlayerEntity player, GlobalPos pos) {
+	private static boolean shouldRenderSiteOverlay(MinecraftClient client, World world, PlayerEntity player, GlobalPos pos) {
+		Optional<HitResult> target = Optional.ofNullable(client.crosshairTarget);
+		if (target.filter(h -> h.getType() == HitResult.Type.BLOCK)
+				.filter(h -> ModUtils.isSameObject(world, ((BlockHitResult) h).getBlockPos(), pos))
+				.isPresent()) {
+			return false;
+		}
+
 		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
 		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
 	}

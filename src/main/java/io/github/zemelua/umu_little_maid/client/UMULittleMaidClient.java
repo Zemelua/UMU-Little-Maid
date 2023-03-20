@@ -65,6 +65,11 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_UP);
 			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_LEFT);
 			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_RIGHT);
+			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE);
+			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_DOWN);
+			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_UP);
+			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_LEFT);
+			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_RIGHT);
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE);
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_DOWN);
 			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_UP);
@@ -90,7 +95,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 			IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 
 			if (instructionComponent.isInstructing()) {
-				InstructionRenderer.renderTargetOverlay(worldRenderContext, blockOutlineContext);
+				InstructionRenderer.renderTargetOverlay(worldRenderContext, blockOutlineContext, instructionComponent.getTarget().get());
 				return false;
 			}
 
