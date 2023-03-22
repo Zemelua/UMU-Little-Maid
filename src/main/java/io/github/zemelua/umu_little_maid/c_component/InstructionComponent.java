@@ -32,8 +32,6 @@ import java.util.Optional;
 
 public class InstructionComponent implements IInstructionComponent, AutoSyncedComponent {
 	private final PlayerEntity owner;
-
-	private boolean instructing;
 	@Nullable private LittleMaidEntity target;
 
 	public InstructionComponent(PlayerEntity owner) {
@@ -42,7 +40,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void startInstruction(LittleMaidEntity target) {
-		this.instructing = true;
 		this.target = target;
 
 		Components.INSTRUCTION.sync(this.owner);
@@ -117,7 +114,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void finishInstruction() {
-		this.instructing = false;
 		this.target = null;
 
 		Components.INSTRUCTION.sync(this.owner);
@@ -125,7 +121,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void cancelInstruction() {
-		this.instructing = false;
 		this.target = null;
 
 		Components.INSTRUCTION.sync(this.owner);
@@ -133,11 +128,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 		if (!this.owner.getWorld().isClient()) {
 			this.owner.sendMessage(InstructionUtils.cancelMessage(), true);
 		}
-	}
-
-	@Override
-	public boolean isInstructing() {
-		return this.instructing;
 	}
 
 	@Override
@@ -153,7 +143,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 	@Deprecated
 	@Override
 	public void serverTick() {
-		if (this.instructing) {
+		if (this.isInstructing()) {
 			ItemStack mainHandStack = this.owner.getMainHandStack();
 			ItemStack offHandStack = this.owner.getOffHandStack();
 
@@ -165,14 +155,12 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void writeSyncPacket(PacketByteBuf packet, ServerPlayerEntity recipient) {
-		packet.writeBoolean(this.instructing);
 		packet.writeOptional(Optional.ofNullable(this.target)
 				.map(Entity::getId), PacketByteBuf::writeInt);
 	}
 
 	@Override
 	public void applySyncPacket(PacketByteBuf packet) {
-		this.instructing = packet.readBoolean();
 		this.target = (LittleMaidEntity) packet.readOptional(PacketByteBuf::readInt)
 				.map(i -> this.owner.getWorld().getEntityById(i))
 				.filter(e -> e instanceof LittleMaidEntity)

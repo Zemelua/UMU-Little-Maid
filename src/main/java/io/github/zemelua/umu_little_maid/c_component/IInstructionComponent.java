@@ -21,7 +21,9 @@ public interface IInstructionComponent extends ComponentV3, ServerTickingCompone
 
 	void cancelInstruction();
 
-	boolean isInstructing();
-
 	Optional<LittleMaidEntity> getTarget();
+
+	default boolean isInstructing() {
+		return this.getTarget().isPresent();
+	}
 }

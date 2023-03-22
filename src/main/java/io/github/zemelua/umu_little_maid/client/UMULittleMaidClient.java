@@ -1,11 +1,8 @@
 package io.github.zemelua.umu_little_maid.client;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
-import io.github.zemelua.umu_little_maid.client.renderer.InstructionRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.entity.LittleMaidEntityRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -18,7 +15,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.animation.Animation;
 import net.minecraft.client.render.entity.animation.AnimationHelper;
@@ -26,12 +22,9 @@ import net.minecraft.client.render.entity.animation.Keyframe;
 import net.minecraft.client.render.entity.animation.Transformation;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-
-import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class UMULittleMaidClient implements ClientModInitializer {
@@ -56,52 +49,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
 
-		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
-			registry.register(LittleMaidScreen.EMPTY_HELD_SLOT_TEXTURE);
-			registry.register(LittleMaidScreen.EMPTY_HELMET_SLOT_TEXTURE);
-			registry.register(LittleMaidScreen.EMPTY_BOOTS_SLOT_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_DOWN);
-			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_UP);
-			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_LEFT);
-			registry.register(InstructionRenderer.OVERLAY_AVAILABLE_TEXTURE_RIGHT);
-			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_DOWN);
-			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_UP);
-			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_LEFT);
-			registry.register(InstructionRenderer.OVERLAY_DELETABLE_TEXTURE_RIGHT);
-			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_DOWN);
-			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_UP);
-			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_LEFT);
-			registry.register(InstructionRenderer.OVERLAY_UNAVAILABLE_TEXTURE_RIGHT);
-			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_DOWN);
-			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_UP);
-			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_LEFT);
-			registry.register(InstructionRenderer.OVERLAY_HOME_TEXTURE_RIGHT);
-			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE);
-			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_DOWN);
-			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_UP);
-			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_LEFT);
-			registry.register(InstructionRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT);
-			registry.register(InstructionRenderer.CROSSHAIR);
-			registry.register(InstructionRenderer.SITE_ICON);
-			registry.register(InstructionRenderer.HEADDRESS);
-		});
-
-		WorldRenderEvents.BLOCK_OUTLINE.register((worldRenderContext, blockOutlineContext) -> {
-			PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
-			IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
-
-			if (instructionComponent.isInstructing()) {
-				InstructionRenderer.renderTargetOverlay(worldRenderContext, blockOutlineContext, instructionComponent.getTarget().get());
-				return false;
-			}
-
-			return true;
-		});
-
+		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);
+		WorldRenderEvents.BLOCK_OUTLINE.register(ClientCallbacks::onRenderBlockOutline);
 		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::beforeRenderDebug);
 		HudRenderCallback.EVENT.register(ClientCallbacks::onRenderHUD);
 

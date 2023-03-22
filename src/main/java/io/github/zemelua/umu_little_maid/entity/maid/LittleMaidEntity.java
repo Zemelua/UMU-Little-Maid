@@ -91,7 +91,7 @@ import java.util.function.Predicate;
 import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -1309,38 +1309,36 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
 	}
 
+	@Override
 	public Optional<GlobalPos> getHome() {
 		return this.dataTracker.get(HOME);
 	}
 
-	public boolean isHome(World world, BlockPos pos) {
-		return this.getHome().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
-	}
-
+	@Override
 	public void setHome(GlobalPos value) {
 		this.dataTracker.set(HOME, Optional.of(value));
 		this.brain.remember(MemoryModuleType.HOME, Optional.of(value));
 	}
 
+	@Override
 	public void removeHome() {
 		this.dataTracker.set(HOME, Optional.empty());
 		this.brain.forget(MemoryModuleType.HOME);
 	}
 
+	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
 
-	public boolean isDeliveryBox(World world, BlockPos pos) {
-		return this.getDeliveryBoxes().stream().anyMatch(b -> ModUtils.isSameObject(world, pos, b));
-	}
-
+	@Override
 	public void addDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.add(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
 	}
 
+	@Override
 	public void removeDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
