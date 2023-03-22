@@ -88,7 +88,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
 public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
@@ -703,7 +702,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 	@Override
 	public void takeKnockback(double strength, double x, double z) {
-		if (this.getPersonality().isIn(PERSONALITY_PERSISTENCES)) {
+		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES)) {
 			return;
 		}
 
@@ -1327,6 +1326,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Override
+	public boolean isSettableAsHome(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_HOME);
+	}
+
+	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
@@ -1343,6 +1347,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
+	}
+
+	@Override
+	public boolean isSettableAsDeliveryBox(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX);
 	}
 
 	public MaidJob getJob() {

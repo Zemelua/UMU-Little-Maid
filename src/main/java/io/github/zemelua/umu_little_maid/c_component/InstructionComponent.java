@@ -8,14 +8,12 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -72,7 +70,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			}
 
 			return ActionResult.success(world.isClient());
-		} else if (world.getBlockState(target.getBlockPos()).isIn(BlockTags.BEDS)) {
+		} else if (this.target.isSettableAsHome(world, pos)) {
 			if (!world.isClient()) {
 				this.target.setHome(GlobalPos.create(world.getRegistryKey(), pos));
 				this.finishInstruction();
@@ -85,7 +83,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			}
 
 			return ActionResult.success(world.isClient());
-		} else if (world.getBlockState(target.getBlockPos()).isOf(Blocks.CHEST)) {
+		} else if (this.target.isSettableAsDeliveryBox(world, pos)) {
 			if (!world.isClient()) {
 				this.target.addDeliveryBox(GlobalPos.create(world.getRegistryKey(), pos));
 				this.finishInstruction();

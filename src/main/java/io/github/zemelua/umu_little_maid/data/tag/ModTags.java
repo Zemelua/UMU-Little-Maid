@@ -16,6 +16,8 @@ import org.apache.logging.log4j.MarkerManager;
 public final class ModTags {
 	public static final Marker MARKER = MarkerManager.getMarker("TAG").addParents(UMULittleMaid.MARKER);
 
+	public static final TagKey<Block> BLOCK_MAID_SETTABLE_AS_HOME;
+	public static final TagKey<Block> BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX;
 	public static final TagKey<Block> BLOCK_MAID_HARVESTS;
 	public static final TagKey<Block> BLOCK_MAID_GOURDS;
 	public static final TagKey<Block> BLOCK_SCARECROW_HEAD;
@@ -74,17 +76,15 @@ public final class ModTags {
 	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_BOW_ATTACKS;
 	public static final TagKey<MaidPersonality> PERSONALITY_DEVOTE_WHEN_HEAL_OWNERS;
 
-	private static boolean initialized = false;
 	public static void initialize() {
-		if (ModTags.initialized) throw new IllegalStateException("Tags are already initialized!");
-
-		ModTags.initialized = true;
 		UMULittleMaid.LOGGER.info(ModTags.MARKER, "Tags are initialized!");
 	}
 
-	private ModTags() throws IllegalAccessException {throw new IllegalAccessException();}
+	private ModTags() {}
 
 	static {
+		BLOCK_MAID_SETTABLE_AS_HOME = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_settable_as_home"));
+		BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_settable_as_delivery_box"));
 		BLOCK_MAID_HARVESTS = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_harvests"));
 		BLOCK_MAID_GOURDS = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("maid_gourds"));
 		BLOCK_SCARECROW_HEAD = TagKey.of(Registry.BLOCK_KEY, UMULittleMaid.identifier("scarecrow_head"));

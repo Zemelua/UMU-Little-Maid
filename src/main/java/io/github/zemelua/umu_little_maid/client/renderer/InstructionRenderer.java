@@ -47,7 +47,7 @@ public final class InstructionRenderer {
 	public static void renderTargetOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, World world, BlockPos pos, BlockState state, LittleMaidEntity maid) {
 		if (maid.isAnySite(world, pos)) {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_DELETABLE, pos, state);
-		} else if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
+		} else if (maid.isSettableAsAnySite(world, pos)) {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.AVAILABLE, pos, state);
 		} else {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_UNAVAILABLE, pos, state);
@@ -154,7 +154,7 @@ public final class InstructionRenderer {
 
 	public static void renderCrossHair(MinecraftClient client, MatrixStack matrices, int screenW, int screenH, float z) {
 		Sprite texture = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(CROSSHAIR);
-		RenderSystem.setShaderTexture(0, CROSSHAIR);
+		// RenderSystem.setShaderTexture(0, CROSSHAIR);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		Matrix4f matrix = matrices.peek().getPositionMatrix();
 		int textureW = texture.getWidth();
