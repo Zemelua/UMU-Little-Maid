@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.util;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
@@ -12,6 +13,8 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -126,5 +129,17 @@ public final class ModUtils {
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
 
-	private ModUtils() throws IllegalAccessException {throw new IllegalAccessException();}
+	public static final class Conversion {
+		public static NbtElement globalPosToNBT(GlobalPos pos) {
+			return GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos)
+					.getOrThrow(false, UMULittleMaid.LOGGER::error);
+		}
+
+		public static GlobalPos nbtToGlobalPos(NbtElement nbt) {
+			return GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt)
+					.getOrThrow(false, UMULittleMaid.LOGGER::error);
+		}
+	}
+
+	private ModUtils() {}
 }

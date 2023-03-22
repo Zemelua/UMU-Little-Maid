@@ -56,10 +56,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
@@ -1532,6 +1529,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 	private static final String KEY_COMMITMENT = "Commitment";
+	private static final String KEY_HOME = "Home";
+	private static final String KEY_DELIVERY_BOXES = "DeliveryBoxes";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -1575,6 +1574,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
 		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
+
+		this.getHome().map(ModUtils.Conversion::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_HOME, n));
+		NbtList boxesNBT = new NbtList();
+		this.getDeliveryBoxes().stream()
+				.map(ModUtils.Conversion::globalPosToNBT)
+				.forEach(boxesNBT::add);
+		nbt.put(KEY_DELIVERY_BOXES, boxesNBT);
 	}
 
 	@Override
@@ -1616,6 +1623,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
 		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
+
+		if (nbt.contains(KEY_HOME)) {
+			this.setHome(ModUtils.Conversion.nbtToGlobalPos(nbt.get(KEY_HOME)));
+		}
+		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
+		for (NbtElement boxNBT : boxesNBT) {
+			this.addDeliveryBox(ModUtils.Conversion.nbtToGlobalPos(boxNBT));
+		}
 	}
 	//</editor-fold>
 
