@@ -1575,11 +1575,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
 		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
 
-		this.getHome().map(ModUtils.Conversion::globalPosToNBT)
+		this.getHome().map(ModUtils.Conversions::globalPosToNBT)
 				.ifPresent(n -> nbt.put(KEY_HOME, n));
 		NbtList boxesNBT = new NbtList();
 		this.getDeliveryBoxes().stream()
-				.map(ModUtils.Conversion::globalPosToNBT)
+				.map(ModUtils.Conversions::globalPosToNBT)
 				.forEach(boxesNBT::add);
 		nbt.put(KEY_DELIVERY_BOXES, boxesNBT);
 	}
@@ -1625,11 +1625,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
 
 		if (nbt.contains(KEY_HOME)) {
-			this.setHome(ModUtils.Conversion.nbtToGlobalPos(nbt.get(KEY_HOME)));
+			this.setHome(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_HOME)));
 		}
 		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
 		for (NbtElement boxNBT : boxesNBT) {
-			this.addDeliveryBox(ModUtils.Conversion.nbtToGlobalPos(boxNBT));
+			this.addDeliveryBox(ModUtils.Conversions.nbtToGlobalPos(boxNBT));
 		}
 	}
 	//</editor-fold>

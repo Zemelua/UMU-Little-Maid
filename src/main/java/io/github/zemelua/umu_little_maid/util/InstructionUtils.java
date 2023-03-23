@@ -8,17 +8,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
 public final class InstructionUtils {
+	public static final ImmutableText PASS_ON_BLOCK_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_block"));
+	public static final ImmutableText PASS_ON_ENTITY_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_entity"));
+	public static final ImmutableText CANCEL = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_cancel"));
+
 	public static IInstructionComponent getComponent(PlayerEntity player) {
 		return player.getComponent(Components.INSTRUCTION);
 	}
@@ -43,66 +48,70 @@ public final class InstructionUtils {
 		ClientPlayNetworking.send(NetworkHandler.CHANNEL_CLIENT_INSTRUCTION_CANCEL, PacketByteBufs.create());
 	}
 
-	public static Text setHomeMessage(Block block, BlockPos pos) {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_set_home",
-				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
-				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
-		);
+	public static <I extends Entity & IInstructable> Text homeMessage(I owner) {
+		return Text.translatable("message.umu_little_maid.instruction_home", owner.getDisplayName());
 	}
 
-	public static Text replaceHomeMessage(Block block, BlockPos pos) {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_replace_home",
-				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
-				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
-		);
+	public static <I extends Entity & IInstructable> Text anchorMessage(I owner) {
+		return Text.translatable("message.umu_little_maid.instruction_anchor", owner.getDisplayName());
 	}
 
-	public static Text removeHomeMessage() {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_remove_home");
+	public static <I extends Entity & IInstructable> Text deliveryBoxMessage(I owner) {
+		return Text.translatable("message.umu_little_maid.instruction_delivery_box", owner.getDisplayName());
 	}
 
-	public static Text addDeliveryBoxMessage(Block block, BlockPos pos) {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_add_delivery_box",
-				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
-				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
-		);
+	public static <I extends Entity & IInstructable> Text setHomeMessage(BlockState state, BlockPos pos, I owner) {
+		return setSiteMessage(state, pos, owner, homeMessage(owner));
 	}
 
-	public static Text removeDeliveryBoxMessage(Block block, BlockPos pos) {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_remove_delivery_box",
-				Text.translatable(block.getTranslationKey()).styled(style -> style.withBold(true).withColor(Formatting.GREEN)),
-				Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ())).styled(style -> style.withColor(Formatting.GREEN))
-		);
+	public static <I extends Entity & IInstructable> Text renewHomeMessage(BlockState state, BlockPos pos, I owner) {
+		return renewSiteMessage(state, pos, owner, homeMessage(owner));
 	}
 
-	public static Text passOnBlockMessage() {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_pass_on_block");
+	public static <I extends Entity & IInstructable> Text removeHomeMessage(BlockState state, BlockPos pos, I owner) {
+		return removeSiteMessage(state, pos, owner, homeMessage(owner));
 	}
 
-	public static Text passOnEntityMessage() {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_pass_on_entity");
+	public static <I extends Entity & IInstructable> Text addDeliveryBoxMessage(BlockState state, BlockPos pos, I owner) {
+		return addSiteMessage(state, pos, owner, deliveryBoxMessage(owner));
 	}
 
-	public static Text cancelMessage() {
-		return Text.translatable("message.actionbar.umu_little_maid.instruction_cancel");
+	public static <I extends Entity & IInstructable> Text removeDeliveryBoxMessage(BlockState state, BlockPos pos, I owner) {
+		return removeSiteMessage(state, pos, owner, deliveryBoxMessage(owner));
+	}
+
+	public static <I extends Entity & IInstructable> Text setSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+		return Text.translatable("message.umu_little_maid.instruction_set_site", ModUtils.Texts.blockWithPos(state, pos), site);
+	}
+
+	public static <I extends Entity & IInstructable> Text renewSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+		return Text.translatable("message.umu_little_maid.instruction_renew_site", ModUtils.Texts.blockWithPos(state, pos), site);
+	}
+
+	public static <I extends Entity & IInstructable> Text addSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+		return Text.translatable("message.umu_little_maid.instruction_add_site", ModUtils.Texts.blockWithPos(state, pos), site);
+	}
+
+	public static <I extends Entity & IInstructable> Text removeSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+		return Text.translatable("message.umu_little_maid.instruction_remove_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 
 	public static Text guideCancelMessage() {
-		return Text.translatable("message.umu_little_maid.instruction_guide_cancel",
-				Text.translatable("gui.cancel")
-		);
+		KeyBinding attackKey = ModUtils.KeyBinds.getAttackKey();
+
+		return Text.translatable("message.umu_little_maid.instruction_guide_cancel", attackKey.getBoundKeyLocalizedText(), ScreenTexts.CANCEL);
 	}
 
 	public static Text guideDecideMessage() {
-		return Text.translatable("message.umu_little_maid.instruction_guide_decide",
-				Text.translatable("message.word.umu_little_maid.decide").styled(s -> s.withColor(Formatting.GREEN))
-		);
+		KeyBinding useKey = ModUtils.KeyBinds.getUseKey();
+
+		return Text.translatable("message.umu_little_maid.instruction_guide_decide", useKey.getBoundKeyLocalizedText(), ModUtils.Texts.DECIDE);
 	}
 
 	public static Text guideRemoveMessage() {
-		return Text.translatable("message.umu_little_maid.instruction_guide_remove",
-				Text.translatable("message.word.umu_little_maid.remove").styled(s -> s.withColor(Formatting.RED))
-		);
+		KeyBinding useKey = ModUtils.KeyBinds.getUseKey();
+
+		return Text.translatable("message.umu_little_maid.instruction_guide_remove", useKey.getBoundKeyLocalizedText(), ModUtils.Texts.REMOVE);
 	}
 
 	private InstructionUtils() {}

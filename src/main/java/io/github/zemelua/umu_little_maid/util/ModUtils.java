@@ -5,6 +5,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -16,6 +18,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
@@ -129,7 +134,7 @@ public final class ModUtils {
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
 	}
 
-	public static final class Conversion {
+	public static final class Conversions {
 		public static NbtElement globalPosToNBT(GlobalPos pos) {
 			return GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos)
 					.getOrThrow(false, UMULittleMaid.LOGGER::error);
@@ -138,6 +143,31 @@ public final class ModUtils {
 		public static GlobalPos nbtToGlobalPos(NbtElement nbt) {
 			return GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt)
 					.getOrThrow(false, UMULittleMaid.LOGGER::error);
+		}
+	}
+
+	public static final class Texts {
+		public static final ImmutableText DECIDE = new ImmutableText(Text.translatable("message.umu_little_maid.decide").styled(s -> s.withColor(Formatting.GREEN)));
+		public static final ImmutableText REMOVE = new ImmutableText(Text.translatable("message.umu_little_maid.remove").styled(s -> s.withColor(Formatting.RED)));
+
+		public static MutableText blockWithPos(BlockState state, BlockPos pos) {
+			return Text.translatable(state.getBlock().getTranslationKey())
+					.append(pos(pos))
+					.styled(style -> style.withColor(Formatting.GREEN));
+		}
+
+		public static MutableText pos(BlockPos pos) {
+			return net.minecraft.text.Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ()));
+		}
+	}
+
+	public static final class KeyBinds {
+		public static KeyBinding getAttackKey() {
+			return MinecraftClient.getInstance().options.attackKey;
+		}
+
+		public static KeyBinding getUseKey() {
+			return MinecraftClient.getInstance().options.useKey;
 		}
 	}
 

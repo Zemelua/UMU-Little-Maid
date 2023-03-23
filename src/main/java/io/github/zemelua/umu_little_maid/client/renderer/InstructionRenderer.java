@@ -11,7 +11,6 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -24,7 +23,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -197,15 +195,14 @@ public final class InstructionRenderer {
 		float rightX = centerX + padding;
 		if (target.getType() == HitResult.Type.BLOCK) {
 			BlockPos targetPos = ((BlockHitResult) target).getBlockPos();
-			BlockState targetState = world.getBlockState(targetPos);
 			Optional<LittleMaidEntity> maid = component.getTarget();
 
-			if (world.getWorldBorder().contains(targetPos)) {
+			if (maid.isPresent() && world.getWorldBorder().contains(targetPos)) {
 				Text onRightClick;
 
-				if (maid.filter(m -> m.isHome(world, targetPos) || m.isDeliveryBox(world, targetPos)).isPresent()) {
+				if (maid.get().isAnySite(world, targetPos)) {
 					onRightClick = InstructionUtils.guideRemoveMessage();
-				} else if (targetState.isIn(BlockTags.BEDS) || targetState.isOf(Blocks.CHEST)) {
+				} else if (maid.get().isSettableAsAnySite(world, targetPos)) {
 					onRightClick = InstructionUtils.guideDecideMessage();
 				} else {
 					onRightClick = Text.empty();
