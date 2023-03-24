@@ -1299,6 +1299,12 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
+
+		if (value == MaidMode.FREE) {
+			this.setAnchor(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos()));
+		} else {
+			this.removeAnchor();
+		}
 	}
 
 	@Override
