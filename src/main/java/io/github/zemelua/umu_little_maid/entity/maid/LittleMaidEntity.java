@@ -1557,6 +1557,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 	private static final String KEY_COMMITMENT = "Commitment";
 	private static final String KEY_HOME = "Home";
+	private static final String KEY_ANCHOR = "Anchor";
 	private static final String KEY_DELIVERY_BOXES = "DeliveryBoxes";
 
 	@Override
@@ -1604,6 +1605,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.getHome().map(ModUtils.Conversions::globalPosToNBT)
 				.ifPresent(n -> nbt.put(KEY_HOME, n));
+		this.getAnchor().map(ModUtils.Conversions::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_ANCHOR, n));
 		NbtList boxesNBT = new NbtList();
 		this.getDeliveryBoxes().stream()
 				.map(ModUtils.Conversions::globalPosToNBT)
@@ -1653,6 +1656,9 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		if (nbt.contains(KEY_HOME)) {
 			this.setHome(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_HOME)));
+		}
+		if (nbt.contains(KEY_ANCHOR)) {
+			this.setAnchor(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_ANCHOR)));
 		}
 		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
 		for (NbtElement boxNBT : boxesNBT) {
