@@ -15,6 +15,7 @@ public final class ModMemories {
 
 	public static void init() {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("anchor"), ANCHOR);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("delivery_boxes"), DELIVERY_BOXES);
 	}
 
 	private ModMemories() {}
