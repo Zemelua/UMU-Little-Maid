@@ -22,7 +22,7 @@ public interface IInstructable {
 	void removeAnchor();
 
 	default boolean isAnchor(World world, BlockPos pos) {
-		return this.getAnchor().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
+		return this.getAnchor().filter(h -> h.equals(GlobalPos.create(world.getRegistryKey(), pos))).isPresent();
 	}
 
 	Collection<GlobalPos> getDeliveryBoxes();
@@ -38,7 +38,7 @@ public interface IInstructable {
 		return this.isSettableAsHome(world, pos) || this.isSettableAsDeliveryBox(world, pos);
 	}
 
-	default boolean isAnySite(World world, BlockPos pos) {
+	default boolean isAnyRemovableSite(World world, BlockPos pos) {
 		return this.isHome(world, pos) || this.isDeliveryBox(world, pos);
 	}
 }

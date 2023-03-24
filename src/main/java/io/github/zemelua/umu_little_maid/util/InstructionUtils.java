@@ -22,6 +22,7 @@ import java.util.Optional;
 public final class InstructionUtils {
 	public static final ImmutableText PASS_ON_BLOCK_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_block"));
 	public static final ImmutableText PASS_ON_ENTITY_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_entity"));
+	public static final ImmutableText PASS_ON_ANCHOR_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_anchor"));
 	public static final ImmutableText CANCEL = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_cancel"));
 
 	public static IInstructionComponent getComponent(PlayerEntity player) {

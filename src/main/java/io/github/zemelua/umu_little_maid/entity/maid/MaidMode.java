@@ -5,9 +5,9 @@ import net.minecraft.text.Text;
 import java.util.Arrays;
 
 public enum MaidMode {
-	FOLLOW(0, Text.translatable("message.actionbar.umu_little_maid.maid_follow")),
-	WAIT(1, Text.translatable("message.actionbar.umu_little_maid.maid_wait")),
-	FREE(2, Text.translatable("message.actionbar.umu_little_maid.maid_free"));
+	FOLLOW(0, Text.translatable("message.umu_little_maid.maid_follow")),
+	WAIT(1, Text.translatable("message.umu_little_maid.maid_wait")),
+	FREE(2, Text.translatable("message.umu_little_maid.maid_free"));
 
 	private final int id;
 	private final Text message;

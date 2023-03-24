@@ -88,6 +88,12 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			}
 
 			return ActionResult.success(world.isClient());
+		} else if (this.target.isAnchor(world, pos)) {
+			if (world.isClient()) {
+				this.owner.sendMessage(InstructionUtils.PASS_ON_ANCHOR_MESSAGE, true);
+			}
+
+			return ActionResult.FAIL;
 		} else {
 			if (world.isClient()) {
 				this.owner.sendMessage(InstructionUtils.PASS_ON_BLOCK_MESSAGE, true);

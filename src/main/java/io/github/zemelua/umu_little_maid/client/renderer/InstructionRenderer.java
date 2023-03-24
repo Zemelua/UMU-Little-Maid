@@ -42,11 +42,15 @@ public final class InstructionRenderer {
 	public static final Identifier HEADDRESS = UMULittleMaid.identifier("instruction/site/headdress");
 
 	public static void renderTargetOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, World world, BlockPos pos, BlockState state, LittleMaidEntity maid) {
-		if (maid.isAnySite(world, pos)) {
+		if (maid.isAnchor(world, pos)) {
+			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, pos, null);
+		}
+
+		if (maid.isAnyRemovableSite(world, pos)) {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_DELETABLE, pos, state);
 		} else if (maid.isSettableAsAnySite(world, pos)) {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.AVAILABLE, pos, state);
-		} else {
+		} else if (!maid.isAnchor(world, pos)) {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_UNAVAILABLE, pos, state);
 		}
 	}
@@ -66,7 +70,7 @@ public final class InstructionRenderer {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_HOME, homePos, world.getBlockState(homePos));
 		});
 
-		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
+		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderAnchorOverlay(client, world, player, h)).ifPresent(h -> {
 			BlockPos anchorPos = h.getPos();
 
 			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, anchorPos, null);
@@ -83,6 +87,18 @@ public final class InstructionRenderer {
 		Optional<HitResult> target = Optional.ofNullable(client.crosshairTarget);
 		if (target.filter(h -> h.getType() == HitResult.Type.BLOCK)
 				.filter(h -> ModUtils.isSameObject(world, ((BlockHitResult) h).getBlockPos(), pos))
+				.isPresent()) {
+			return false;
+		}
+
+		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
+		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
+	}
+
+	private static boolean shouldRenderAnchorOverlay(MinecraftClient client, World world, PlayerEntity player, GlobalPos pos) {
+		Optional<HitResult> target = Optional.ofNullable(client.crosshairTarget);
+		if (target.filter(h -> h.getType() == HitResult.Type.BLOCK)
+				.filter(h -> pos.equals(GlobalPos.create(world.getRegistryKey(), ((BlockHitResult) h).getBlockPos())))
 				.isPresent()) {
 			return false;
 		}
@@ -204,7 +220,7 @@ public final class InstructionRenderer {
 			Optional<LittleMaidEntity> maid = component.getTarget();
 
 			if (maid.isPresent() && world.getWorldBorder().contains(targetPos)) {
-				if (maid.get().isAnySite(world, targetPos)) {
+				if (maid.get().isAnyRemovableSite(world, targetPos)) {
 					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideRemoveMessage(), rightX, y, 0xFFFFFF);
 				} else if (maid.get().isSettableAsAnySite(world, targetPos)) {
 					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideDecideMessage(), rightX, y, 0xFFFFFF);

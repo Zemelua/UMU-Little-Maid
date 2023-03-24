@@ -15,6 +15,7 @@
 	"message.umu_little_maid.instruction_remove_site": "Removed %1$s from %2$s!",
 	"message.umu_little_maid.instruction_pass_on_block": "This block cannot be set",
 	"message.umu_little_maid.instruction_pass_on_entity": "This entity cannot be set",
+	"message.umu_little_maid.instruction_pass_on_anchor": "Anchor cannot be operated; it is set/removed automatically when switching maid modes",
 	"message.umu_little_maid.instruction_cancel": "Instruction was canceled",
 	"message.umu_little_maid.instruction_guide_cancel": "%1$s to %2$s",
 	"message.umu_little_maid.instruction_guide_decide": "%1$s to %2$s",
