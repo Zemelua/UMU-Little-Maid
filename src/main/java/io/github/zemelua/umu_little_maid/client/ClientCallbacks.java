@@ -51,6 +51,11 @@ public final class ClientCallbacks {
 		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_UP);
 		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_LEFT);
 		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_RIGHT);
+		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE);
+		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_DOWN);
+		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_UP);
+		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_LEFT);
+		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_RIGHT);
 		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE);
 		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_DOWN);
 		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_UP);

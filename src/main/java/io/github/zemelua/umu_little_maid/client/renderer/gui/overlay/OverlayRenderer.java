@@ -26,6 +26,11 @@ public final class OverlayRenderer {
 	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_home_up");
 	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_home_left");
 	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_home_right");
+	public static final Identifier OVERLAY_ANCHOR_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_anchor");
+	public static final Identifier OVERLAY_ANCHOR_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_anchor_down");
+	public static final Identifier OVERLAY_ANCHOR_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_anchor_up");
+	public static final Identifier OVERLAY_ANCHOR_TEXTURE_LEFT = UMULittleMaid.identifier("gui/overlay/instruction_anchor_left");
+	public static final Identifier OVERLAY_ANCHOR_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/overlay/instruction_anchor_right");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_DOWN = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_down");
 	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/overlay/instruction_delivery_box_up");
@@ -67,6 +72,7 @@ public final class OverlayRenderer {
 			OVERLAY_HOME_TEXTURE_LEFT,
 			OVERLAY_HOME_TEXTURE_RIGHT
 	);
+	public static final Overlay OVERLAY_ANCHOR;
 	public static final Overlay OVERLAY_DELIVERY_BOX = new Overlay(
 			ModRenderLayers.INSTRUCTION_OVERLAY_SITE,
 			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
@@ -77,4 +83,15 @@ public final class OverlayRenderer {
 			OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT
 	);
 
+	static {
+		OVERLAY_ANCHOR = new Overlay(
+				ModRenderLayers.INSTRUCTION_OVERLAY_SITE,
+				PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+				OVERLAY_ANCHOR_TEXTURE,
+				OVERLAY_ANCHOR_TEXTURE_DOWN,
+				OVERLAY_ANCHOR_TEXTURE_UP,
+				OVERLAY_ANCHOR_TEXTURE_LEFT,
+				OVERLAY_ANCHOR_TEXTURE_RIGHT
+		);
+	}
 }

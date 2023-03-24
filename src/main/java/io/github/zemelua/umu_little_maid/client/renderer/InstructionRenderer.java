@@ -66,6 +66,12 @@ public final class InstructionRenderer {
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_HOME, homePos, world.getBlockState(homePos));
 		});
 
+		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
+			BlockPos anchorPos = h.getPos();
+
+			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, anchorPos, null);
+		});
+
 		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRenderSiteOverlay(client, world, player, b)).forEach(b -> {
 			BlockPos boxPos = b.getPos();
 

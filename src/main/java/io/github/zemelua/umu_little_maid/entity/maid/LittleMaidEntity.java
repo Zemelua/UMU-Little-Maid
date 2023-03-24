@@ -1301,6 +1301,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 
 		if (value == MaidMode.FREE) {
+			// TODO: おうちから離れてるときのみアンカーを設定するように
 			this.setAnchor(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos()));
 		} else {
 			this.removeAnchor();
