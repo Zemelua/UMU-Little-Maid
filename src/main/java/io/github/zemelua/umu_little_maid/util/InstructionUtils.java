@@ -61,38 +61,38 @@ public final class InstructionUtils {
 	}
 
 	public static <I extends Entity & IInstructable> Text setHomeMessage(BlockState state, BlockPos pos, I owner) {
-		return setSiteMessage(state, pos, owner, homeMessage(owner));
+		return setSiteMessage(state, pos, homeMessage(owner));
 	}
 
 	public static <I extends Entity & IInstructable> Text renewHomeMessage(BlockState state, BlockPos pos, I owner) {
-		return renewSiteMessage(state, pos, owner, homeMessage(owner));
+		return renewSiteMessage(state, pos, homeMessage(owner));
 	}
 
 	public static <I extends Entity & IInstructable> Text removeHomeMessage(BlockState state, BlockPos pos, I owner) {
-		return removeSiteMessage(state, pos, owner, homeMessage(owner));
+		return removeSiteMessage(state, pos, homeMessage(owner));
 	}
 
 	public static <I extends Entity & IInstructable> Text addDeliveryBoxMessage(BlockState state, BlockPos pos, I owner) {
-		return addSiteMessage(state, pos, owner, deliveryBoxMessage(owner));
+		return addSiteMessage(state, pos, deliveryBoxMessage(owner));
 	}
 
 	public static <I extends Entity & IInstructable> Text removeDeliveryBoxMessage(BlockState state, BlockPos pos, I owner) {
-		return removeSiteMessage(state, pos, owner, deliveryBoxMessage(owner));
+		return removeSiteMessage(state, pos, deliveryBoxMessage(owner));
 	}
 
-	public static <I extends Entity & IInstructable> Text setSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+	public static Text setSiteMessage(BlockState state, BlockPos pos, Text site) {
 		return Text.translatable("message.umu_little_maid.instruction_set_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 
-	public static <I extends Entity & IInstructable> Text renewSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+	public static Text renewSiteMessage(BlockState state, BlockPos pos, Text site) {
 		return Text.translatable("message.umu_little_maid.instruction_renew_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 
-	public static <I extends Entity & IInstructable> Text addSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+	public static Text addSiteMessage(BlockState state, BlockPos pos, Text site) {
 		return Text.translatable("message.umu_little_maid.instruction_add_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 
-	public static <I extends Entity & IInstructable> Text removeSiteMessage(BlockState state, BlockPos pos, I owner, Text site) {
+	public static Text removeSiteMessage(BlockState state, BlockPos pos, Text site) {
 		return Text.translatable("message.umu_little_maid.instruction_remove_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 

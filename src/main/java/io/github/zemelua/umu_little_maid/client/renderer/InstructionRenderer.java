@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Window;
@@ -183,32 +182,27 @@ public final class InstructionRenderer {
 	}
 
 	public static void renderGuideMessage(MatrixStack matrices, TextRenderer textRenderer, int screenW, int screenH, World world, HitResult target, IInstructionComponent component) {
-		float padding = 20;
+		int padding = 20;
 		float centerX = screenW / 2.0F;
 		float centerY = screenH / 2.0F;
-		float y = centerY - (textRenderer.fontHeight / 2.0F);
+		int y = Math.round(centerY - (textRenderer.fontHeight / 2.0F));
 
 		Text onLeftClick = InstructionUtils.guideCancelMessage();
-		float leftX = centerX - padding - textRenderer.getWidth(onLeftClick);
-		DrawableHelper.drawTextWithShadow(matrices, textRenderer, onLeftClick, Math.round(leftX), Math.round(y), 0xFFFFFF);
+		int leftW = textRenderer.getWidth(onLeftClick);
+		int leftX = Math.round(centerX - padding - leftW);
+		ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, onLeftClick, leftX, y, 0xFFFFFF);
 
-		float rightX = centerX + padding;
+		int rightX = Math.round(centerX + padding);
 		if (target.getType() == HitResult.Type.BLOCK) {
 			BlockPos targetPos = ((BlockHitResult) target).getBlockPos();
 			Optional<LittleMaidEntity> maid = component.getTarget();
 
 			if (maid.isPresent() && world.getWorldBorder().contains(targetPos)) {
-				Text onRightClick;
-
 				if (maid.get().isAnySite(world, targetPos)) {
-					onRightClick = InstructionUtils.guideRemoveMessage();
+					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideRemoveMessage(), rightX, y, 0xFFFFFF);
 				} else if (maid.get().isSettableAsAnySite(world, targetPos)) {
-					onRightClick = InstructionUtils.guideDecideMessage();
-				} else {
-					onRightClick = Text.empty();
+					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideDecideMessage(), rightX, y, 0xFFFFFF);
 				}
-
-				DrawableHelper.drawTextWithShadow(matrices, textRenderer, onRightClick, Math.round(rightX), Math.round(y), 0xFFFFFF);
 			}
 		}
 	}
