@@ -20,6 +20,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -87,6 +88,9 @@ public final class ClientCallbacks {
 
 	static void beforeRenderDebug(WorldRenderContext context) {
 		MinecraftClient client = MinecraftClient.getInstance();
+		Vec3d cameraPos = context.camera().getPos();
+
+		client.debugRenderer.pathfindingDebugRenderer.render(context.matrixStack(), context.consumers(), cameraPos.getX(), cameraPos.getY(), cameraPos.getZ());
 
 		InstructionRenderer.renderSitesOverlay(client, context);
 	}

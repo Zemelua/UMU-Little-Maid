@@ -1287,7 +1287,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.getMasterUuid() != null;
 	}
 
-	private MaidMode getMode() {
+	public MaidMode getMode() {
 		return this.dataTracker.get(LittleMaidEntity.MODE);
 	}
 
@@ -1309,8 +1309,13 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Override
+	public boolean isFollowingMaster() {
+		return this.dataTracker.get(MODE) == MaidMode.FOLLOW;
+	}
+
+	@Override
 	public boolean isSitting() {
-		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
+		return this.dataTracker.get(MODE) == MaidMode.WAIT;
 	}
 
 	@Override
