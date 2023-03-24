@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.util;
 
+import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
@@ -34,6 +35,7 @@ import net.minecraft.world.World;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -140,6 +142,8 @@ public final class ModUtils {
 	}
 
 	public static final class Conversions {
+		public static final Codec<List<GlobalPos>> GLOBAL_POS_COLLECTION_CODEC = GlobalPos.CODEC.listOf();
+
 		public static NbtElement globalPosToNBT(GlobalPos pos) {
 			return GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos)
 					.getOrThrow(false, UMULittleMaid.LOGGER::error);

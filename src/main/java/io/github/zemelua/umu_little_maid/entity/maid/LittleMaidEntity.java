@@ -10,6 +10,7 @@ import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
@@ -1328,6 +1329,23 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Override
+	public Optional<GlobalPos> getAnchor() {
+		return this.dataTracker.get(ANCHOR);
+	}
+
+	@Override
+	public void setAnchor(GlobalPos value) {
+		this.dataTracker.set(ANCHOR, Optional.of(value));
+		this.brain.remember(ModMemories.ANCHOR, Optional.of(value));
+	}
+
+	@Override
+	public void removeAnchor() {
+		this.dataTracker.set(ANCHOR, Optional.empty());
+		this.brain.forget(ModMemories.ANCHOR);
+	}
+
+	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
@@ -1337,6 +1355,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.add(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
 	}
 
 	@Override
@@ -1344,6 +1363,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.forget(ModMemories.DELIVERY_BOXES);
 	}
 
 	@Override
@@ -1672,7 +1692,9 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
 				ModEntities.MEMORY_SHOULD_BREATH,
-				MEMORY_IS_HUNTING
+				MEMORY_IS_HUNTING,
+				ModMemories.ANCHOR,
+				ModMemories.DELIVERY_BOXES
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

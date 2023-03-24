@@ -17,6 +17,14 @@ public interface IInstructable {
 		return this.getHome().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
 	}
 
+	Optional<GlobalPos> getAnchor();
+	void setAnchor(GlobalPos value);
+	void removeAnchor();
+
+	default boolean isAnchor(World world, BlockPos pos) {
+		return this.getAnchor().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
+	}
+
 	Collection<GlobalPos> getDeliveryBoxes();
 	void addDeliveryBox(GlobalPos value);
 	void removeDeliveryBox(GlobalPos value);
