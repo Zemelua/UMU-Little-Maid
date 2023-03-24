@@ -673,7 +673,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				} else {
 					if (!this.world.isClient()) {
 						this.setMode(this.getMode().getNext());
-						player.sendMessage(this.getMode().getMessage(), true);
+						player.sendMessage(this.getMode().getMessage(this), true);
 					}
 
 					return ActionResult.success(this.world.isClient());
