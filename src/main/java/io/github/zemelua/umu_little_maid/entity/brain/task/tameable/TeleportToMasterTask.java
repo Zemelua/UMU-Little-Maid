@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.util.IHasMaster;
+import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -16,12 +16,8 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
-import static net.minecraft.entity.ai.brain.MemoryModuleState.*;
-
-public class TeleportToMasterTask<E extends PathAwareEntity & IHasMaster> extends Task<E> {
+public class TeleportToMasterTask<E extends PathAwareEntity & ITameable> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			MEMORY_JOB_SITE, VALUE_ABSENT
 	);
 
 	private final float startDistance;
@@ -80,6 +76,6 @@ public class TeleportToMasterTask<E extends PathAwareEntity & IHasMaster> extend
 		if (pet.isLeashed()) return false;
 		if (pet.hasVehicle()) return false;
 
-		return !master.isSpectator() && pet.distanceTo(master) >= this.startDistance;
+		return !master.isSpectator() && pet.distanceTo(master) >= this.startDistance && pet.isFollowingMaster();
 	}
 }

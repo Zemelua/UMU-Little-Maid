@@ -1,8 +1,8 @@
-package io.github.zemelua.umu_little_maid.entity.brain.task.engage;
+package io.github.zemelua.umu_little_maid.entity.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidMode;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -17,27 +17,30 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Map;
 import java.util.Optional;
 
-public class KeepAroundJobSiteTask extends Task<LittleMaidEntity> {
+public class KeepAroundHomeOrAnchorTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_JOB_SITE, MemoryModuleState.VALUE_PRESENT,
 			MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT
 	);
 
-	public KeepAroundJobSiteTask() {
-		super(KeepAroundJobSiteTask.REQUIRED_MEMORIES, 0);
+	public KeepAroundHomeOrAnchorTask() {
+		super(REQUIRED_MEMORIES, 0);
 	}
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LittleMaidEntity maid) {
-		return maid.isEngaging();
+		return maid.getMode() == MaidMode.FREE;
 	}
 
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<?> brain = maid.getBrain();
 
-		Optional<GlobalPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_JOB_SITE);
+		Optional<GlobalPos> home = maid.getHome();
+		Optional<GlobalPos> anchor = maid.getAnchor();
+		Optional<GlobalPos> pos = anchor.isPresent() ? anchor : home;
+
+
 		if (pos.isPresent() && this.exceedsMaxRange(maid, pos.get())) {
 			Optional<Vec3d> walkTo = Optional.empty();
 			final int tryCount = 1000;
@@ -46,10 +49,7 @@ public class KeepAroundJobSiteTask extends Task<LittleMaidEntity> {
 				walkTo = Optional.ofNullable(NoPenaltyTargeting.findTo(maid, 15, 7, Vec3d.ofBottomCenter(pos.get().getPos()), 1.5707963705062866));
 			}
 
-			if (i == tryCount || walkTo.isEmpty()) {
-				brain.forget(ModEntities.MEMORY_JOB_SITE);
-				ForgetJobSiteTask.playLostSiteParticles(world, maid);
-			} else {
+			if (i != tryCount && walkTo.isPresent()) {
 				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(walkTo.get(), 0.8F, 1));
 			}
 		}

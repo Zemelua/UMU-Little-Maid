@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
@@ -20,7 +19,6 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class FollowOwnerTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_JOB_SITE, MemoryModuleState.VALUE_ABSENT
 	);
 
 	private final float minDistance;

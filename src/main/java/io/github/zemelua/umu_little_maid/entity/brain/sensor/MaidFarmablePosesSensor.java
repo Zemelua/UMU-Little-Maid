@@ -11,11 +11,9 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
@@ -23,29 +21,14 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	protected void sense(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		List<BlockPos> list = Lists.newArrayList();
-		Optional<GlobalPos> sitePos = brain.getOptionalMemory(ModEntities.MEMORY_JOB_SITE);
 
-		if (sitePos.isEmpty()) {
-			for (int x = -5; x < 6; x++) {
-				for (int y = -2; y < 3; y++) {
-					for (int z = -5; z < 6; z++) {
-						BlockPos pos = maid.getBlockPos().add(x, y, z);
+		for (int x = -16; x < 17; x++) {
+			for (int y = -3; y < 4; y++) {
+				for (int z = -16; z < 17; z++) {
+					BlockPos pos = maid.getBlockPos().add(x, y, z);
 
-						if (canAnyFarm(world, maid, pos) && canReach(maid, pos)) {
-							list.add(pos);
-						}
-					}
-				}
-			}
-		} else {
-			for (int x = -16; x < 17; x++) {
-				for (int y = -3; y < 4; y++) {
-					for (int z = -16; z < 17; z++) {
-						BlockPos pos = sitePos.get().getPos().add(x, y, z);
-
-						if (canAnyFarm(world, maid, pos) && canReach(maid, pos)) {
-							list.add(pos);
-						}
+					if (canAnyFarm(world, maid, pos) && canReach(maid, pos)) {
+						list.add(pos);
 					}
 				}
 			}

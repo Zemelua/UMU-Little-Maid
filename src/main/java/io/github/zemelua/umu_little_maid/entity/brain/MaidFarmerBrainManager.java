@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.farm.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.RememberFarmPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.WalkToFarmPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
@@ -48,18 +50,14 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
+				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(3, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldEatTask()),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
-				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new RememberFarmPosTask<>()),
-				Pair.of(98, new RememberFarmSiteTask()),
 				Pair.of(99, new ForgetShouldEatTask()),
-				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetHomeTask<>()),
-				Pair.of(99, new ForgetFarmSiteTask())
+				Pair.of(99, new ForgetShouldSleepTask<>(12000L))
 		));
 	}
 

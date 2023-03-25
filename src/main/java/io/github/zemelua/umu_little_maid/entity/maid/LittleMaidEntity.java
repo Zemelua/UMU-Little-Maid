@@ -5,8 +5,12 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.c_component.Components;
+import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
@@ -14,10 +18,7 @@ import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccesso
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import io.github.zemelua.umu_little_maid.util.IAvoidRain;
-import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
-import io.github.zemelua.umu_little_maid.util.ITameable;
-import io.github.zemelua.umu_little_maid.util.ModUtils;
+import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -56,10 +57,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
@@ -75,10 +73,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
@@ -91,10 +86,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -112,13 +106,15 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	public static final Identifier TEXTURE_HUNTER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_hunter.png");
 
 	private static final TrackedData<Optional<UUID>> MASTER;
-	private static final TrackedData<Boolean> IS_SITTING;
-	private static final TrackedData<Boolean> IS_ENGAGING;
+	private static final TrackedData<MaidMode> MODE;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
+	private static final TrackedData<Optional<GlobalPos>> HOME;
+	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
+	private static final TrackedData<Collection<GlobalPos>> DELIVERY_BOXES;
 
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
@@ -209,13 +205,15 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		super.initDataTracker();
 
 		this.dataTracker.startTracking(MASTER, Optional.empty());
-		this.dataTracker.startTracking(IS_SITTING, false);
-		this.dataTracker.startTracking(IS_ENGAGING, false);
+		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
 		this.dataTracker.startTracking(JOB, JOB_NONE);
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(COMMITMENT, 0);
+		this.dataTracker.startTracking(HOME, Optional.empty());
+		this.dataTracker.startTracking(ANCHOR, Optional.empty());
+		this.dataTracker.startTracking(DELIVERY_BOXES, new HashSet<>());
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -579,8 +577,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.brain = brain.copy();
 		this.getJob().initializeBrain(this.getBrain());
-		this.brain.forget(ModEntities.MEMORY_JOB_SITE);
-		this.brain.forget(ModEntities.MEMORY_JOB_SITE_CANDIDATE);
 	}
 
 	@Override
@@ -642,17 +638,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					}
 
 					return ActionResult.success(this.world.isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_ENGAGE_BATONS)) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
 					if (!this.world.isClient()) {
-						if (!this.isEngaging()) {
-							this.setEngaging(true);
-							this.spawnEngageParticle();
+						IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+						if (instructionComponent.isInstructing()) {
+							instructionComponent.cancelInstruction();
 						} else {
-							this.setEngaging(false);
-							this.spawnSingleParticle(ParticleTypes.ANGRY_VILLAGER);
+							instructionComponent.startInstruction(this);
 						}
-
-						this.playEngageSound();
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -679,8 +672,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 					return ActionResult.success(this.world.isClient());
 				} else {
 					if (!this.world.isClient()) {
-						this.setSitting(!this.isSitting());
-						this.playSitSound();
+						this.setMode(this.getMode().getNext());
+						player.sendMessage(this.getMode().getMessage(this), true);
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -707,7 +700,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 	@Override
 	public void takeKnockback(double strength, double x, double z) {
-		if (this.getPersonality().isIn(PERSONALITY_PERSISTENCES)) {
+		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES)) {
 			return;
 		}
 
@@ -924,7 +917,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.damageBlocked = false;
 
 		if (!this.world.isClient() && this.isSitting()) {
-			this.setSitting(false);
+			this.setMode(MaidMode.FREE);
 		}
 
 		return result;
@@ -1001,7 +994,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
-		this.brain.forget(MemoryModuleType.HOME);
 	}
 
 	@Override
@@ -1176,13 +1168,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 	}
 
-	private void spawnEngageParticle() {
-		if (!this.world.isClient()) {
-			double color = MathHelper.clamp(0.3D, 0.0D, 1.0D);
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.NOTE, this.getX(), this.getY() + 1.2D, this.getZ(), 0, color, 0.0D, 0.0D, 1.0D);
-		}
-	}
-
 	@Override
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
@@ -1301,27 +1286,100 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.getMasterUuid() != null;
 	}
 
-	@Override
-	public boolean isSitting() {
-		return this.dataTracker.get(LittleMaidEntity.IS_SITTING);
+	public MaidMode getMode() {
+		return this.dataTracker.get(LittleMaidEntity.MODE);
 	}
 
-	private void setSitting(boolean value) {
-		this.dataTracker.set(LittleMaidEntity.IS_SITTING, value);
+	private void setMode(MaidMode value) {
+		this.dataTracker.set(LittleMaidEntity.MODE, value);
 
-		if (value) {
+		if (value == MaidMode.WAIT) {
 			this.brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
+
+		if (value == MaidMode.FREE) {
+			// TODO: おうちから離れてるときのみアンカーを設定するように
+			this.setAnchor(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos()));
+		} else {
+			this.removeAnchor();
+		}
 	}
 
-	public boolean isEngaging() {
-		return this.dataTracker.get(LittleMaidEntity.IS_ENGAGING);
+	@Override
+	public boolean isFollowingMaster() {
+		return this.dataTracker.get(MODE) == MaidMode.FOLLOW;
 	}
 
-	private void setEngaging(boolean value) {
-		this.dataTracker.set(LittleMaidEntity.IS_ENGAGING, value);
+	@Override
+	public boolean isSitting() {
+		return this.dataTracker.get(MODE) == MaidMode.WAIT;
+	}
+
+	@Override
+	public Optional<GlobalPos> getHome() {
+		return this.dataTracker.get(HOME);
+	}
+
+	@Override
+	public void setHome(GlobalPos value) {
+		this.dataTracker.set(HOME, Optional.of(value));
+		this.brain.remember(MemoryModuleType.HOME, Optional.of(value));
+	}
+
+	@Override
+	public void removeHome() {
+		this.dataTracker.set(HOME, Optional.empty());
+		this.brain.forget(MemoryModuleType.HOME);
+	}
+
+	@Override
+	public boolean isSettableAsHome(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_HOME);
+	}
+
+	@Override
+	public Optional<GlobalPos> getAnchor() {
+		return this.dataTracker.get(ANCHOR);
+	}
+
+	@Override
+	public void setAnchor(GlobalPos value) {
+		this.dataTracker.set(ANCHOR, Optional.of(value));
+		this.brain.remember(ModMemories.ANCHOR, Optional.of(value));
+	}
+
+	@Override
+	public void removeAnchor() {
+		this.dataTracker.set(ANCHOR, Optional.empty());
+		this.brain.forget(ModMemories.ANCHOR);
+	}
+
+	@Override
+	public Collection<GlobalPos> getDeliveryBoxes() {
+		return this.dataTracker.get(DELIVERY_BOXES);
+	}
+
+	@Override
+	public void addDeliveryBox(GlobalPos value) {
+		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		boxes.add(value);
+		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
+	}
+
+	@Override
+	public void removeDeliveryBox(GlobalPos value) {
+		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		boxes.remove(value);
+		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.forget(ModMemories.DELIVERY_BOXES);
+	}
+
+	@Override
+	public boolean isSettableAsDeliveryBox(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX);
 	}
 
 	public MaidJob getJob() {
@@ -1497,12 +1555,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final String KEY_SLOT = "Slot";
 	private static final String KEY_GIVEN_FOODS = "GivenFoods";
 	private static final String KEY_OWNER = "Owner";
-	private static final String KEY_IS_SITTING = "IsSitting";
-	private static final String KEY_IS_ENGAGING = "IsEngaging";
+	private static final String KEY_MODE = "Mode";
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 	private static final String KEY_COMMITMENT = "Commitment";
+	private static final String KEY_HOME = "Home";
+	private static final String KEY_ANCHOR = "Anchor";
+	private static final String KEY_DELIVERY_BOXES = "DeliveryBoxes";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -1532,8 +1592,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			nbt.putUuid(LittleMaidEntity.KEY_OWNER, uuid);
 		}
 
-		nbt.putBoolean(LittleMaidEntity.KEY_IS_SITTING, this.isSitting());
-		nbt.putBoolean(LittleMaidEntity.KEY_IS_ENGAGING, this.isEngaging());
+		nbt.putInt(LittleMaidEntity.KEY_MODE, this.getMode().getId());
 
 		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
 		if (job != null) {
@@ -1547,6 +1606,16 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
 		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
+
+		this.getHome().map(ModUtils.Conversions::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_HOME, n));
+		this.getAnchor().map(ModUtils.Conversions::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_ANCHOR, n));
+		NbtList boxesNBT = new NbtList();
+		this.getDeliveryBoxes().stream()
+				.map(ModUtils.Conversions::globalPosToNBT)
+				.forEach(boxesNBT::add);
+		nbt.put(KEY_DELIVERY_BOXES, boxesNBT);
 	}
 
 	@Override
@@ -1576,8 +1645,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		}
 		this.setMasterUuid(uuid);
 
-		this.setSitting(nbt.getBoolean(LittleMaidEntity.KEY_IS_SITTING));
-		this.setEngaging(nbt.getBoolean(LittleMaidEntity.KEY_IS_ENGAGING));
+		this.setMode(MaidMode.fromId(nbt.getInt(LittleMaidEntity.KEY_MODE)));
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
 			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
@@ -1589,6 +1657,17 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
 		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
+
+		if (nbt.contains(KEY_HOME)) {
+			this.setHome(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_HOME)));
+		}
+		if (nbt.contains(KEY_ANCHOR)) {
+			this.setAnchor(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_ANCHOR)));
+		}
+		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
+		for (NbtElement boxNBT : boxesNBT) {
+			this.addDeliveryBox(ModUtils.Conversions.nbtToGlobalPos(boxNBT));
+		}
 	}
 	//</editor-fold>
 
@@ -1627,12 +1706,12 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,
 				ModEntities.MEMORY_FARM_COOLDOWN,
-				ModEntities.MEMORY_JOB_SITE,
-				ModEntities.MEMORY_JOB_SITE_CANDIDATE,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
 				ModEntities.MEMORY_SHOULD_BREATH,
-				MEMORY_IS_HUNTING
+				MEMORY_IS_HUNTING,
+				ModMemories.ANCHOR,
+				ModMemories.DELIVERY_BOXES
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
@@ -1641,17 +1720,18 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.SENSOR_MAID_ATTACKABLE,
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
-				ModEntities.SENSOR_MAID_FARMABLE_POSES,
-				ModEntities.SENSOR_JOB_SITE_CANDIDATE
+				ModEntities.SENSOR_MAID_FARMABLE_POSES
 		);
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-		IS_SITTING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_ENGAGING = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
+		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
+		DELIVERY_BOXES = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.COLLECTION_GLOBAL_POS);
 	}
 }

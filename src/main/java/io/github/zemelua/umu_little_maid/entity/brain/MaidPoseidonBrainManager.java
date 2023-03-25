@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
@@ -11,9 +12,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.Triden
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.ForgetJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.KeepAroundJobSiteTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.engage.RememberJobSiteTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
@@ -60,17 +58,15 @@ public final class MaidPoseidonBrainManager {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
+				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
-				Pair.of(4, new KeepAroundJobSiteTask()),
 				Pair.of(98, new RememberShouldBreathTask<>(100)),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(98, new RememberJobSiteTask()),
 				Pair.of(99, new ForgetShouldBreathTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
-				Pair.of(99, new ForgetAttackTargetTask<>()),
-				Pair.of(99, new ForgetJobSiteTask())
+				Pair.of(99, new ForgetAttackTargetTask<>())
 		));
 	}
 

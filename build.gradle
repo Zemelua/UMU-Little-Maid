@@ -17,6 +17,11 @@ repositories {
         name "Jitpack"
         url "https://jitpack.io"
     }
+
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+    }
 }
 
 loom {
@@ -33,6 +38,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation include("com.github.Chocohead:fabric-asm:v2.3")
+    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
 }
 
 processResources {

@@ -1,12 +1,17 @@
 package io.github.zemelua.umu_little_maid;
 
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.item.ModItems;
+import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,9 +30,18 @@ public class UMULittleMaid implements ModInitializer {
 		ModRegistries.initialize();
 		ModItems.initialize();
 		ModEntities.initialize();
+		ModMemories.init();
+		ModDataHandlers.init();
 		ModInventories.initialize();
 		ModSounds.initialize();
 		ModTags.initialize();
+
+		NetworkHandler.init();
+
+		UseBlockCallback.EVENT.register(Callbacks::onUseBlock);
+		UseEntityCallback.EVENT.register(Callbacks::onUseEntity);
+//		AttackBlockCallback.EVENT.register(Callbacks::onAttackBlock);
+//		AttackEntityCallback.EVENT.register(Callbacks::onAttackEntity);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}

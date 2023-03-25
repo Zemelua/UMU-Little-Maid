@@ -12,6 +12,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.animation.Animation;
@@ -47,11 +49,10 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
 
-		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
-			registry.register(LittleMaidScreen.EMPTY_HELD_SLOT_TEXTURE);
-			registry.register(LittleMaidScreen.EMPTY_HELMET_SLOT_TEXTURE);
-			registry.register(LittleMaidScreen.EMPTY_BOOTS_SLOT_TEXTURE);
-		});
+		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);
+		WorldRenderEvents.BLOCK_OUTLINE.register(ClientCallbacks::onRenderBlockOutline);
+		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::beforeRenderDebug);
+		HudRenderCallback.EVENT.register(ClientCallbacks::onRenderHUD);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Succeeded initializing mod client!");
 	}
