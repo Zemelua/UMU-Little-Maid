@@ -8,14 +8,12 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,8 +30,6 @@ import java.util.Optional;
 
 public class InstructionComponent implements IInstructionComponent, AutoSyncedComponent {
 	private final PlayerEntity owner;
-
-	private boolean instructing;
 	@Nullable private LittleMaidEntity target;
 
 	public InstructionComponent(PlayerEntity owner) {
@@ -42,7 +38,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void startInstruction(LittleMaidEntity target) {
-		this.instructing = true;
 		this.target = target;
 
 		Components.INSTRUCTION.sync(this.owner);
@@ -60,46 +55,48 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 		if (home.isPresent() && ModUtils.isSameObject(world, pos, home.get())) {
 			if (!world.isClient()) {
 				this.target.removeHome();
+				this.owner.sendMessage(InstructionUtils.removeHomeMessage(state, pos, this.target));
 				this.finishInstruction();
-
-				this.owner.sendMessage(InstructionUtils.removeHomeMessage());
 			}
 
 			return ActionResult.success(world.isClient());
 		} else if (sameBox.isPresent()) {
 			if (!world.isClient()) {
 				this.target.removeDeliveryBox(sameBox.get());
+				this.owner.sendMessage(InstructionUtils.removeDeliveryBoxMessage(state, pos, this.target));
 				this.finishInstruction();
-
-				this.owner.sendMessage(InstructionUtils.removeDeliveryBoxMessage(state.getBlock(), pos));
 			}
 
 			return ActionResult.success(world.isClient());
-		} else if (world.getBlockState(target.getBlockPos()).isIn(BlockTags.BEDS)) {
+		} else if (this.target.isSettableAsHome(world, pos)) {
 			if (!world.isClient()) {
 				this.target.setHome(GlobalPos.create(world.getRegistryKey(), pos));
-				this.finishInstruction();
-
 				if (home.isPresent()) {
-					this.owner.sendMessage(InstructionUtils.replaceHomeMessage(state.getBlock(), pos));
+					this.owner.sendMessage(InstructionUtils.renewHomeMessage(state, pos, this.target));
 				} else {
-					this.owner.sendMessage(InstructionUtils.setHomeMessage(state.getBlock(), pos));
+					this.owner.sendMessage(InstructionUtils.setHomeMessage(state, pos, this.target));
 				}
+				this.finishInstruction();
 			}
 
 			return ActionResult.success(world.isClient());
-		} else if (world.getBlockState(target.getBlockPos()).isOf(Blocks.CHEST)) {
+		} else if (this.target.isSettableAsDeliveryBox(world, pos)) {
 			if (!world.isClient()) {
 				this.target.addDeliveryBox(GlobalPos.create(world.getRegistryKey(), pos));
+				this.owner.sendMessage(InstructionUtils.addDeliveryBoxMessage(state, pos, this.target));
 				this.finishInstruction();
-
-				this.owner.sendMessage(InstructionUtils.addDeliveryBoxMessage(state.getBlock(), pos));
 			}
 
 			return ActionResult.success(world.isClient());
+		} else if (this.target.isAnchor(world, pos)) {
+			if (world.isClient()) {
+				this.owner.sendMessage(InstructionUtils.PASS_ON_ANCHOR_MESSAGE, true);
+			}
+
+			return ActionResult.FAIL;
 		} else {
 			if (world.isClient()) {
-				this.owner.sendMessage(InstructionUtils.passOnBlockMessage(), true);
+				this.owner.sendMessage(InstructionUtils.PASS_ON_BLOCK_MESSAGE, true);
 			}
 
 			return ActionResult.FAIL;
@@ -109,7 +106,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 	@Override
 	public ActionResult tryInstruction(World world, EntityHitResult target) {
 		if (world.isClient()) {
-			this.owner.sendMessage(InstructionUtils.passOnEntityMessage(), true);
+			this.owner.sendMessage(InstructionUtils.PASS_ON_ENTITY_MESSAGE, true);
 		}
 
 		return ActionResult.FAIL;
@@ -117,7 +114,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void finishInstruction() {
-		this.instructing = false;
 		this.target = null;
 
 		Components.INSTRUCTION.sync(this.owner);
@@ -125,19 +121,13 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void cancelInstruction() {
-		this.instructing = false;
 		this.target = null;
 
 		Components.INSTRUCTION.sync(this.owner);
 
 		if (!this.owner.getWorld().isClient()) {
-			this.owner.sendMessage(InstructionUtils.cancelMessage(), true);
+			this.owner.sendMessage(InstructionUtils.CANCEL, true);
 		}
-	}
-
-	@Override
-	public boolean isInstructing() {
-		return this.instructing;
 	}
 
 	@Override
@@ -153,7 +143,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 	@Deprecated
 	@Override
 	public void serverTick() {
-		if (this.instructing) {
+		if (this.isInstructing()) {
 			ItemStack mainHandStack = this.owner.getMainHandStack();
 			ItemStack offHandStack = this.owner.getOffHandStack();
 
@@ -165,14 +155,11 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 
 	@Override
 	public void writeSyncPacket(PacketByteBuf packet, ServerPlayerEntity recipient) {
-		packet.writeBoolean(this.instructing);
-		packet.writeOptional(Optional.ofNullable(this.target)
-				.map(Entity::getId), PacketByteBuf::writeInt);
+		packet.writeOptional(Optional.ofNullable(this.target).map(Entity::getId), PacketByteBuf::writeInt);
 	}
 
 	@Override
 	public void applySyncPacket(PacketByteBuf packet) {
-		this.instructing = packet.readBoolean();
 		this.target = (LittleMaidEntity) packet.readOptional(PacketByteBuf::readInt)
 				.map(i -> this.owner.getWorld().getEntityById(i))
 				.filter(e -> e instanceof LittleMaidEntity)

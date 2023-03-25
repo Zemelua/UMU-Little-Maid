@@ -10,6 +10,7 @@ import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
@@ -56,10 +57,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
@@ -88,10 +86,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.zemelua.umu_little_maid.data.tag.ModTags.*;
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -676,7 +673,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				} else {
 					if (!this.world.isClient()) {
 						this.setMode(this.getMode().getNext());
-						player.sendMessage(this.getMode().getMessage(), true);
+						player.sendMessage(this.getMode().getMessage(this), true);
 					}
 
 					return ActionResult.success(this.world.isClient());
@@ -703,7 +700,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 	@Override
 	public void takeKnockback(double strength, double x, double z) {
-		if (this.getPersonality().isIn(PERSONALITY_PERSISTENCES)) {
+		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES)) {
 			return;
 		}
 
@@ -997,7 +994,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
-		this.brain.forget(MemoryModuleType.HOME);
 	}
 
 	@Override
@@ -1290,7 +1286,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.getMasterUuid() != null;
 	}
 
-	private MaidMode getMode() {
+	public MaidMode getMode() {
 		return this.dataTracker.get(LittleMaidEntity.MODE);
 	}
 
@@ -1302,49 +1298,88 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		} else {
 			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
 		}
+
+		if (value == MaidMode.FREE) {
+			// TODO: おうちから離れてるときのみアンカーを設定するように
+			this.setAnchor(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos()));
+		} else {
+			this.removeAnchor();
+		}
+	}
+
+	@Override
+	public boolean isFollowingMaster() {
+		return this.dataTracker.get(MODE) == MaidMode.FOLLOW;
 	}
 
 	@Override
 	public boolean isSitting() {
-		return this.dataTracker.get(LittleMaidEntity.MODE) == MaidMode.WAIT;
+		return this.dataTracker.get(MODE) == MaidMode.WAIT;
 	}
 
+	@Override
 	public Optional<GlobalPos> getHome() {
 		return this.dataTracker.get(HOME);
 	}
 
-	public boolean isHome(World world, BlockPos pos) {
-		return this.getHome().filter(h -> ModUtils.isSameObject(world, pos, h)).isPresent();
-	}
-
+	@Override
 	public void setHome(GlobalPos value) {
 		this.dataTracker.set(HOME, Optional.of(value));
 		this.brain.remember(MemoryModuleType.HOME, Optional.of(value));
 	}
 
+	@Override
 	public void removeHome() {
 		this.dataTracker.set(HOME, Optional.empty());
 		this.brain.forget(MemoryModuleType.HOME);
 	}
 
+	@Override
+	public boolean isSettableAsHome(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_HOME);
+	}
+
+	@Override
+	public Optional<GlobalPos> getAnchor() {
+		return this.dataTracker.get(ANCHOR);
+	}
+
+	@Override
+	public void setAnchor(GlobalPos value) {
+		this.dataTracker.set(ANCHOR, Optional.of(value));
+		this.brain.remember(ModMemories.ANCHOR, Optional.of(value));
+	}
+
+	@Override
+	public void removeAnchor() {
+		this.dataTracker.set(ANCHOR, Optional.empty());
+		this.brain.forget(ModMemories.ANCHOR);
+	}
+
+	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
 
-	public boolean isDeliveryBox(World world, BlockPos pos) {
-		return this.getDeliveryBoxes().stream().anyMatch(b -> ModUtils.isSameObject(world, pos, b));
-	}
-
+	@Override
 	public void addDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.add(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
 	}
 
+	@Override
 	public void removeDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.brain.forget(ModMemories.DELIVERY_BOXES);
+	}
+
+	@Override
+	public boolean isSettableAsDeliveryBox(World world, BlockPos pos) {
+		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX);
 	}
 
 	public MaidJob getJob() {
@@ -1525,6 +1560,9 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
 	private static final String KEY_COMMITMENT = "Commitment";
+	private static final String KEY_HOME = "Home";
+	private static final String KEY_ANCHOR = "Anchor";
+	private static final String KEY_DELIVERY_BOXES = "DeliveryBoxes";
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -1568,6 +1606,16 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
 		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
+
+		this.getHome().map(ModUtils.Conversions::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_HOME, n));
+		this.getAnchor().map(ModUtils.Conversions::globalPosToNBT)
+				.ifPresent(n -> nbt.put(KEY_ANCHOR, n));
+		NbtList boxesNBT = new NbtList();
+		this.getDeliveryBoxes().stream()
+				.map(ModUtils.Conversions::globalPosToNBT)
+				.forEach(boxesNBT::add);
+		nbt.put(KEY_DELIVERY_BOXES, boxesNBT);
 	}
 
 	@Override
@@ -1609,6 +1657,17 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
 		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
+
+		if (nbt.contains(KEY_HOME)) {
+			this.setHome(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_HOME)));
+		}
+		if (nbt.contains(KEY_ANCHOR)) {
+			this.setAnchor(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_ANCHOR)));
+		}
+		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
+		for (NbtElement boxNBT : boxesNBT) {
+			this.addDeliveryBox(ModUtils.Conversions.nbtToGlobalPos(boxNBT));
+		}
 	}
 	//</editor-fold>
 
@@ -1650,7 +1709,9 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.MEMORY_THROWN_TRIDENT,
 				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
 				ModEntities.MEMORY_SHOULD_BREATH,
-				MEMORY_IS_HUNTING
+				MEMORY_IS_HUNTING,
+				ModMemories.ANCHOR,
+				ModMemories.DELIVERY_BOXES
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

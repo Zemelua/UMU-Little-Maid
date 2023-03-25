@@ -3,26 +3,27 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 import net.minecraft.text.Text;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public enum MaidMode {
-	FOLLOW(0, Text.translatable("message.actionbar.umu_little_maid.maid_follow")),
-	WAIT(1, Text.translatable("message.actionbar.umu_little_maid.maid_wait")),
-	FREE(2, Text.translatable("message.actionbar.umu_little_maid.maid_free"));
+	FOLLOW(0, m -> Text.translatable("message.umu_little_maid.maid_follow", m.getDisplayName())),
+	WAIT(1, m -> Text.translatable("message.umu_little_maid.maid_wait", m.getDisplayName())),
+	FREE(2, m -> Text.translatable("message.umu_little_maid.maid_free", m.getDisplayName()));
 
 	private final int id;
-	private final Text message;
+	private final Function<LittleMaidEntity, Text> messageFactory;
 
-	MaidMode(int id, Text message) {
+	MaidMode(int id, Function<LittleMaidEntity, Text> messageFactory) {
 		this.id = id;
-		this.message = message;
+		this.messageFactory = messageFactory;
 	}
 
 	public int getId() {
 		return this.id;
 	}
 
-	public Text getMessage() {
-		return this.message;
+	public Text getMessage(LittleMaidEntity maid) {
+		return this.messageFactory.apply(maid);
 	}
 
 	public MaidMode getNext() {

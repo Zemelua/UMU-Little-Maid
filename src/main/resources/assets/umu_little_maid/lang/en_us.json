@@ -3,6 +3,30 @@
 	"entity.umu_little_maid.little_maid": "Little Maid",
 	"container.umu_little_maid.little_maid": "Little Maid",
 
+	"message.umu_little_maid.maid_follow": "%s now follows you!",
+	"message.umu_little_maid.maid_wait": "%s now waits here!",
+	"message.umu_little_maid.maid_free": "%s now works around here!",
+	"message.umu_little_maid.instruction_home": "%s's Home",
+	"message.umu_little_maid.instruction_anchor": "%s's Anchor",
+	"message.umu_little_maid.instruction_delivery_box": "%s's Delivery Box",
+	"message.umu_little_maid.instruction_set_site": "Set %1$s as %2$s!",
+	"message.umu_little_maid.instruction_renew_site": "Renewed %2$s with %1$s!",
+	"message.umu_little_maid.instruction_add_site": "Added %1$s to %2$s!",
+	"message.umu_little_maid.instruction_remove_site": "Removed %1$s from %2$s!",
+	"message.umu_little_maid.instruction_pass_on_block": "This block cannot be set",
+	"message.umu_little_maid.instruction_pass_on_entity": "This entity cannot be set",
+	"message.umu_little_maid.instruction_pass_on_anchor": "Anchor cannot be operated; it is set/removed automatically when switching maid modes",
+	"message.umu_little_maid.instruction_cancel": "Instruction was canceled",
+	"message.umu_little_maid.instruction_guide_cancel": "%1$s to %2$s",
+	"message.umu_little_maid.instruction_guide_decide": "%1$s to %2$s",
+	"message.umu_little_maid.instruction_guide_remove": "%1$s to %2$s",
+	"message.umu_little_maid.decide": "Decide",
+	"message.umu_little_maid.remove": "Remove",
+
+	"tooltip.umu_little_maid.home": "When near the house, the maid sleeps in a bed registered as Home.\nAlso, when she has no Anchor, the maid in free mode stays within a range not too far from Home.",
+	"tooltip.umu_little_maid.anchor": "When the maid is in free mode, if she is far from Home, the coordinates of her feet are automatically set as Anchor.\nWhen the maid is no longer in free mode, Anchor is automatically deleted.\nWhen the maid has Anchor, the maid acts around the anchor even if she is near Home.",
+	"tooltip.umu_little_maid.delivery_box": "The maid deliver harvested crops and other items to Delivery Boxes, but it is not implemented in the current version! Please wait!",
+
 	"subtitles.umu_little_maid.entity.maid.ambient": "Maid says soliloquy",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "Maid attacks",
 	"subtitles.umu_little_maid.entity.maid.cracker_attack": "Maid attacks",
@@ -14,5 +38,4 @@
 	"subtitles.umu_little_maid.entity.maid.contract": "Maid contracts",
 	"subtitles.umu_little_maid.entity.maid.sit": "Maid obeys",
 	"subtitles.umu_little_maid.entity.maid.engage": "Maid obeys"
-
 }

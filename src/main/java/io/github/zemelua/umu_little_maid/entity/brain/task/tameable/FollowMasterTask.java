@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.util.IHasMaster;
+import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -14,9 +14,8 @@ import java.util.Optional;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
 
-public class FollowMasterTask<E extends PathAwareEntity & IHasMaster> extends Task<E> {
-	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-	);
+public class FollowMasterTask<E extends PathAwareEntity & ITameable> extends Task<E> {
+	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
 	private final float startDistance;
 
@@ -34,7 +33,7 @@ public class FollowMasterTask<E extends PathAwareEntity & IHasMaster> extends Ta
 		Optional<PlayerEntity> master = pet.getMaster();
 
 		return master
-				.filter(masterValue -> !masterValue.isSpectator() && pet.distanceTo(masterValue) >= this.startDistance)
+				.filter(m -> !m.isSpectator() && pet.distanceTo(m) >= this.startDistance && pet.isFollowingMaster())
 				.isPresent();
 	}
 

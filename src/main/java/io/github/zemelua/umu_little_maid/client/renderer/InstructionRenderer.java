@@ -5,112 +5,59 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.Overlay;
+import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.OverlayRenderer;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.util.InstructionUtils;
+import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext.BlockOutlineContext;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 
+import static net.minecraft.world.RaycastContext.FluidHandling.*;
+import static net.minecraft.world.RaycastContext.ShapeType.*;
+
 public final class InstructionRenderer {
-	public static final Identifier ATLAS_ID = UMULittleMaid.identifier("textures/atlas/instruction.png");
-	public static final SpriteAtlasTexture ATLAS = new SpriteAtlasTexture(ATLAS_ID);
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_available");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_available_down");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_available_up");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_available_left");
-	public static final Identifier OVERLAY_AVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_available_right");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_unavailable");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_down");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_up");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_left");
-	public static final Identifier OVERLAY_UNAVAILABLE_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_unavailable_right");
-	public static final Identifier OVERLAY_HOME_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_home");
-	public static final Identifier OVERLAY_HOME_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_home_down");
-	public static final Identifier OVERLAY_HOME_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_home_up");
-	public static final Identifier OVERLAY_HOME_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_home_left");
-	public static final Identifier OVERLAY_HOME_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_home_right");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_DOWN = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_down");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_UP = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_up");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_LEFT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_left");
-	public static final Identifier OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT = UMULittleMaid.identifier("gui/instruction_overlay_delivery_box_right");
 	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("gui/hud/instruction_crosshair");
+	public static final Identifier HEADDRESS = UMULittleMaid.identifier("instruction/site/headdress");
+	public static final Identifier ICON_HOME = UMULittleMaid.identifier("gui/home_icon");
+	public static final Identifier ICON_ANCHOR = UMULittleMaid.identifier("gui/anchor_icon");
+	public static final Identifier ICON_DELIVERY_BOX = UMULittleMaid.identifier("gui/delivery_box_icon");
 
-	private static final Overlay OVERLAY_AVAILABLE = new Overlay(
-			ModRenderLayers.INSTRUCTION_TARGET,
-			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-			OVERLAY_AVAILABLE_TEXTURE,
-			OVERLAY_AVAILABLE_TEXTURE_DOWN,
-			OVERLAY_AVAILABLE_TEXTURE_UP,
-			OVERLAY_AVAILABLE_TEXTURE_LEFT,
-			OVERLAY_AVAILABLE_TEXTURE_RIGHT
-	);
-	private static final Overlay OVERLAY_UNAVAILABLE = new Overlay(
-			ModRenderLayers.INSTRUCTION_TARGET,
-			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-			OVERLAY_UNAVAILABLE_TEXTURE,
-			OVERLAY_UNAVAILABLE_TEXTURE_DOWN,
-			OVERLAY_UNAVAILABLE_TEXTURE_UP,
-			OVERLAY_UNAVAILABLE_TEXTURE_LEFT,
-			OVERLAY_UNAVAILABLE_TEXTURE_RIGHT
-	);
-	private static final Overlay OVERLAY_HOME = new Overlay(
-			ModRenderLayers.INSTRUCTION_SITE,
-			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-			OVERLAY_HOME_TEXTURE,
-			OVERLAY_HOME_TEXTURE_DOWN,
-			OVERLAY_HOME_TEXTURE_UP,
-			OVERLAY_HOME_TEXTURE_LEFT,
-			OVERLAY_HOME_TEXTURE_RIGHT
-	);
-	private static final Overlay OVERLAY_DELIVERY_BOX = new Overlay(
-			ModRenderLayers.INSTRUCTION_SITE,
-			PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-			OVERLAY_DELIVERY_BOX_TEXTURE,
-			OVERLAY_DELIVERY_BOX_TEXTURE_DOWN,
-			OVERLAY_DELIVERY_BOX_TEXTURE_UP,
-			OVERLAY_DELIVERY_BOX_TEXTURE_LEFT,
-			OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT
-	);
+	public static void renderTargetOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, World world, BlockPos pos, BlockState state, LittleMaidEntity maid) {
+		if (maid.isAnchor(world, pos)) {
+			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, pos, null);
+		}
 
-	public static void renderTargetOverlay(WorldRenderContext worldRenderContext, BlockOutlineContext blockOutlineContext) {
-		VertexConsumerProvider verticesProvider = Objects.requireNonNull(worldRenderContext.consumers());
-		MatrixStack matrices = worldRenderContext.matrixStack();
-		Camera camera = worldRenderContext.camera();
-		BlockPos pos = blockOutlineContext.blockPos();
-		BlockState state = blockOutlineContext.blockState();
-
-		if (state.isIn(BlockTags.BEDS) || state.isOf(Blocks.CHEST)) {
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_AVAILABLE, pos, state);
-		} else {
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_UNAVAILABLE, pos, state);
+		if (maid.isAnyRemovableSite(world, pos)) {
+			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_DELETABLE, pos, state);
+		} else if (maid.isSettableAsAnySite(world, pos)) {
+			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.AVAILABLE, pos, state);
+		} else if (!maid.isAnchor(world, pos)) {
+			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_UNAVAILABLE, pos, state);
 		}
 	}
 
-	public static void renderSitesOverlay(WorldRenderContext context) {
+	public static void renderSitesOverlay(MinecraftClient client, WorldRenderContext context) {
 		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
@@ -119,20 +66,45 @@ public final class InstructionRenderer {
 		Camera camera = context.camera();
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
 
-		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRender(world, player, h)).ifPresent(h -> {
+		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
 			BlockPos homePos = h.getPos();
 
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_HOME, homePos, world.getBlockState(homePos));
+			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_HOME, homePos, world.getBlockState(homePos));
 		});
 
-		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRender(world, player, b)).forEach(b -> {
+		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderAnchorOverlay(client, world, player, h)).ifPresent(h -> {
+			BlockPos anchorPos = h.getPos();
+
+			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, anchorPos, null);
+		});
+
+		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRenderSiteOverlay(client, world, player, b)).forEach(b -> {
 			BlockPos boxPos = b.getPos();
 
-			renderOverlay(verticesProvider, matrices, camera, OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos));
+			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos));
 		}));
 	}
 
-	private static boolean shouldRender(World world, PlayerEntity player, GlobalPos pos) {
+	private static boolean shouldRenderSiteOverlay(MinecraftClient client, World world, PlayerEntity player, GlobalPos pos) {
+		Optional<HitResult> target = Optional.ofNullable(client.crosshairTarget);
+		if (target.filter(h -> h.getType() == HitResult.Type.BLOCK)
+				.filter(h -> ModUtils.isSameObject(world, ((BlockHitResult) h).getBlockPos(), pos))
+				.isPresent()) {
+			return false;
+		}
+
+		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
+		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
+	}
+
+	private static boolean shouldRenderAnchorOverlay(MinecraftClient client, World world, PlayerEntity player, GlobalPos pos) {
+		Optional<HitResult> target = Optional.ofNullable(client.crosshairTarget);
+		if (target.filter(h -> h.getType() == HitResult.Type.BLOCK)
+				.filter(h -> pos.equals(GlobalPos.create(world.getRegistryKey(), ((BlockHitResult) h).getBlockPos())))
+				.isPresent()) {
+			return false;
+		}
+
 		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
 		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
 	}
@@ -159,11 +131,51 @@ public final class InstructionRenderer {
 			};
 			if (connectTo == null) {
 				overlay.render(verticesProvider, matrices, camera, pos, null);
+			} else {
+				renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
 			}
-
-			renderDoubleOverlay(overlay, verticesProvider, matrices, camera, pos, connectTo);
 		} else {
 			overlay.render(verticesProvider, matrices, camera, pos, null);
+		}
+	}
+
+	public static void renderSiteTooltip(MinecraftClient client, MatrixStack matrices, TextRenderer textRenderer, World world, Camera camera, int screenW, int screenH) {
+		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
+		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
+		if (maid.isEmpty()) return;
+
+		double length = 100;
+		Vec3d cameraPos = camera.getPos();
+		Vec3d cameraRot = ModMathUtils.rotationToVector(camera.getPitch(), camera.getYaw());
+		Vec3d endPos = cameraPos.add(cameraRot.multiply(length));
+		Entity cameraEntity = camera.getFocusedEntity();
+		RaycastContext raycast = new RaycastContext(cameraPos, endPos, OUTLINE, NONE, cameraEntity);
+
+		int x = Math.round(screenW / 2.0F) + 12;
+		int y = Math.round(screenH / 2.0F) + 7;
+		int width = 200;
+
+		BlockHitResult hitSite = ModWorldUtils.raycast(world, raycast, p -> maid.get().isAnySite(world, p));
+		BlockPos hitPos = hitSite.getBlockPos();
+		if (maid.get().isHome(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_HOME);
+			Text title = InstructionUtils.homeMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.HOME_TOOLTIP;
+
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
+		} else if (maid.get().isDeliveryBox(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_DELIVERY_BOX);
+			Text title = InstructionUtils.deliveryBoxMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.DELIVERY_BOX_TOOLTIP;
+
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
+		} else if (maid.get().isAnchor(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_ANCHOR);
+			Text title = InstructionUtils.anchorMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.ANCHOR_TOOLTIP;
+
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
 		}
 	}
 
@@ -173,157 +185,9 @@ public final class InstructionRenderer {
 		overlay.render(verticesProvider, matrices, camera, pos.offset(connectTo), connectTo.getOpposite());
 	}
 
-	private static class Overlay {
-		private final RenderLayer layer;
-		private final Identifier atlas;
-		private final Identifier base;
-		private final Identifier down;
-		private final Identifier up;
-		private final Identifier left;
-		private final Identifier right;
-
-		private Overlay(RenderLayer layer, Identifier atlas, Identifier base, Identifier down, Identifier up, Identifier left, Identifier right) {
-			this.layer = layer;
-			this.atlas = atlas;
-			this.base = base;
-			this.down = down;
-			this.up = up;
-			this.left = left;
-			this.right = right;
-		}
-
-		private void render(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, BlockPos pos, @Nullable Direction connectTo) {
-			Vec3d cameraPos = camera.getPos();
-			VertexConsumer vertices = verticesProvider.getBuffer(this.layer);
-			Sprite[] textures = this.computeTextures(connectTo);
-
-			matrices.push();
-			matrices.translate(pos.getX() - cameraPos.getX(), pos.getY() - cameraPos.getY(), pos.getZ() - cameraPos.getZ());
-			MatrixStack.Entry entry = matrices.peek();
-			Matrix4f matrix = entry.getPositionMatrix();
-
-			if (connectTo != Direction.DOWN) {
-				// DOWN
-				vertices.vertex(matrix, 0.0F, 0.0F, 0.0F)
-						.texture(textures[0].getMinU(), textures[0].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 0.0F)
-						.texture(textures[0].getMaxU(), textures[0].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 1.0F)
-						.texture(textures[0].getMaxU(), textures[0].getMinV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 0.0F, 1.0F)
-						.texture(textures[0].getMinU(), textures[0].getMinV())
-						.next();
-			}
-
-			if (connectTo != Direction.UP) {
-				// UP
-				vertices.vertex(matrix, 0.0F, 1.0F, 0.0F)
-						.texture(textures[1].getMinU(), textures[1].getMinV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 1.0F, 1.0F)
-						.texture(textures[1].getMinU(), textures[1].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 1.0F, 1.0F)
-						.texture(textures[1].getMaxU(), textures[1].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 1.0F, 0.0F)
-						.texture(textures[1].getMaxU(), textures[1].getMinV())
-						.next();
-			}
-
-			if (connectTo != Direction.NORTH) {
-				// NORTH
-				vertices.vertex(matrix, 1.0F, 1.0F, 0.0F)
-						.texture(textures[2].getMinU(), textures[2].getMinV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 0.0F)
-						.texture(textures[2].getMinU(), textures[2].getMaxV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 0.0F, 0.0F)
-						.texture(textures[2].getMaxU(), textures[2].getMaxV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 1.0F, 0.0F)
-						.texture(textures[2].getMaxU(), textures[2].getMinV())
-						.next();
-			}
-
-			if (connectTo != Direction.SOUTH) {
-				// SOUTH
-				vertices.vertex(matrix, 0.0F, 1.0F, 1.0F)
-						.texture(textures[3].getMinU(), textures[3].getMinV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 0.0F, 1.0F)
-						.texture(textures[3].getMinU(), textures[3].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 1.0F)
-						.texture(textures[3].getMaxU(), textures[3].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 1.0F, 1.0F)
-						.texture(textures[3].getMaxU(), textures[3].getMinV())
-						.next();
-			}
-
-			if (connectTo != Direction.WEST) {
-				// WEST
-				vertices.vertex(matrix, 0.0F, 1.0F, 0.0F)
-						.texture(textures[4].getMinU(), textures[4].getMinV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 0.0F, 0.0F)
-						.texture(textures[4].getMinU(), textures[4].getMaxV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 0.0F, 1.0F)
-						.texture(textures[4].getMaxU(), textures[4].getMaxV())
-						.next();
-				vertices.vertex(matrix, 0.0F, 1.0F, 1.0F)
-						.texture(textures[4].getMaxU(), textures[4].getMinV())
-						.next();
-			}
-
-			if (connectTo != Direction.EAST) {
-				// EAST
-				vertices.vertex(matrix, 1.0F, 1.0F, 1.0F)
-						.texture(textures[5].getMinU(), textures[5].getMinV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 1.0F)
-						.texture(textures[5].getMinU(), textures[5].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 0.0F, 0.0F)
-						.texture(textures[5].getMaxU(), textures[5].getMaxV())
-						.next();
-				vertices.vertex(matrix, 1.0F, 1.0F, 0.0F)
-						.texture(textures[5].getMaxU(), textures[5].getMinV())
-						.next();
-			}
-
-			matrices.translate(0, 0, 0);
-			matrices.pop();
-		}
-
-		private Sprite[] computeTextures(@Nullable Direction connectTo) {
-			Sprite base = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.base);
-			Sprite down = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.down);
-			Sprite up = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.up);
-			Sprite left = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.left);
-			Sprite right = MinecraftClient.getInstance().getSpriteAtlas(this.atlas).apply(this.right);
-
-			if (connectTo == null) return new Sprite[]{base, base, base, base, base, base};
-
-			return switch (connectTo) {
-				case DOWN -> new Sprite[]{base, base, up, up, up, up};
-				case UP -> new Sprite[]{base, base, down, down, down, down};
-				case NORTH -> new Sprite[]{up, down, base, base, right, left};
-				case SOUTH -> new Sprite[]{down, up, base, base, left, right};
-				case WEST -> new Sprite[]{left, right, left, right, base, base};
-				case EAST -> new Sprite[]{right, left, right, left, base, base};
-			};
-		}
-	}
-
 	public static void renderCrossHair(MinecraftClient client, MatrixStack matrices, int screenW, int screenH, float z) {
 		Sprite texture = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(CROSSHAIR);
+		// RenderSystem.setShaderTexture(0, CROSSHAIR);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		Matrix4f matrix = matrices.peek().getPositionMatrix();
 		int textureW = texture.getWidth();
@@ -354,33 +218,27 @@ public final class InstructionRenderer {
 	}
 
 	public static void renderGuideMessage(MatrixStack matrices, TextRenderer textRenderer, int screenW, int screenH, World world, HitResult target, IInstructionComponent component) {
-		float padding = 20;
+		int padding = 20;
 		float centerX = screenW / 2.0F;
 		float centerY = screenH / 2.0F;
-		float y = centerY - (textRenderer.fontHeight / 2.0F);
+		int y = Math.round(centerY - (textRenderer.fontHeight / 2.0F));
 
 		Text onLeftClick = InstructionUtils.guideCancelMessage();
-		float leftX = centerX - padding - textRenderer.getWidth(onLeftClick);
-		DrawableHelper.drawTextWithShadow(matrices, textRenderer, onLeftClick, Math.round(leftX), Math.round(y), 0xFFFFFF);
+		int leftW = textRenderer.getWidth(onLeftClick);
+		int leftX = Math.round(centerX - padding - leftW);
+		ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, onLeftClick, leftX, y, 0xFFFFFF);
 
-		float rightX = centerX + padding;
+		int rightX = Math.round(centerX + padding);
 		if (target.getType() == HitResult.Type.BLOCK) {
 			BlockPos targetPos = ((BlockHitResult) target).getBlockPos();
-			BlockState targetState = world.getBlockState(targetPos);
 			Optional<LittleMaidEntity> maid = component.getTarget();
 
-			if (world.getWorldBorder().contains(targetPos)) {
-				Text onRightClick;
-
-				if (maid.filter(m -> m.isHome(world, targetPos) || m.isDeliveryBox(world, targetPos)).isPresent()) {
-					onRightClick = InstructionUtils.guideRemoveMessage();
-				} else if (targetState.isIn(BlockTags.BEDS) || targetState.isOf(Blocks.CHEST)) {
-					onRightClick = InstructionUtils.guideDecideMessage();
-				} else {
-					onRightClick = Text.empty();
+			if (maid.isPresent() && world.getWorldBorder().contains(targetPos)) {
+				if (maid.get().isAnyRemovableSite(world, targetPos)) {
+					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideRemoveMessage(), rightX, y, 0xFFFFFF);
+				} else if (maid.get().isSettableAsAnySite(world, targetPos)) {
+					ModUtils.GUIs.drawTextWithBackground(matrices, textRenderer, InstructionUtils.guideDecideMessage(), rightX, y, 0xFFFFFF);
 				}
-
-				DrawableHelper.drawTextWithShadow(matrices, textRenderer, onRightClick, Math.round(rightX), Math.round(y), 0xFFFFFF);
 			}
 		}
 	}

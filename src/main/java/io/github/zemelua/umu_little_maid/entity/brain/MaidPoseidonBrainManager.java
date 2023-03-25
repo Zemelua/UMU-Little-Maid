@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
@@ -57,6 +58,7 @@ public final class MaidPoseidonBrainManager {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
+				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldBreathTask<>(100)),

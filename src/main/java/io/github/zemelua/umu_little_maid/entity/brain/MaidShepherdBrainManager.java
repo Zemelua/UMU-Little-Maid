@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
@@ -53,15 +54,14 @@ public final class MaidShepherdBrainManager {
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
+				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldEatTask()),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
-				Pair.of(98, new RememberHomeTask<>()),
 				Pair.of(98, new RememberShouldHealTask<>()),
 				Pair.of(99, new ForgetShouldEatTask()),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetHomeTask<>()),
 				Pair.of(99, new ForgetShouldHealTask<>())
 		));
 	}
