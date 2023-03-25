@@ -38,6 +38,10 @@ public interface IInstructable {
 		return this.isSettableAsHome(world, pos) || this.isSettableAsDeliveryBox(world, pos);
 	}
 
+	default boolean isAnySite(World world, BlockPos pos) {
+		return this.isHome(world, pos) || this.isAnchor(world, pos) || this.isDeliveryBox(world, pos);
+	}
+
 	default boolean isAnyRemovableSite(World world, BlockPos pos) {
 		return this.isHome(world, pos) || this.isDeliveryBox(world, pos);
 	}

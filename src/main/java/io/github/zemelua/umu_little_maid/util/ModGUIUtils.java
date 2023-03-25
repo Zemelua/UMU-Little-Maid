@@ -8,17 +8,14 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public final class ModGUIUtils extends DrawableHelper {
-	public static void drawULMTooltip(MinecraftClient client, MatrixStack matrices, TextRenderer textRenderer, int x, int y, @Nullable Sprite texture, Text title, Text content, int width) {
+	public static void drawULMTooltip(MinecraftClient client, MatrixStack matrices, TextRenderer textRenderer, int x, int y, Sprite icon, Text title, Text content, int width) {
 		final int bgColor = 0xF0100010;
 		final int frColor0 = 0x50FF81D6;
 		final int frColor1 = 0x509C1B73;
@@ -54,11 +51,13 @@ public final class ModGUIUtils extends DrawableHelper {
 
 		matrices.translate(0.0D, 0.0D, 1.0D);
 		matrices.push();
-		ItemStack itemStack = new ItemStack(Items.PINK_BED);
-		client.getItemRenderer().renderGuiItemIcon(itemStack, iconX, iconY);
+		// ItemStack itemStack = new ItemStack(Items.PINK_BED);
+		// client.getItemRenderer().renderGuiItemIcon(itemStack, iconX, iconY);
+
+		DrawableHelper.drawSprite(matrices, iconX, iconY, 0, icon.getWidth(), icon.getHeight(), icon);
 
 		matrices.translate(titleX, titleY, 0.0D);
-		textRenderer.draw(matrices, title, 0, 0, 0x555555);
+		textRenderer.draw(matrices, title, 0, 0, 0x000000);
 		matrices.pop();
 
 		RenderSystem.disableTexture();

@@ -15,7 +15,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -40,6 +39,9 @@ import static net.minecraft.world.RaycastContext.ShapeType.*;
 public final class InstructionRenderer {
 	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("gui/hud/instruction_crosshair");
 	public static final Identifier HEADDRESS = UMULittleMaid.identifier("instruction/site/headdress");
+	public static final Identifier ICON_HOME = UMULittleMaid.identifier("gui/home_icon");
+	public static final Identifier ICON_ANCHOR = UMULittleMaid.identifier("gui/anchor_icon");
+	public static final Identifier ICON_DELIVERY_BOX = UMULittleMaid.identifier("gui/delivery_box_icon");
 
 	public static void renderTargetOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, World world, BlockPos pos, BlockState state, LittleMaidEntity maid) {
 		if (maid.isAnchor(world, pos)) {
@@ -137,10 +139,11 @@ public final class InstructionRenderer {
 		}
 	}
 
-	public static void renderSiteTooltip(MatrixStack matrices, Window window, World world, Camera camera, int screenW, int screenH) {
+	public static void renderSiteTooltip(MinecraftClient client, MatrixStack matrices, TextRenderer textRenderer, World world, Camera camera, int screenW, int screenH) {
 		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
+		if (maid.isEmpty()) return;
 
 		double length = 100;
 		Vec3d cameraPos = camera.getPos();
@@ -148,20 +151,31 @@ public final class InstructionRenderer {
 		Vec3d endPos = cameraPos.add(cameraRot.multiply(length));
 		Entity cameraEntity = camera.getFocusedEntity();
 		RaycastContext raycast = new RaycastContext(cameraPos, endPos, OUTLINE, NONE, cameraEntity);
-		BlockHitResult hitHome =  ModWorldUtils.raycast(world, raycast, b -> maid
-				.flatMap(LittleMaidEntity::getHome)
-				.map(h -> ModUtils.isSameObject(world, b, h))
-				.orElse(false));
 
-		if (hitHome.getType() != HitResult.Type.MISS) {
-			// RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-			// Sprite texture = MinecraftClient.getInstance().getSpriteAtlas(OverlayRenderer.ATLAS).apply(SITE_ICON);
-			// DrawableHelper.drawSprite(matrices, screenW / 2, screenH / 2, 0, texture.getWidth(), texture.getHeight(), texture);
+		int x = Math.round(screenW / 2.0F) + 12;
+		int y = Math.round(screenH / 2.0F) + 7;
+		int width = 200;
 
-			int x = Math.round(screenW / 2.0F) + 12;
-			int y = Math.round(screenH / 2.0F) + 7;
+		BlockHitResult hitSite = ModWorldUtils.raycast(world, raycast, p -> maid.get().isAnySite(world, p));
+		BlockPos hitPos = hitSite.getBlockPos();
+		if (maid.get().isHome(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_HOME);
+			Text title = InstructionUtils.homeMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.HOME_TOOLTIP;
 
-			ModGUIUtils.drawULMTooltip(MinecraftClient.getInstance(), matrices, MinecraftClient.getInstance().textRenderer, x, y, null, Text.literal("メイドさんのおうち").styled(s -> s.withBold(true)), Text.of("srthbrsthy\naer"), 120);
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
+		} else if (maid.get().isDeliveryBox(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_DELIVERY_BOX);
+			Text title = InstructionUtils.deliveryBoxMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.DELIVERY_BOX_TOOLTIP;
+
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
+		} else if (maid.get().isAnchor(world, hitPos)) {
+			Sprite icon = client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(ICON_ANCHOR);
+			Text title = InstructionUtils.anchorMessage(maid.get()).styled(s -> s.withBold(true));
+			Text content = InstructionUtils.ANCHOR_TOOLTIP;
+
+			ModGUIUtils.drawULMTooltip(client, matrices, textRenderer, x, y, icon, title, content, width);
 		}
 	}
 

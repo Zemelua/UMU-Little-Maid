@@ -64,6 +64,9 @@ public final class ClientCallbacks {
 		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT);
 		registry.register(InstructionRenderer.CROSSHAIR);
 		registry.register(InstructionRenderer.HEADDRESS);
+		registry.register(InstructionRenderer.ICON_HOME);
+		registry.register(InstructionRenderer.ICON_ANCHOR);
+		registry.register(InstructionRenderer.ICON_DELIVERY_BOX);
 	}
 
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {
@@ -102,12 +105,13 @@ public final class ClientCallbacks {
 		int screenW = window.getScaledWidth();
 		int screenH = window.getScaledHeight();
 		World world = client.world;
+		Camera camera = client.gameRenderer.getCamera();
 		HitResult target = Objects.requireNonNull(client.crosshairTarget);
 		Optional<IInstructionComponent> component = InstructionUtils.getComponent(client);
 
 		if (component.isPresent() && component.get().isInstructing()) {
 			InstructionRenderer.renderGuideMessage(matrices, textRenderer, screenW, screenH, world, target, component.get());
-			InstructionRenderer.renderSiteTooltip(matrices, window, world, client.gameRenderer.getCamera(), screenW, screenH);
+			InstructionRenderer.renderSiteTooltip(client, matrices, textRenderer, world, camera, screenW, screenH);
 		}
 	}
 }

@@ -25,6 +25,10 @@
 	"message.umu_little_maid.decide": "決定",
 	"message.umu_little_maid.remove": "削除",
 
+	"tooltip.umu_little_maid.home": "おうちの近くにいるとき、メイドさんはおうちに登録されたベッドで眠ります。\nまた、アンカーが存在しないとき、自由行動モードのメイドさんはおうちから離れすぎない範囲で行動します。",
+	"tooltip.umu_little_maid.anchor": "メイドさんが自由行動モードになったとき、おうちから遠ければ、足元の座標が自動でアンカーに設定されます。\n自由行動モードでなくなったとき、自動でアンカーが削除されます。\nアンカーが存在するとき、おうちの近くにいる場合でもアンカーの周囲で行動するようになります。",
+	"tooltip.umu_little_maid.delivery_box": "メイドさんが収穫した作物などを納品箱に納品しますが、現在のバージョンでは未実装です！お待ち下さい！",
+
 	"subtitles.umu_little_maid.entity.maid.ambient": "メイドさんが独り言をつぶやく",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "メイドさんが攻撃する",
 	"subtitles.umu_little_maid.entity.maid.cracker_attack": "メイドさんが攻撃する",

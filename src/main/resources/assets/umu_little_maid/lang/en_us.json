@@ -23,6 +23,10 @@
 	"message.umu_little_maid.decide": "Decide",
 	"message.umu_little_maid.remove": "Remove",
 
+	"tooltip.umu_little_maid.home": "When near the house, the maid sleeps in a bed registered as Home.\nAlso, when she has no Anchor, the maid in free mode stays within a range not too far from Home.",
+	"tooltip.umu_little_maid.anchor": "When the maid is in free mode, if she is far from Home, the coordinates of her feet are automatically set as Anchor.\nWhen the maid is no longer in free mode, Anchor is automatically deleted.\nWhen the maid has Anchor, the maid acts around the anchor even if she is near Home.",
+	"tooltip.umu_little_maid.delivery_box": "The maid deliver harvested crops and other items to Delivery Boxes, but it is not implemented in the current version! Please wait!",
+
 	"subtitles.umu_little_maid.entity.maid.ambient": "Maid says soliloquy",
 	"subtitles.umu_little_maid.entity.maid.fencer_attack": "Maid attacks",
 	"subtitles.umu_little_maid.entity.maid.cracker_attack": "Maid attacks",
