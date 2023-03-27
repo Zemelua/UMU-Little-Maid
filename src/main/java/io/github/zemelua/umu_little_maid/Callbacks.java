@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid;
 
 import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;

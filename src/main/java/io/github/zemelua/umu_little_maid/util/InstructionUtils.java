@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.util;
 
 import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import net.fabricmc.api.EnvType;

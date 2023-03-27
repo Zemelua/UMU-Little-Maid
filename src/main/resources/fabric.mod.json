@@ -21,11 +21,12 @@
 	"entrypoints": {
 		"client": [ "io.github.zemelua.umu_little_maid.client.UMULittleMaidClient" ],
 		"main": [ "io.github.zemelua.umu_little_maid.UMULittleMaid" ],
-		"mm:early_risers": [ "io.github.zemelua.umu_little_maid.util.EarlyRiser" ],
+		"mm:early_risers": [ "io.github.zemelua.umu_little_maid.tinker.EarlyRiser" ],
 		"cardinal-components": [ "io.github.zemelua.umu_little_maid.c_component.Components" ]
 	},
 	"custom": {
 		"cardinal-components": [
+			"umu_little_maid:headpatting",
 			"umu_little_maid:instruction"
 		]
 	},

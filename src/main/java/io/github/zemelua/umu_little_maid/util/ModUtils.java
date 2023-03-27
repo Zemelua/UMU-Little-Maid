@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.util;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
@@ -19,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -27,6 +29,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
@@ -139,6 +143,21 @@ public final class ModUtils {
 	public static boolean hasHarmfulEffect(LivingEntity living) {
 		return living.getStatusEffects().stream()
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
+	}
+
+	public static Optional<Entity> crosshairEntity(PlayerEntity entity) {
+		HitResult hitResult = entity.raycast(4.0D, 0.0F, false);
+		if (hitResult instanceof EntityHitResult) {
+			return Optional.ofNullable(((EntityHitResult) hitResult).getEntity());
+		}
+
+		return Optional.empty();
+	}
+
+	public static Optional<LittleMaidEntity> crosshairMaid(PlayerEntity entity) {
+		return crosshairEntity(entity)
+				.filter(e -> e instanceof LittleMaidEntity)
+				.map(e -> (LittleMaidEntity) e);
 	}
 
 	public static final class Conversions {

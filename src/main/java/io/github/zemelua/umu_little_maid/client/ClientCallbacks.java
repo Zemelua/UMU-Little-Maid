@@ -1,6 +1,8 @@
 package io.github.zemelua.umu_little_maid.client;
 
-import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
+import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
+import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.renderer.InstructionRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.OverlayRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
@@ -28,6 +30,11 @@ import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class ClientCallbacks {
+	static void onStartTick(MinecraftClient client) {
+		Optional<IHeadpattingComponent> component = HeadpattingManager.getComponent(client);
+		component.ifPresent(c -> HeadpattingManager.clientTick(client, c));
+	}
+
 	static void onRegisterSpritesWithBlockAtlas(@SuppressWarnings("unused") SpriteAtlasTexture atlas, ClientSpriteRegistryCallback.Registry registry) {
 		registry.register(LittleMaidScreen.EMPTY_HELD_SLOT_TEXTURE);
 		registry.register(LittleMaidScreen.EMPTY_HELMET_SLOT_TEXTURE);

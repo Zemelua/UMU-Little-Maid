@@ -36,6 +36,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // modLocalRuntime 'com.github.Zemelua:UMU-Debugger:main-SNAPSHOT'
 
     modImplementation include("com.github.Chocohead:fabric-asm:v2.3")
     modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")

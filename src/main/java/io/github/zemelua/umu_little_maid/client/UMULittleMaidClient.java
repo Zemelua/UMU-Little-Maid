@@ -10,12 +10,15 @@ import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.entity.animation.Animation;
 import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.animation.Keyframe;
@@ -26,9 +29,14 @@ import net.minecraft.screen.PlayerScreenHandler;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import static net.minecraft.client.option.KeyBinding.*;
+import static org.lwjgl.glfw.GLFW.*;
+
 @Environment(EnvType.CLIENT)
 public class UMULittleMaidClient implements ClientModInitializer {
 	public static final Marker MARKER = MarkerManager.getMarker("UMU_LITTLE_MAID_CLIENT");
+
+	public static final KeyBinding KEY_HEADPAT = new KeyBinding("key.umu_little_maid.headpat", GLFW_KEY_P, GAMEPLAY_CATEGORY);
 
 	public static final EntityModelLayer LAYER_LITTLE_MAID = new EntityModelLayer(UMULittleMaid.identifier("little_maid"), "main");
 
@@ -42,6 +50,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		UMULittleMaid.LOGGER.info(UMULittleMaidClient.MARKER, "Start initializing mod client!");
 
+		KeyBindingHelper.registerKeyBinding(KEY_HEADPAT);
+
 		ClientNetworkHandler.initializeClient();
 
 		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntityRenderer::new);
@@ -49,6 +59,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
 
+		ClientTickEvents.START_CLIENT_TICK.register(ClientCallbacks::onStartTick);
 		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);
 		WorldRenderEvents.BLOCK_OUTLINE.register(ClientCallbacks::onRenderBlockOutline);
 		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(ClientCallbacks::beforeRenderDebug);

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.c_component.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.Overlay;
 import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.OverlayRenderer;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;

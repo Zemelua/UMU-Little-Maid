@@ -1,4 +1,4 @@
-package io.github.zemelua.umu_little_maid.c_component;
+package io.github.zemelua.umu_little_maid.c_component.instruction;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;

@@ -11,7 +11,8 @@
 		"TridentEntityMixin"
 	],
 	"client": [
-		"CrackParticleMixin", "DrawableHelperAccessor", "InGameHudMixin", "MinecraftClientMixin", "PlayerInventoryMixin"
+		"CrackParticleMixin", "DrawableHelperAccessor", "InGameHudMixin", "MinecraftClientMixin",
+		"MixinBipedEntityModel", "MixinPlayerEntityRenderer", "PlayerInventoryMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
