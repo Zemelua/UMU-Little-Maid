@@ -2,20 +2,57 @@ package io.github.zemelua.umu_little_maid.mixin;
 
 import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
 import io.github.zemelua.umu_little_maid.tinker.Tinkers;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
+	private static boolean pushedArmMatrices;
+
+	@SuppressWarnings("SpellCheckingInspection")
+	@Inject(method = "renderArm",
+			at = @At(value = "INVOKE",
+					target = "Lnet/minecraft/client/model/ModelPart;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V",
+					ordinal = 0))
+	private void animateHeadpattingArmsOnFirstPerson(MatrixStack matrices, VertexConsumerProvider vertices, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo callback) {
+		if (ModUtils.isFirstPersonView() && HeadpattingManager.isHeadpatting(player)) {
+			float tickDelta = MinecraftClient.getInstance().getTickDelta();
+			int ticks = HeadpattingManager.getComponent(player).getHeadpattingTicks();
+			double sin = Math.sin(Math.toRadians((ticks + tickDelta) * 18.0D + 180.0D));
+			matrices.push();
+			matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
+			matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
+
+			pushedArmMatrices = true;
+		} else {
+			pushedArmMatrices = false;
+		}
+	}
+
+	@Inject(method = "renderArm",
+			at = @At(value = "RETURN"))
+	private void endAnimateHeadpattingArmsOnFirstPerson(MatrixStack matrices, VertexConsumerProvider vertices, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo callback) {
+		if (pushedArmMatrices) {
+			matrices.pop();
+		}
+	}
+
 	@Inject(method = "getArmPose",
 			at = @At("HEAD"),
 			cancellable = true)
@@ -23,7 +60,19 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 		boolean isHeadpatting = HeadpattingManager.isHeadpatting(player);
 
 		if (isHeadpatting) {
-			callback.setReturnValue(Tinkers.ArmPose.HEADPATTING);
+			if (player.getMainHandStack().isEmpty()) {
+				if (hand == Hand.MAIN_HAND) {
+					callback.setReturnValue(Tinkers.ArmPose.HEADPATTING);
+				}
+			} else if (player.getOffHandStack().isEmpty()) {
+				if (hand == Hand.OFF_HAND) {
+					callback.setReturnValue(Tinkers.ArmPose.HEADPATTING);
+				}
+			} else {
+				if (hand == Hand.MAIN_HAND) {
+					callback.setReturnValue(Tinkers.ArmPose.HEADPATTING);
+				}
+			}
 		}
 	}
 

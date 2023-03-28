@@ -3,6 +3,8 @@ package io.github.zemelua.umu_little_maid.util;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
@@ -13,6 +15,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -50,6 +53,17 @@ public final class ModUtils {
 
 	public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
 		return EnchantmentHelper.getLevel(enchantment, itemStack) > 0;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static boolean isFirstPersonView() {
+		return MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static boolean isThirdPersonView() {
+		Perspective perspective = MinecraftClient.getInstance().options.getPerspective();
+		return perspective == Perspective.THIRD_PERSON_BACK || perspective.isFrontView();
 	}
 
 	public static ItemStack searchInInventory(Inventory inventory, Predicate<ItemStack> predicate) {

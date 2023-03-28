@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.c_component.headpatting;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -13,9 +14,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+import static net.fabricmc.api.EnvType.*;
+
 public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedComponent {
 	private final PlayerEntity owner;
 	@Nullable private LittleMaidEntity target;
+
+	/**
+	 * モデルのレンダリング時に手の角度を計算するために使われます。
+	 */
+	@Environment(CLIENT) private int headpattingTicks;
 
 	public HeadpattingComponent(PlayerEntity owner) {
 		this.owner = owner;
@@ -36,6 +44,21 @@ public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedCo
 	@Override
 	public Optional<LittleMaidEntity> getTarget() {
 		return Optional.ofNullable(this.target);
+	}
+
+	@Override
+	public void clientTick() {
+		if (this.isHeadpatting()) {
+			this.headpattingTicks++;
+		} else {
+			this.headpattingTicks = 0;
+		}
+	}
+
+	@Environment(CLIENT)
+	@Override
+	public int getHeadpattingTicks() {
+		return this.headpattingTicks;
 	}
 
 	@Override
