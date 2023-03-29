@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-	private static boolean pushedArmMatrices;
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Inject(method = "renderArm",
@@ -31,26 +30,26 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 					target = "Lnet/minecraft/client/model/ModelPart;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V",
 					ordinal = 0))
 	private void animateHeadpattingArmsOnFirstPerson(MatrixStack matrices, VertexConsumerProvider vertices, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo callback) {
+		matrices.push();
+
 		if (ModUtils.isFirstPersonView() && HeadpattingManager.isHeadpatting(player)) {
 			float tickDelta = MinecraftClient.getInstance().getTickDelta();
 			int ticks = HeadpattingManager.getComponent(player).getHeadpattingTicks();
 			double sin = Math.sin(Math.toRadians((ticks + tickDelta) * 18.0D + 180.0D));
-			matrices.push();
+
 			matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
 			matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
-
-			pushedArmMatrices = true;
-		} else {
-			pushedArmMatrices = false;
 		}
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@Inject(method = "renderArm",
-			at = @At(value = "RETURN"))
+			at = @At(value = "INVOKE",
+					target = "Lnet/minecraft/client/model/ModelPart;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V",
+					ordinal = 1,
+					shift = At.Shift.AFTER))
 	private void endAnimateHeadpattingArmsOnFirstPerson(MatrixStack matrices, VertexConsumerProvider vertices, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo callback) {
-		if (pushedArmMatrices) {
-			matrices.pop();
-		}
+		matrices.pop();
 	}
 
 	@Inject(method = "getArmPose",
