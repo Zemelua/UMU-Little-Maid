@@ -27,6 +27,7 @@
 	"custom": {
 		"cardinal-components": [
 			"umu_little_maid:headpatting",
+			"umu_little_maid:headpatted",
 			"umu_little_maid:instruction"
 		]
 	},

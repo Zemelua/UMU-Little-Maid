@@ -45,6 +45,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_LEFT;
 	public static final Animation ANIMATION_MAID_USE_DRIPLEAF_RIGHT;
 	public static final Animation ANIMATION_MAID_CHANGE_COSTUME;
+	public static final Animation ANIMATION_MAID_HEADPATTED;
 
 	@Override
 	public void onInitializeClient() {
@@ -71,62 +72,63 @@ public class UMULittleMaidClient implements ClientModInitializer {
 	static {
 		ANIMATION_MAID_EAT = Animation.Builder.create(0.5F).looping()
 				.addBoneAnimation(EntityModelPartNames.HEAD, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.2F, AnimationHelper.method_41829(30.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.3F, AnimationHelper.method_41829(30.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.5F, AnimationHelper.method_41829(10.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(10.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.2F, AnimationHelper.createRotationalVector(30.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.3F, AnimationHelper.createRotationalVector(30.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.5F, AnimationHelper.createRotationalVector(10.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)))
 				.addBoneAnimation("left_arm", new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, 22.9F, 0.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.5F, 22.9F, 0.0F), Transformation.Interpolations.LINEAR)))
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(-90.5F, -22.9F, 0.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.5F, -22.9F, 0.0F), Transformation.Interpolations.LINEAR)))
 				.build();
 		ANIMATION_MAID_HEAL = Animation.Builder.create(1.0F).looping()
 				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(-90.0F, 5.7F, -45.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, 5.7F, -45.0F), Transformation.Interpolations.LINEAR)))
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(-90.0F, -5.7F, 45.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, -5.7F, 45.0F), Transformation.Interpolations.LINEAR)))
 				.build();
 		ANIMATION_MAID_USE_DRIPLEAF_LEFT = Animation.Builder.create(2.0F).looping()
 				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, -150.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -150.0F), Transformation.Interpolations.LINEAR)))
 				.addBoneAnimation("using_dripleaf_bone", new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, 15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 20.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.75F, AnimationHelper.method_41829(0.0F, 0.0F, 15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.25F, AnimationHelper.method_41829(0.0F, 0.0F, -15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.5F, AnimationHelper.method_41829(0.0F, 0.0F, -20.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.75F, AnimationHelper.method_41829(0.0F, 0.0F, -15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(2.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 20.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.75F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -20.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.75F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(2.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)))
 				.build();
 		ANIMATION_MAID_USE_DRIPLEAF_RIGHT = Animation.Builder.create(2.0F).looping()
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 150.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 150.0F), Transformation.Interpolations.LINEAR)))
 				.addBoneAnimation("using_dripleaf_bone", new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, -15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, -20.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(0.75F, AnimationHelper.method_41829(0.0F, 0.0F, -15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.25F, AnimationHelper.method_41829(0.0F, 0.0F, 15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.5F, AnimationHelper.method_41829(0.0F, 0.0F, 20.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(1.75F, AnimationHelper.method_41829(0.0F, 0.0F, 15.0F), Transformation.Interpolations.field_37884),
-						new Keyframe(2.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -20.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(0.75F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 20.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(1.75F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 15.0F), Transformation.Interpolations.LINEAR),
+						new Keyframe(2.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)))
 				.build();
 		ANIMATION_MAID_CHANGE_COSTUME = Animation.Builder.create(0.5F)
 				.addBoneAnimation(EntityModelPartNames.LEFT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, -32.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, -65.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, -32.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.04F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -32.5F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -65.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.46F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -32.5F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)))
 				.addBoneAnimation(EntityModelPartNames.RIGHT_ARM, new Transformation(Transformation.Targets.ROTATE,
-						new Keyframe(0.0F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.04F, AnimationHelper.method_41829(0.0F, 0.0F, 32.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.25F, AnimationHelper.method_41829(0.0F, 0.0F, 65.0F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.46F, AnimationHelper.method_41829(0.0F, 0.0F, 32.5F), Transformation.Interpolations.field_37885),
-						new Keyframe(0.5F, AnimationHelper.method_41829(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37885)))
+						new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.04F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 32.5F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.25F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 65.0F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.46F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 32.5F), Transformation.Interpolations.CUBIC),
+						new Keyframe(0.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)))
 				.build();
+		ANIMATION_MAID_HEADPATTED = Animation.Builder.create(0.5F).build();
 	}
 }
