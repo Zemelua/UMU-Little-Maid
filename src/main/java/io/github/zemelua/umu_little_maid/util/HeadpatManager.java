@@ -1,6 +1,8 @@
-package io.github.zemelua.umu_little_maid.c_component.headpatting;
+package io.github.zemelua.umu_little_maid.util;
 
 import io.github.zemelua.umu_little_maid.c_component.Components;
+import io.github.zemelua.umu_little_maid.c_component.headpatted.IHeadpattedComponent;
+import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
@@ -9,13 +11,14 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.EntityHitResult;
 
 import java.util.Optional;
 
-public final class HeadpattingManager {
+public final class HeadpatManager {
 	@Environment(EnvType.CLIENT)
 	public static void clientTick(MinecraftClient client, IHeadpattingComponent component) {
 		Optional<LittleMaidEntity> crosshairMaid = Optional.ofNullable(client.crosshairTarget)
@@ -45,22 +48,25 @@ public final class HeadpattingManager {
 		}
 	}
 
-	public static IHeadpattingComponent getComponent(PlayerEntity player) {
+	public static IHeadpattingComponent getHeadpattingComponent(PlayerEntity player) {
 		return player.getComponent(Components.HEADPATTING);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Optional<IHeadpattingComponent> getComponent(MinecraftClient client) {
-		return Optional.ofNullable(client.player).map(HeadpattingManager::getComponent);
+	public static Optional<IHeadpattingComponent> getHeadpattingComponent(MinecraftClient client) {
+		return Optional.ofNullable(client.player).map(HeadpatManager::getHeadpattingComponent);
+	}
+
+	public static IHeadpattedComponent getHeadpattedComponent(Entity entity) {
+		return entity.getComponent(Components.HEADPATTED);
 	}
 
 	public static boolean isHeadpatting(PlayerEntity player) {
-		return getComponent(player).isHeadpatting();
+		return getHeadpattingComponent(player).isHeadpatting();
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static boolean isHeadpatting(MinecraftClient client) {
-		return getComponent(client).map(IHeadpattingComponent::isHeadpatting).orElse(false);
+	public static boolean isHeadpattingWith(PlayerEntity player, Entity entity) {
+		return getHeadpattingComponent(player).isHeadpattingWith(entity);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -76,5 +82,5 @@ public final class HeadpattingManager {
 		ClientPlayNetworking.send(NetworkHandler.CHANNEL_CLIENT_HEADPATTING_FINISH, PacketByteBufs.create());
 	}
 
-	private HeadpattingManager() {}
+	private HeadpatManager() {}
 }

@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
-import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.tinker.Tinkers;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.MinecraftClient;
@@ -32,9 +32,9 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 	private void animateHeadpattingArmsOnFirstPerson(MatrixStack matrices, VertexConsumerProvider vertices, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo callback) {
 		matrices.push();
 
-		if (ModUtils.isFirstPersonView() && HeadpattingManager.isHeadpatting(player)) {
+		if (ModUtils.isFirstPersonView() && HeadpatManager.isHeadpatting(player)) {
 			float tickDelta = MinecraftClient.getInstance().getTickDelta();
-			int ticks = HeadpattingManager.getComponent(player).getHeadpattingTicks();
+			int ticks = HeadpatManager.getHeadpattingComponent(player).getHeadpattingTicks();
 			double sin = Math.sin(Math.toRadians((ticks + tickDelta) * 18.0D + 180.0D));
 
 			matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
@@ -56,7 +56,7 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 			at = @At("HEAD"),
 			cancellable = true)
 	private static void getHeadpattingArmPose(AbstractClientPlayerEntity player, Hand hand, CallbackInfoReturnable<BipedEntityModel.ArmPose> callback) {
-		boolean isHeadpatting = HeadpattingManager.isHeadpatting(player);
+		boolean isHeadpatting = HeadpatManager.isHeadpatting(player);
 
 		if (isHeadpatting) {
 			if (player.getMainHandStack().isEmpty()) {

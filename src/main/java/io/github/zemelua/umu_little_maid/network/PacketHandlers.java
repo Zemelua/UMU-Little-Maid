@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.network;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -18,7 +18,7 @@ public final class PacketHandlers {
 	}
 
 	static void handleStartHeadpatting(ServerPlayerEntity player, World world, int maidID) {
-		IHeadpattingComponent component = HeadpattingManager.getComponent(player);
+		IHeadpattingComponent component = HeadpatManager.getHeadpattingComponent(player);
 		Optional<LittleMaidEntity> maid = Optional.ofNullable(world.getEntityById(maidID))
 				.filter(e -> e instanceof LittleMaidEntity)
 				.map(e -> (LittleMaidEntity) e);
@@ -27,7 +27,7 @@ public final class PacketHandlers {
 	}
 
 	static void handleFinishHeadpatting(ServerPlayerEntity player) {
-		IHeadpattingComponent component = HeadpattingManager.getComponent(player);
+		IHeadpattingComponent component = HeadpatManager.getHeadpattingComponent(player);
 		component.finishHeadpatting();
 	}
 

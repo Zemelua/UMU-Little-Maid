@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
-import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.tinker.Tinkers;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +30,7 @@ public abstract class MixinBipedEntityModel<T extends LivingEntity> extends Anim
 	private void animateHeadpattingArms(T entity, float animationProgress, CallbackInfo callback) {
 		if (entity instanceof PlayerEntity player && this.rightArmPose == Tinkers.ArmPose.HEADPATTING && ModUtils.isThirdPersonView()) {
 			float tickDelta = MinecraftClient.getInstance().getTickDelta();
-			int ticks = HeadpattingManager.getComponent(player).getHeadpattingTicks();
+			int ticks = HeadpatManager.getHeadpattingComponent(player).getHeadpattingTicks();
 			double sin = Math.sin(Math.toRadians((ticks + tickDelta) * 18.0D));
 
 			this.rightArm.roll = (float) Math.toRadians(0.0D + sin * -20.0D);

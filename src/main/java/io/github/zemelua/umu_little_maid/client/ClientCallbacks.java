@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.client;
 
-import io.github.zemelua.umu_little_maid.c_component.headpatting.HeadpattingManager;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.renderer.InstructionRenderer;
@@ -31,8 +31,8 @@ import java.util.Optional;
 @Environment(EnvType.CLIENT)
 public final class ClientCallbacks {
 	static void onStartTick(MinecraftClient client) {
-		Optional<IHeadpattingComponent> component = HeadpattingManager.getComponent(client);
-		component.ifPresent(c -> HeadpattingManager.clientTick(client, c));
+		Optional<IHeadpattingComponent> component = HeadpatManager.getHeadpattingComponent(client);
+		component.ifPresent(c -> HeadpatManager.clientTick(client, c));
 	}
 
 	static void onRegisterSpritesWithBlockAtlas(@SuppressWarnings("unused") SpriteAtlasTexture atlas, ClientSpriteRegistryCallback.Registry registry) {

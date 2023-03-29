@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.c_component.headpatting;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +17,7 @@ import static net.fabricmc.api.EnvType.*;
 
 public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedComponent {
 	private final PlayerEntity owner;
-	@Nullable private LittleMaidEntity target;
+	@Nullable private Entity target;
 
 	/**
 	 * モデルのレンダリング時に手の角度を計算するために使われます。
@@ -30,7 +29,7 @@ public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedCo
 	}
 
 	@Override
-	public void startHeadpatting(LittleMaidEntity target) {
+	public void startHeadpatting(Entity target) {
 		this.target = target;
 		Components.HEADPATTING.sync(this.owner);
 	}
@@ -42,7 +41,7 @@ public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedCo
 	}
 
 	@Override
-	public Optional<LittleMaidEntity> getTarget() {
+	public Optional<Entity> getTarget() {
 		return Optional.ofNullable(this.target);
 	}
 
@@ -68,9 +67,8 @@ public class HeadpattingComponent implements IHeadpattingComponent, AutoSyncedCo
 
 	@Override
 	public void applySyncPacket(PacketByteBuf packet) {
-		this.target = (LittleMaidEntity) packet.readOptional(PacketByteBuf::readInt)
+		this.target = packet.readOptional(PacketByteBuf::readInt)
 				.map(i -> this.owner.getWorld().getEntityById(i))
-				.filter(e -> e instanceof LittleMaidEntity)
 				.orElse(null);
 	}
 
