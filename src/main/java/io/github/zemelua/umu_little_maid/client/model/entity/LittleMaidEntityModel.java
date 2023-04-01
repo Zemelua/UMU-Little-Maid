@@ -5,6 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel.ArmPose;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
@@ -59,6 +60,8 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	public float leaningPitch;
 
 	public LittleMaidEntityModel(ModelPart root) {
+		super(RenderLayer::getEntityTranslucent);
+
 		this.root = root;
 		this.head = this.root.getChild(KEY_HEAD);
 		this.body = this.root.getChild(KEY_BODY);
@@ -146,8 +149,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		this.rightArm.pitch = (float) Math.toRadians(-42.0 * sitProgress);
 		this.rightArm.roll = (float) Math.toRadians(15.0F - 40.0F * sitProgress);
 
-		float begProgress = maid.getBegProgress(tickDelta);
-		this.head.roll = (float) Math.toRadians(13.7F * begProgress);
+		if (!maid.getHeadpattedAnimation().isRunning()) {
+			float begProgress = maid.getBegProgress(tickDelta);
+			this.head.roll = (float) Math.toRadians(13.7F * begProgress);
+		}
 	}
 
 	@Override
@@ -186,6 +191,10 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.preChangeCostumeAnimation(maid.getChangeCostumeAnimation(), limbAngle, limbDistance);
 		}
 		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
+		if (maid.getHeadpattedAnimation().isRunning()) {
+			this.head.pitch = (float) Math.toRadians(36.0D);
+		}
+		this.updateAnimation(maid.getHeadpattedAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEADPATTED, animationProgress);
 	}
 
 	@Override

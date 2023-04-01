@@ -124,6 +124,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private final AnimationState healAnimation = new AnimationState();
 	private final AnimationState useDripleafAnimation = new AnimationState();
 	private final AnimationState changeCostumeAnimation = new AnimationState();
+	private final AnimationState headpattedAnimation = new AnimationState();
 
 	@Nonnull private MaidJob lastJob;
 
@@ -476,6 +477,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			}
 		} else {
 			this.begProgress += (0.0F - this.begProgress) * 0.4F;
+		}
+		if (HeadpatManager.isHeadpatted(this)) {
+			this.headpattedAnimation.startIfNotRunning(this.age);
+		} else if (this.headpattedAnimation.isRunning()) {
+			this.headpattedAnimation.stop();
 		}
 	}
 
@@ -1466,6 +1472,10 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		return this.changeCostumeAnimation;
 	}
 
+	public AnimationState getHeadpattedAnimation() {
+		return this.headpattedAnimation;
+	}
+
 	@Override
 	public float getSoundPitch() {
 		return 1.0F;
@@ -1547,7 +1557,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			return this.getJob().getTexture();
 		}
 
-		return LittleMaidEntity.TEXTURE_NONE;
+		// return LittleMaidEntity.TEXTURE_NONE;
+		return UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fun.png");
 	}
 
 	//<editor-fold desc="Save/Load">

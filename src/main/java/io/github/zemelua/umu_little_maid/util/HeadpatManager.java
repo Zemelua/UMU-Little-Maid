@@ -69,6 +69,10 @@ public final class HeadpatManager {
 		return getHeadpattingComponent(player).isHeadpattingWith(entity);
 	}
 
+	public static boolean isHeadpatted(Entity entity) {
+		return getHeadpattedComponent(entity).isHeadpatted();
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static void sendStartHeadpatting(LittleMaidEntity maid) {
 		PacketByteBuf packet = PacketByteBufs.create();
