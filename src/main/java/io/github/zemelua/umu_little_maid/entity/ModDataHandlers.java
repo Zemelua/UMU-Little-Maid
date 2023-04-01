@@ -1,5 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity;
 
+import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
+import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.util.math.GlobalPos;
@@ -10,9 +12,11 @@ import java.util.Set;
 
 public final class ModDataHandlers {
 	public static final TrackedDataHandler<Collection<GlobalPos>> COLLECTION_GLOBAL_POS;
+	public static final TrackedDataHandler<IMaidFeeling> MAID_FEELING;
 
 	public static void init() {
 		TrackedDataHandlerRegistry.register(COLLECTION_GLOBAL_POS);
+		TrackedDataHandlerRegistry.register(MAID_FEELING);
 	}
 
 	static {
@@ -30,5 +34,6 @@ public final class ModDataHandlers {
 
 			return set;
 		});
+		MAID_FEELING = TrackedDataHandler.of(ModRegistries.MAID_FEELING);
 	}
 }

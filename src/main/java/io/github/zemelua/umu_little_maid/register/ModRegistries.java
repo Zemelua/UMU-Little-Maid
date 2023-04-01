@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.register;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
+import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Marker;
@@ -13,16 +14,11 @@ public final class ModRegistries {
 
 	public static final Registry<MaidPersonality> MAID_PERSONALITY;
 	public static final Registry<MaidJob> MAID_JOB;
+	public static final Registry<IMaidFeeling> MAID_FEELING;
 
-	private static boolean initialized = false;
 	public static void initialize() {
-		if (ModRegistries.initialized) throw new IllegalStateException("Registries are already initialized!");
-
-		ModRegistries.initialized = true;
 		UMULittleMaid.LOGGER.info(ModRegistries.MARKER, "Registries are initialized!");
 	}
-
-	private ModRegistries() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
 		MAID_PERSONALITY = FabricRegistryBuilder
@@ -31,5 +27,10 @@ public final class ModRegistries {
 		MAID_JOB = FabricRegistryBuilder
 				.createSimple(MaidJob.class, UMULittleMaid.identifier("maid_job"))
 				.buildAndRegister();
+		MAID_FEELING = FabricRegistryBuilder
+				.createSimple(IMaidFeeling.class, UMULittleMaid.identifier("maid_feeling"))
+				.buildAndRegister();
 	}
+
+	private ModRegistries() {}
 }

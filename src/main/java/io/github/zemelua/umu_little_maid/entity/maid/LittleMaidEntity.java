@@ -12,6 +12,8 @@ import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
+import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
+import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
@@ -57,7 +59,10 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
@@ -109,6 +114,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private static final TrackedData<MaidMode> MODE;
 	private static final TrackedData<MaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
+	private static final TrackedData<IMaidFeeling> FEELING;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
@@ -209,6 +215,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
 		this.dataTracker.startTracking(JOB, JOB_NONE);
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
+		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
 		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(COMMITMENT, 0);
@@ -482,6 +489,12 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			this.headpattedAnimation.startIfNotRunning(this.age);
 		} else if (this.headpattedAnimation.isRunning()) {
 			this.headpattedAnimation.stop();
+		}
+
+		if (HeadpatManager.isHeadpatted(this)) {
+			this.setFeeling(MaidFeeling.HAPPY);
+		} else {
+			this.setFeeling(MaidFeeling.NORMAL);
 		}
 	}
 
@@ -1405,6 +1418,14 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
+	public IMaidFeeling getFeeling() {
+		return this.dataTracker.get(FEELING);
+	}
+
+	public void setFeeling(IMaidFeeling value) {
+		this.dataTracker.set(FEELING, value);
+	}
+
 	public boolean isIdle() {
 		return this.brain.hasActivity(Activity.IDLE);
 	}
@@ -1553,12 +1574,18 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	public Identifier getTexture() {
-		if (this.isVariableCostume()) {
-			return this.getJob().getTexture();
-		}
+		Identifier id = this.isVariableCostume()
+				? this.getJob().getTexture()
+				: TEXTURE_NONE;
+		Optional<String> feelingLiteral = this.getFeeling().getTextureLiteral();
 
-		// return LittleMaidEntity.TEXTURE_NONE;
-		return UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fun.png");
+		if (feelingLiteral.isEmpty()) return id;
+
+		StringBuilder builder = new StringBuilder(id.getPath());
+		int extIndex = builder.indexOf(".png");
+		builder.insert(extIndex, "_" + feelingLiteral.get());
+
+		return Identifier.of(id.getNamespace(), builder.toString());
 	}
 
 	//<editor-fold desc="Save/Load">
@@ -1738,6 +1765,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
+		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
