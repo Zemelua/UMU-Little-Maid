@@ -192,7 +192,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		}
 		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
 		if (maid.getHeadpattedAnimation().isRunning()) {
-			this.head.pitch = (float) Math.toRadians(36.0D);
+			this.head.pitch = (float) Math.toRadians(27.0D);
 		}
 		this.updateAnimation(maid.getHeadpattedAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEADPATTED, animationProgress);
 	}

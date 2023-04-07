@@ -131,13 +131,21 @@ public class UMULittleMaidClient implements ClientModInitializer {
 						new Keyframe(0.46F, createRotationalVector(0.0F, 0.0F, 32.5F), Interpolations.CUBIC),
 						new Keyframe(0.5F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC)))
 				.build();
-		ANIMATION_MAID_HEADPATTED = Animation.Builder.create(0.7F).looping()
+//		ANIMATION_MAID_HEADPATTED = Animation.Builder.create(0.7F).looping()
+//				.addBoneAnimation(LittleMaidEntityModel.KEY_HEAD, new Transformation(Targets.ROTATE,
+//						new Keyframe(0.0F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),
+//						new Keyframe(0.175F, createRotationalVector(0.0F, 27.0F, 0.0F), Interpolations.CUBIC),
+//						new Keyframe(0.35F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),
+//						new Keyframe(0.525F, createRotationalVector(0.0F, -27.0F, 0.0F), Interpolations.CUBIC),
+//						new Keyframe(0.7F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC)))
+//				.build();
+		ANIMATION_MAID_HEADPATTED = Animation.Builder.create(1.0F).looping()
 				.addBoneAnimation(LittleMaidEntityModel.KEY_HEAD, new Transformation(Targets.ROTATE,
-						new Keyframe(0.0F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.LINEAR),
-						new Keyframe(0.175F, createRotationalVector(0.0F, 27.0F, 0.0F), Interpolations.LINEAR),
-						new Keyframe(0.35F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.LINEAR),
-						new Keyframe(0.525F, createRotationalVector(0.0F, -27.0F, 0.0F), Interpolations.LINEAR),
-						new Keyframe(0.7F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.LINEAR)))
+						new Keyframe(0.0F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),
+						new Keyframe(0.25F, createRotationalVector(0.0F, 5.0F, 0.0F), Interpolations.CUBIC),
+						new Keyframe(0.5F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),
+						new Keyframe(0.75F, createRotationalVector(0.0F, -5.0F, 0.0F), Interpolations.CUBIC),
+						new Keyframe(1.0F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC)))
 				.build();
 	}
 }
