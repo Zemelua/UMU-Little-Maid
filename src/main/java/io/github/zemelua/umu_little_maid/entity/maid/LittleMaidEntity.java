@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
@@ -93,7 +94,7 @@ import java.util.function.Predicate;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable, IHeadpattable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -1334,6 +1335,15 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	@Override
 	public boolean isSitting() {
 		return this.dataTracker.get(MODE) == MaidMode.WAIT;
+	}
+
+	@Override
+	public boolean isHeadpatted() {
+		if (this.getMaster().isPresent()) {
+			return HeadpatManager.isHeadpattingWith(this.getMaster().get(), this);
+		}
+
+		return false;
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.util;
 
+import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.c_component.Components;
-import io.github.zemelua.umu_little_maid.c_component.headpatted.IHeadpattedComponent;
 import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -57,10 +57,6 @@ public final class HeadpatManager {
 		return Optional.ofNullable(client.player).map(HeadpatManager::getHeadpattingComponent);
 	}
 
-	public static IHeadpattedComponent getHeadpattedComponent(Entity entity) {
-		return entity.getComponent(Components.HEADPATTED);
-	}
-
 	public static boolean isHeadpatting(PlayerEntity player) {
 		return getHeadpattingComponent(player).isHeadpatting();
 	}
@@ -69,8 +65,8 @@ public final class HeadpatManager {
 		return getHeadpattingComponent(player).isHeadpattingWith(entity);
 	}
 
-	public static boolean isHeadpatted(Entity entity) {
-		return getHeadpattedComponent(entity).isHeadpatted();
+	public static <T extends Entity & IHeadpattable> boolean isHeadpatted(T pet) {
+		return pet.isHeadpatted();
 	}
 
 	@Environment(EnvType.CLIENT)
