@@ -59,6 +59,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	private boolean isUsingDripleaf;
 	public float leaningPitch;
 
+	private float lastHeadPitch;
+	private float virtualHeadPitch;
+
 	public LittleMaidEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityTranslucent);
 
@@ -153,6 +156,14 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			float begProgress = maid.getBegProgress(tickDelta);
 			this.head.roll = (float) Math.toRadians(13.7F * begProgress);
 		}
+
+		if (maid.getHeadpattedAnimation().isRunning()) {
+			this.head.pitch = (float) MathHelper.lerp(tickDelta, this.lastHeadPitch, this.lastHeadPitch + (Math.toRadians(27.0F) - this.lastHeadPitch) * 0.4);
+		} else {
+			this.head.pitch = (float) MathHelper.lerp(tickDelta, this.lastHeadPitch, this.lastHeadPitch - (this.lastHeadPitch - this.virtualHeadPitch) * 0.4);
+			if (this.head.pitch <= 0.00001F) this.head.pitch = 0.0F;
+		}
+		this.lastHeadPitch = this.head.pitch;
 	}
 
 	@Override
@@ -191,9 +202,7 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.preChangeCostumeAnimation(maid.getChangeCostumeAnimation(), limbAngle, limbDistance);
 		}
 		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
-		if (maid.getHeadpattedAnimation().isRunning()) {
-			this.head.pitch = (float) Math.toRadians(27.0D);
-		}
+
 		this.updateAnimation(maid.getHeadpattedAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEADPATTED, animationProgress);
 	}
 
@@ -242,7 +251,11 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		float lerped = isSwimming
 				? ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, -0.7853982F)
 				: ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, (float) Math.toRadians(headPitch));
-		this.head.pitch = isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch);
+		this.virtualHeadPitch = isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch);
+		if (this.head.pitch == 0.0F) {
+			this.head.pitch = this.virtualHeadPitch;
+		}
+
 		this.head.yaw = (float) Math.toRadians(headYaw);
 	}
 
@@ -433,12 +446,12 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	}
 
 	public static void setVisible(LittleMaidEntityModel model, EquipmentSlot slot) {
-			model.head.visible = false;
-			model.body.visible = false;
-			model.rightArm.visible = false;
-			model.leftArm.visible = false;
-			model.rightLeg.visible = false;
-			model.leftLeg.visible = false;
+		model.head.visible = false;
+		model.body.visible = false;
+		model.rightArm.visible = false;
+		model.leftArm.visible = false;
+		model.rightLeg.visible = false;
+		model.leftLeg.visible = false;
 
 		switch (slot) {
 			case HEAD -> model.head.visible = true;

@@ -157,7 +157,6 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 		this.begProgress = 0.0F;
 		this.lastBegProgress = 0.0F;
-
 		this.sitProgress = 0.0F;
 		this.lastSitProgress = 0.0F;
 
@@ -486,10 +485,13 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		} else {
 			this.begProgress += (0.0F - this.begProgress) * 0.4F;
 		}
-		if (HeadpatManager.isHeadpatted(this)) {
-			this.headpattedAnimation.startIfNotRunning(this.age);
-		} else if (this.headpattedAnimation.isRunning()) {
-			this.headpattedAnimation.stop();
+
+		if (this.world.isClient()) {
+			if (HeadpatManager.isHeadpatted(this)) {
+				this.headpattedAnimation.startIfNotRunning(this.age);
+			} else if (this.headpattedAnimation.isRunning()) {
+				this.headpattedAnimation.stop();
+			}
 		}
 
 		if (HeadpatManager.isHeadpatted(this)) {
