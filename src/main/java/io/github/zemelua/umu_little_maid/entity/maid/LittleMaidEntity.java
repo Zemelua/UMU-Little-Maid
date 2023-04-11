@@ -22,6 +22,8 @@ import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.*;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -147,6 +149,13 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private float lastSitProgress;
 	private float begProgress;
 	private float lastBegProgress;
+
+	/**
+	 * この二つのフィールドは、なでなでされるアニメーションの繋がりをなめらかにするためのものです。
+	 * 基本的に {@link io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel} からset/getされます。
+	 */
+	@Environment(EnvType.CLIENT) private float lastHeadPitch;
+	@Environment(EnvType.CLIENT) private float virtualHeadPitch;
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
@@ -1487,6 +1496,28 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 	public float getBegProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastBegProgress, this.begProgress);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float getLastHeadPitch() {
+		return this.lastHeadPitch;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public LittleMaidEntity setLastHeadPitch(float value) {
+		this.lastHeadPitch = value;
+		return this;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float getVirtualHeadPitch() {
+		return this.virtualHeadPitch;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public LittleMaidEntity setVirtualHeadPitch(float value) {
+		this.virtualHeadPitch = value;
+		return this;
 	}
 
 	public AnimationState getEatAnimation() {

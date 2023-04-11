@@ -59,9 +59,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 	private boolean isUsingDripleaf;
 	public float leaningPitch;
 
-	private float lastHeadPitch;
-	private float virtualHeadPitch;
-
 	public LittleMaidEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityTranslucent);
 
@@ -157,13 +154,15 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 			this.head.roll = (float) Math.toRadians(13.7F * begProgress);
 		}
 
+		float lastHeadPitch = maid.getLastHeadPitch();
+		float virtualHeadPitch = maid.getVirtualHeadPitch();
 		if (maid.getHeadpattedAnimation().isRunning()) {
-			this.head.pitch = (float) MathHelper.lerp(tickDelta, this.lastHeadPitch, this.lastHeadPitch + (Math.toRadians(27.0F) - this.lastHeadPitch) * 0.4);
-		} else {
-			this.head.pitch = (float) MathHelper.lerp(tickDelta, this.lastHeadPitch, this.lastHeadPitch - (this.lastHeadPitch - this.virtualHeadPitch) * 0.4);
+			this.head.pitch = (float) MathHelper.lerp(tickDelta, lastHeadPitch, lastHeadPitch + (Math.toRadians(27.0F) - lastHeadPitch) * 0.4);
+		} else if (lastHeadPitch > 0.0F) {
+			this.head.pitch = (float) MathHelper.lerp(tickDelta, lastHeadPitch, lastHeadPitch - (lastHeadPitch - virtualHeadPitch) * 0.4);
 			if (this.head.pitch <= 0.00001F) this.head.pitch = 0.0F;
 		}
-		this.lastHeadPitch = this.head.pitch;
+		maid.setLastHeadPitch(this.head.pitch);
 	}
 
 	@Override
@@ -251,9 +250,9 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		float lerped = isSwimming
 				? ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, -0.7853982F)
 				: ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, (float) Math.toRadians(headPitch));
-		this.virtualHeadPitch = isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch);
+		maid.setVirtualHeadPitch(isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch));
 		if (this.head.pitch == 0.0F) {
-			this.head.pitch = this.virtualHeadPitch;
+			this.head.pitch = maid.getVirtualHeadPitch();
 		}
 
 		this.head.yaw = (float) Math.toRadians(headYaw);
