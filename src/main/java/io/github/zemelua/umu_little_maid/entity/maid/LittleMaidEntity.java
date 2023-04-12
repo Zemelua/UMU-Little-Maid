@@ -1504,9 +1504,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LittleMaidEntity setLastHeadPitch(float value) {
+	public void setLastHeadPitch(float value) {
 		this.lastHeadPitch = value;
-		return this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1515,9 +1514,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LittleMaidEntity setVirtualHeadPitch(float value) {
+	public void setVirtualHeadPitch(float value) {
 		this.virtualHeadPitch = value;
-		return this;
 	}
 
 	public AnimationState getEatAnimation() {
@@ -1603,10 +1601,12 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.playSound(this.getPersonality().getContractSound(), this.getSoundVolume(), this.getSoundPitch());
 	}
 
+	@SuppressWarnings("unused")
 	public void playSitSound() {
 		this.playSound(this.getPersonality().getSitSound(), this.getSoundVolume(), this.getSoundPitch());
 	}
 
+	@SuppressWarnings("unused")
 	public void playEngageSound() {
 		this.playSound(this.getPersonality().getEngageSound(), this.getSoundVolume(), this.getSoundPitch());
 	}
@@ -1792,7 +1792,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 				ModEntities.MEMORY_SHOULD_BREATH,
 				MEMORY_IS_HUNTING,
 				ModMemories.ANCHOR,
-				ModMemories.DELIVERY_BOXES
+				ModMemories.DELIVERY_BOXES,
+				ModMemories.CANT_REACH_HOME
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,

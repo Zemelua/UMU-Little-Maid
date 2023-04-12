@@ -96,10 +96,13 @@ public final class MaidNoneBrainManager {
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
 				Pair.of(0, new SleepTask()),
-				Pair.of(1, new WalkToHomeTask<>(0.8F))
+				Pair.of(1, new WalkToHomeTask<>(0.8F)),
+				Pair.of(2, new FollowMasterTask<>(10.0F))
+				// Pair.of(1, new WalkHomeTask(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.CANT_REACH_HOME, MemoryModuleState.VALUE_ABSENT)
 		));
 	}
 
