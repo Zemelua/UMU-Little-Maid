@@ -1,9 +1,9 @@
 package io.github.zemelua.umu_little_maid.client;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoRenderer;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
-import io.github.zemelua.umu_little_maid.client.renderer.entity.LittleMaidEntityRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
@@ -57,7 +57,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		ClientNetworkHandler.initializeClient();
 
-		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntityRenderer::new);
+		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidGeoRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
 
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);

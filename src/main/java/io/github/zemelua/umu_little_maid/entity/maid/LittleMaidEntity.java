@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -88,6 +89,14 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -96,7 +105,7 @@ import java.util.function.Predicate;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable, IHeadpattable {
+public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable, IHeadpattable, IAnimatable {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -150,9 +159,11 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	private float begProgress;
 	private float lastBegProgress;
 
+	private final AnimationFactory animationFactory = GeckoLibUtil.createFactory(this);
+
 	/**
 	 * この二つのフィールドは、なでなでされるアニメーションの繋がりをなめらかにするためのものです。
-	 * 基本的に {@link io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel} からset/getされます。
+	 * 基本的に {@link LittleMaidEntityModel} からset/getされます。
 	 */
 	@Environment(EnvType.CLIENT) private float lastHeadPitch;
 	@Environment(EnvType.CLIENT) private float virtualHeadPitch;
@@ -175,6 +186,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 		this.canSwimNavigation = new AxolotlSwimNavigation(this, world);
 		((MobNavigation) this.landNavigation).setCanPathThroughDoors(true);
 		((MobNavigation) this.landNavigation).setCanEnterOpenDoors(true);
+
+		this.ignoreCameraFrustum = true;
 	}
 
 	@Nullable
@@ -964,13 +977,13 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Override
-	protected void damageArmor(DamageSource source, float amount) {
+	public void damageArmor(DamageSource source, float amount) {
 		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.FEET));
 		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.HEAD));
 	}
 
 	@Override
-	protected void damageHelmet(DamageSource source, float amount) {
+	public void damageHelmet(DamageSource source, float amount) {
 		this.damageArmor(source, amount, this.getEquippedStack(EquipmentSlot.HEAD));
 	}
 
@@ -987,7 +1000,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	}
 
 	@Override
-	protected void damageShield(float amount) {
+	public void damageShield(float amount) {
 		if (!this.activeItemStack.isOf(Items.SHIELD)) return;
 
 		this.damageBlocked = true;
@@ -1755,6 +1768,44 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 	@Override
 	public MobEntity self() {
 		return this;
+	}
+
+	@Override
+	public void registerControllers(AnimationData data) {
+		data.addAnimationController(new AnimationController<>(this, "behavior", 10, e -> {
+			AnimationController<LittleMaidEntity> controller = e.getController();
+			AnimationBuilder builder = new AnimationBuilder();
+
+			if (this.isSitting()) {
+				builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
+			} else {
+				builder.addAnimation("stand", ILoopType.EDefaultLoopTypes.LOOP);
+			}
+
+			controller.setAnimation(builder);
+
+			return PlayState.CONTINUE;
+		}));
+
+		data.addAnimationController(new AnimationController<>(this, "seasoning", 10, e -> {
+			AnimationController<LittleMaidEntity> controller = e.getController();
+			AnimationBuilder builder = new AnimationBuilder();
+
+			if (e.isMoving()) {
+
+			} else {
+				builder.addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP);
+			}
+
+			controller.setAnimation(builder);
+
+			return PlayState.CONTINUE;
+		}));
+	}
+
+	@Override
+	public AnimationFactory getFactory() {
+		return this.animationFactory;
 	}
 
 	static {

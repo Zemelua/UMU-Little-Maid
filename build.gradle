@@ -22,6 +22,10 @@ repositories {
         name = 'Ladysnake Mods'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
+
+    maven {
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
 }
 
 loom {
@@ -40,6 +44,7 @@ dependencies {
 
     modImplementation include("com.github.Chocohead:fabric-asm:v2.3")
     modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
+    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.19:3.1.40'
 }
 
 processResources {
