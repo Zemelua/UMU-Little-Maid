@@ -37,6 +37,7 @@ public class MaidArmorRenderer extends FeatureRenderer<LittleMaidEntity, LittleM
 		root.addChild(KEY_HEAD, ModelPartBuilder.create()
 						.uv(0, 0).cuboid(KEY_HEAD, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.75F)),
 				ModelTransform.pivot(0.0F, 8.0F, 0.0F));
+		root.addChild(KEY_HAT, ModelPartBuilder.create(), ModelTransform.NONE);
 		root.addChild(KEY_BODY, ModelPartBuilder.create()
 						.uv(0, 16).cuboid(KEY_BODY, -3.0F, 0.0F, -2.0F, 6.0F, 9.0F, 4.0F, new Dilation(0.75F)),
 				ModelTransform.pivot(0.0F, 8.0F, 0.0F));

@@ -5,10 +5,10 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"ConduitBlockEntityMixin", "CraftingResultSlotMixin", "CrossbowAttackTaskAccessor", "GoatHornItemMixin",
-		"LivingEntityAccessor", "MinecraftServerMixin", "MobEntityAccessor", "MoveControlAccessor",
-		"PersistentProjectileEntityAccessor", "PersistentProjectileEntityMixin", "PlayerEntityMixin",
-		"SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TaskAccessor", "TridentEntityAccessor",
-		"TridentEntityMixin"
+		"LivingEntityAccessor", "MinecraftServerMixin", "MixinArmorRenderingRegistryImpl", "MobEntityAccessor",
+		"MoveControlAccessor", "PersistentProjectileEntityAccessor", "PersistentProjectileEntityMixin",
+		"PlayerEntityMixin", "SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TaskAccessor",
+		"TridentEntityAccessor", "TridentEntityMixin"
 	],
 	"client": [
 		"CrackParticleMixin", "DrawableHelperAccessor", "InGameHudMixin", "MinecraftClientMixin",

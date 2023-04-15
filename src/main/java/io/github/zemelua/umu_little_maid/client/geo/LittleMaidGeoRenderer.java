@@ -1,23 +1,43 @@
 package io.github.zemelua.umu_little_maid.client.geo;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidArmorRenderer;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.renderers.geo.ExtendedGeoEntityRenderer;
 
 public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidEntity> {
+	public static BipedEntityModel<LivingEntity> ARMOR_MODEL = new BipedEntityModel<>(MaidArmorRenderer.createModelData().createModel());
+
 	public LittleMaidGeoRenderer(EntityRendererFactory.Context renderManager) {
 		super(renderManager, new LittleMaidGeoModel());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void renderEarly(LittleMaidEntity animatable, MatrixStack poseStack, float partialTick, VertexConsumerProvider bufferSource, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float partialTicks) {
+		this.modelProvider.getAnimationProcessor().getModelRendererList().stream()
+				.filter(bone -> bone instanceof GeoBone)
+				.filter(bone -> this.isArmorBone((GeoBone) bone))
+				.forEach(bone -> ((GeoBone) bone).setHidden(true));
+
+		super.renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, partialTicks);
 	}
 
 	@Override
@@ -46,6 +66,11 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 	}
 
 	@Override
+	protected Identifier getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot, @NotNull String type) {
+		return UMULittleMaid.identifier("textures/item/armor/maid_diamond.png");
+	}
+
+	@Override
 	protected boolean isArmorBone(GeoBone bone) {
 		return bone.getName().startsWith("armor");
 	}
@@ -53,12 +78,11 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 	@Override
 	@Nullable
 	protected Identifier getTextureForBone(String boneName, LittleMaidEntity currentEntity) {
-//		if (boneName.startsWith("armor")) {
-//			return UMULittleMaid.identifier("textures/item/armor/maid_diamond.png");
-//		}
 
 		return null;
 	}
+
+
 
 	@Override
 	@Nullable
