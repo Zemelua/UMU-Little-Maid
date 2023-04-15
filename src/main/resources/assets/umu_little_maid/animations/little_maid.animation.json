@@ -54,7 +54,7 @@
 			}
 		},
 		"sit": {
-			"loop": true,
+			"loop": "hold_on_last_frame",
 			"bones": {
 				"left_arm": {
 					"rotation": {

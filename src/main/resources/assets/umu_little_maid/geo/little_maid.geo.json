@@ -52,6 +52,14 @@
 					]
 				},
 				{
+					"name": "armorHead",
+					"parent": "head",
+					"pivot": [0, 16, 0],
+					"cubes": [
+						{"origin": [-4, 16, -4], "size": [8, 8, 8], "uv": [0, 0]}
+					]
+				},
+				{
 					"name": "left_arm",
 					"parent": "body",
 					"pivot": [4, 14.5, 0.5],
