@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.util;
 
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 public final class ModMathUtils {
@@ -11,5 +12,9 @@ public final class ModMathUtils {
 		double j = Math.cos(pitchRad);
 		double k = Math.sin(pitchRad);
 		return new Vec3d(i * j, -k, h * j);
+	}
+
+	public static void scaleMatrices(MatrixStack matrices, float scale) {
+		matrices.scale(scale, scale, scale);
 	}
 }

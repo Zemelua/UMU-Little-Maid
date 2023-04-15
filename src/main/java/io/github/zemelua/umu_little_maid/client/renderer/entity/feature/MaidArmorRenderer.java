@@ -10,9 +10,11 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
@@ -22,6 +24,17 @@ import org.jetbrains.annotations.Nullable;
 import static io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel.*;
 
 public class MaidArmorRenderer extends FeatureRenderer<LittleMaidEntity, LittleMaidEntityModel> {
+	public static final BipedEntityModel<LivingEntity> MODEL = new BipedEntityModel<>(MaidArmorRenderer.createModelData().createModel());
+	public static final Identifier TEXTURE_LEATHER = UMULittleMaid.identifier("textures/item/armor/maid_leather.png");
+	public static final Identifier TEXTURE_LEATHER_OVERLAY = UMULittleMaid.identifier("textures/item/armor/maid_leather_overlay.png");
+	public static final Identifier TEXTURE_IRON = UMULittleMaid.identifier("textures/item/armor/maid_iron.png");
+	public static final Identifier TEXTURE_GOLD = UMULittleMaid.identifier("textures/item/armor/maid_gold.png");
+	public static final Identifier TEXTURE_DIAMOND = UMULittleMaid.identifier("textures/item/armor/maid_diamond.png");
+	public static final Identifier TEXTURE_NETHERITE = UMULittleMaid.identifier("textures/item/armor/maid_netherite.png");
+	public static final Identifier TEXTURE_CHAINMAIL = UMULittleMaid.identifier("textures/item/armor/maid_chainmail.png");
+	public static final Identifier TEXTURE_TURTLE = UMULittleMaid.identifier("textures/item/armor/maid_turtle.png");
+
+
 	private final LittleMaidEntityModel model;
 
 	public MaidArmorRenderer(FeatureRendererContext<LittleMaidEntity, LittleMaidEntityModel> context) {
@@ -51,10 +64,10 @@ public class MaidArmorRenderer extends FeatureRenderer<LittleMaidEntity, LittleM
 						.uv(20, 16).cuboid(KEY_RIGHT_ARM, -1.0F, -1.5F, -1.5F, 2.0F, 9.0F, 2.0F, new Dilation(0.75F)),
 				ModelTransform.pivot(-4.0F, 9.5F, 0.5F));
 		root.addChild(KEY_LEFT_LEG, ModelPartBuilder.create()
-						.uv(50, 16).cuboid(KEY_LEFT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.75F)),
+						.uv(50, 16).cuboid(KEY_LEFT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.5F)),
 				ModelTransform.pivot(1.5F, 17.0F, 0.0F));
 		root.addChild(KEY_RIGHT_LEG, ModelPartBuilder.create()
-						.uv(36, 16).cuboid(KEY_RIGHT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.75F)),
+						.uv(36, 16).cuboid(KEY_RIGHT_LEG, -1.5F, 0.0F, -2.0F, 3.0F, 7.0F, 4.0F, new Dilation(0.5F)),
 				ModelTransform.pivot(-1.5F, 17.0F, 0.0F));
 
 		root.addChild(KEY_BONE_USING_DRIPLEAF, ModelPartBuilder.create(), ModelTransform.NONE);

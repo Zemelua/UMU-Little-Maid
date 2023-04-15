@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoRenderer;
+import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidArmorRenderer;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.EquipmentSlot;
@@ -22,7 +22,7 @@ public abstract class MixinArmorRenderingRegistryImpl {
 			remap = false)
 	private static void returnMaidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, BipedEntityModel<LivingEntity> defaultModel, CallbackInfoReturnable<BipedEntityModel<LivingEntity>> callback) {
 		if (entity instanceof LittleMaidEntity) {
-			callback.setReturnValue(LittleMaidGeoRenderer.ARMOR_MODEL);
+			callback.setReturnValue(MaidArmorRenderer.MODEL);
 		}
 	}
 
