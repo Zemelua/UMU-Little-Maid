@@ -1778,6 +1778,8 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 
 			if (this.isSitting()) {
 				builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
+			} else if (e.isMoving()) {
+				builder.addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);
 			} else {
 				builder.addAnimation("stand", ILoopType.EDefaultLoopTypes.LOOP);
 			}
@@ -1794,7 +1796,7 @@ public class LittleMaidEntity extends PathAwareEntity implements InventoryOwner,
 			if (e.isMoving()) {
 
 			} else {
-				builder.addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP);
+				// builder.addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP);
 			}
 
 			controller.setAnimation(builder);

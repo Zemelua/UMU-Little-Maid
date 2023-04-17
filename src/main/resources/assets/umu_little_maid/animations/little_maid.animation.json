@@ -69,6 +69,31 @@
 					}
 				}
 			}
+		},
+		"walk": {
+			"loop": true,
+			"bones": {
+				"left_leg": {
+					"rotation": {
+						"vector": ["math.sin(query.ground_speed * 100) * -30", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["math.sin(query.ground_speed * 100) * 30", 0, 0]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"vector": ["math.sin(query.ground_speed * 100) * 30", 0, -15]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"vector": ["math.sin(query.ground_speed * 100) * -30", 0, 15]
+					}
+				}
+			}
 		}
 	}
 }
