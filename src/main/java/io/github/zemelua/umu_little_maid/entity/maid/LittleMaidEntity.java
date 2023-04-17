@@ -1771,41 +1771,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	public void registerControllers(AnimationData data) {
-		data.addAnimationController(new AnimationController<>(this, "behavior", 10, e -> {
-			AnimationController<LittleMaidEntity> controller = e.getController();
-			AnimationBuilder builder = new AnimationBuilder();
-
-			if (this.isSitting()) {
-				builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
-			} else if (e.isMoving()) {
-				builder.addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);
-			} else {
-				builder.addAnimation("stand", ILoopType.EDefaultLoopTypes.LOOP);
-			}
-
-			controller.setAnimation(builder);
-
-			return PlayState.CONTINUE;
-		}));
-
-		data.addAnimationController(new AnimationController<>(this, "seasoning", 10, e -> {
-			AnimationController<LittleMaidEntity> controller = e.getController();
-			AnimationBuilder builder = new AnimationBuilder();
-
-			if (e.isMoving()) {
-
-			} else {
-				// builder.addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP);
-			}
-
-			controller.setAnimation(builder);
-
-			return PlayState.CONTINUE;
-		}));
-	}
-
-	@Override
 	public AnimationFactory getFactory() {
 		return this.animationFactory;
 	}
