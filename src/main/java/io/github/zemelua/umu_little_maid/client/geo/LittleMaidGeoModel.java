@@ -34,7 +34,7 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 		AnimationData manager = maid.getFactory().getOrCreateAnimationData(instanceId);
 		int unpause = !MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused ? 1 : 0;
 
-		if (head != null) {
+		if (head != null && head.getRotationX() == 0.0F && head.getRotationY() == 0.0F && head.getRotationZ() == 0.0F) {
 			head.setRotationX(head.getRotationX() + (float) Math.toRadians(modelData.headPitch) * unpause);
 			head.setRotationY(head.getRotationY() + (float) Math.toRadians(modelData.netHeadYaw) * unpause);
 		}

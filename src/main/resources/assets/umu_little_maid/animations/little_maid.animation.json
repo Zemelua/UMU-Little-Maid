@@ -125,6 +125,38 @@
 					}
 				}
 			}
+		},
+		"headpatted": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [27, 5, 0],
+							"easing": "easeInOutCubic"
+						},
+						"0.5": {
+							"vector": [27, -5, 0],
+							"easing": "easeInOutQuad"
+						},
+						"1.0": {
+							"vector": [27, 5, 0],
+							"easing": "easeInOutQuad"
+						}
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"vector": [0, 0, -15]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"vector": [0, 0, 15]
+					}
+				}
+			}
 		}
 	}
 }
