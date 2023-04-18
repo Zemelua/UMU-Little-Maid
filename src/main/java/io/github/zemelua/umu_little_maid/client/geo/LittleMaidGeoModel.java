@@ -41,13 +41,14 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	}
 
 	@Override
-	public Identifier getModelResource(LittleMaidEntity object) {
+	public Identifier getModelResource(LittleMaidEntity maid) {
 		return MODEL_RESOURCE;
 	}
 
 	@Override
-	public Identifier getTextureResource(LittleMaidEntity object) {
-		return TEXTURE_RESOURCE;
+	public Identifier getTextureResource(LittleMaidEntity maid) {
+		// TODO: getTextureの処理をモデル側に移す
+		return maid.getTexture();
 	}
 
 	@Override
