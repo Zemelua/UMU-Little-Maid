@@ -21,6 +21,7 @@ import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.TridentEntityAccessor;
 import io.github.zemelua.umu_little_maid.network.NetworkHandler;
+import io.github.zemelua.umu_little_maid.particle.ModParticles;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.*;
 import net.fabricmc.api.EnvType;
@@ -1805,18 +1806,16 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			controller.setAnimation(builder);
 			controller.registerParticleListener(event -> {
 				double tick = event.getAnimationTick();
-					UMULittleMaid.LOGGER.info(this.getYaw() + (tick - 1) * 360.0D * 2);
+				double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
+				Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+						.rotateY((float) rotate)
+						.add(this.getX(), this.getY() + 0.7D, this.getZ());
+				Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+						.rotateY((float) rotate)
+						.add(this.getX(), this.getY() + 0.7D, this.getZ());
 
-					double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
-					Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-							.rotateY((float) rotate)
-							.add(this.getX(), this.getY() + 0.7D, this.getZ());
-					Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-							.rotateY((float) rotate)
-							.add(this.getX(), this.getY() + 0.7D, this.getZ());
-
-					this.world.addParticle(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
-					this.world.addParticle(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+				this.world.addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
+				this.world.addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
 			});
 
 			return PlayState.CONTINUE;

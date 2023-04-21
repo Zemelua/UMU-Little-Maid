@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.client;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
@@ -74,6 +75,7 @@ public final class ClientCallbacks {
 		registry.register(InstructionRenderer.ICON_HOME);
 		registry.register(InstructionRenderer.ICON_ANCHOR);
 		registry.register(InstructionRenderer.ICON_DELIVERY_BOX);
+		registry.register(UMULittleMaid.identifier("particle/twinkle"));
 	}
 
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {

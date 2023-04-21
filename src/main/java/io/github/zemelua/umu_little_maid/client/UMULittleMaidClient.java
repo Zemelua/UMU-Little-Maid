@@ -4,14 +4,17 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoRenderer;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
+import io.github.zemelua.umu_little_maid.client.particle.TwinkleParticleFactory;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
+import io.github.zemelua.umu_little_maid.particle.ModParticles;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -59,8 +62,8 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidGeoRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
-
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
+		ParticleFactoryRegistry.getInstance().register(ModParticles.TWINKLE, TwinkleParticleFactory::new);
 
 		ClientTickEvents.START_CLIENT_TICK.register(ClientCallbacks::onStartTick);
 		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);
