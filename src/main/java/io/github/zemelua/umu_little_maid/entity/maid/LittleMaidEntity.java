@@ -565,8 +565,16 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
 			this.changingCostumeTicks++;
 			this.spawnChangingCostumeParticles();
+
+			this.navigation.stop();
 		}
-		if (this.changingCostumeTicks >= 10) {
+		if (this.changingCostumeTicks == 20) {
+			this.jump();
+		}
+		if (this.changingCostumeTicks == 25) {
+			this.setVariableCostume(!this.isVariableCostume());
+		}
+		if (this.changingCostumeTicks >= 59) {
 			this.setPose(EntityPose.STANDING);
 			this.changingCostumeTicks = 0;
 		}
@@ -671,10 +679,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					return ActionResult.success(this.world.isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.getPose() != ModEntities.POSE_CHANGING_COSTUME) {
 					if (!this.world.isClient()) {
-						this.setVariableCostume(!this.isVariableCostume());
 						this.setPose(ModEntities.POSE_CHANGING_COSTUME);
 						this.navigation.stop();
-						this.jump();
+						// this.jump();
 
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
@@ -1176,18 +1183,18 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	public void spawnChangingCostumeParticles() {
-		if (!this.world.isClient()) {
-			double rotate = Math.toRadians(this.getYaw() + this.changingCostumeTicks * 360.0D / 10);
-			Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-					.rotateY((float) rotate)
-					.add(this.getX(), this.getY() + 0.7D, this.getZ());
-			Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-					.rotateY((float) rotate)
-					.add(this.getX(), this.getY() + 0.7D, this.getZ());
-
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
-			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
-		}
+//		if (!this.world.isClient()) {
+//			double rotate = Math.toRadians(this.getYaw() + this.changingCostumeTicks * 360.0D / 10);
+//			Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+//					.rotateY((float) rotate)
+//					.add(this.getX(), this.getY() + 0.7D, this.getZ());
+//			Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+//					.rotateY((float) rotate)
+//					.add(this.getX(), this.getY() + 0.7D, this.getZ());
+//
+//			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
+//			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
+//		}
 	}
 
 	public void spawnTeleportParticles() {
@@ -1773,6 +1780,47 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	public AnimationFactory getFactory() {
 		return this.animationFactory;
+	}
+
+	@Override
+	public void registerControllers(AnimationData data) {
+		data.addAnimationController(new AnimationController<>(this, "behavior", 1.5F, e -> {
+			AnimationController<LittleMaidEntity> controller = e.getController();
+			AnimationBuilder builder = new AnimationBuilder();
+
+			if (this.isTransforming()) {
+				builder.addAnimation("transform", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+			} else if (this.isHeadpatted()) {
+				builder.addAnimation("headpatted", ILoopType.EDefaultLoopTypes.LOOP);
+			} else if (this.isEating()) {
+				builder.addAnimation("eat", ILoopType.EDefaultLoopTypes.LOOP);
+			} else if (this.isSitting()) {
+				builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
+			} else if (e.isMoving()) {
+				builder.addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);
+			} else {
+				builder.addAnimation("stand", ILoopType.EDefaultLoopTypes.LOOP);
+			}
+
+			controller.setAnimation(builder);
+			controller.registerParticleListener(event -> {
+				double tick = event.getAnimationTick();
+					UMULittleMaid.LOGGER.info(this.getYaw() + (tick - 1) * 360.0D * 2);
+
+					double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
+					Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+							.rotateY((float) rotate)
+							.add(this.getX(), this.getY() + 0.7D, this.getZ());
+					Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+							.rotateY((float) rotate)
+							.add(this.getX(), this.getY() + 0.7D, this.getZ());
+
+					this.world.addParticle(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
+					this.world.addParticle(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+			});
+
+			return PlayState.CONTINUE;
+		}));
 	}
 
 	static {

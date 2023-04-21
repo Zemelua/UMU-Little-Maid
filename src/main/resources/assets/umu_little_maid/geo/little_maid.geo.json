@@ -50,8 +50,13 @@
 					]
 				},
 				{
-					"name": "body",
+					"name": "byebye_bone",
 					"parent": "root",
+					"pivot": [0, 7, 0]
+				},
+				{
+					"name": "body",
+					"parent": "byebye_bone",
 					"pivot": [0, 16, 0],
 					"cubes": [
 						{"origin": [-3, 7, -2], "size": [6, 9, 4], "uv": [0, 16]},

@@ -21,6 +21,7 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	private static final Identifier MODEL_RESOURCE = UMULittleMaid.identifier("geo/little_maid.geo.json");
 	private static final Identifier TEXTURE_RESOURCE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	private static final Identifier ANIMATION_RESOURCE = UMULittleMaid.identifier("animations/little_maid.animation.json");
+	private static final Identifier ANIMATION_TRANSFORM_RESOURCE = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -53,6 +54,8 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 
 	@Override
 	public Identifier getAnimationResource(LittleMaidEntity animatable) {
+		if (animatable.isTransforming()) return ANIMATION_TRANSFORM_RESOURCE;
+
 		return ANIMATION_RESOURCE;
 	}
 }
