@@ -92,6 +92,11 @@
 					"rotation": {
 						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 15]
 					}
+				},
+				"body": {
+					"position": {
+						"vector": [0, "Math.sin(query.anim_time * query.ground_speed * 9000) * 0.4", 0]
+					}
 				}
 			}
 		},
