@@ -1789,7 +1789,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			AnimationController<LittleMaidEntity> controller = e.getController();
 			AnimationBuilder builder = new AnimationBuilder();
 
-			if (this.isTransforming()) {
+			if (this.isUsingDripleaf()) {
+				builder.addRepeatingAnimation("wait", 1);
+				builder.addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP);
+			} else if (this.isTransforming()) {
 				builder.addAnimation("transform", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
 			} else if (this.isHeadpatted()) {
 				builder.addAnimation("headpatted", ILoopType.EDefaultLoopTypes.LOOP);
@@ -1817,6 +1820,19 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				this.world.addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
 				this.world.addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
 			});
+
+			return PlayState.CONTINUE;
+		}));
+
+		data.addAnimationController(new AnimationController<>(this, "sub", 1.5F, event -> {
+			AnimationController<LittleMaidEntity> controller = event.getController();
+			AnimationBuilder builder = new AnimationBuilder();
+
+			if (this.isUsingDripleaf()) {
+				builder.addAnimation("glide_root", ILoopType.EDefaultLoopTypes.LOOP);
+			}
+
+			controller.setAnimation(builder);
 
 			return PlayState.CONTINUE;
 		}));

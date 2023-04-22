@@ -4,6 +4,7 @@ import io.github.zemelua.umu_little_maid.client.renderer.entity.feature.MaidArmo
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModMathUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -118,7 +119,13 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 
 	@Override
 	@Nullable
-	protected BlockState getHeldBlockForBone(String boneName, LittleMaidEntity currentEntity) {
+	protected BlockState getHeldBlockForBone(String boneName, LittleMaidEntity maid) {
+		if (maid.isUsingDripleaf()) {
+			if (boneName.equals(LittleMaidGeoModel.KEY_DRIPLEAF_RIGHT_HAND)) {
+				return Blocks.BIG_DRIPLEAF.getDefaultState();
+			}
+		}
+
 		return null;
 	}
 
@@ -152,7 +159,11 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 	}
 
 	@Override
-	protected void preRenderBlock(MatrixStack PoseStack, BlockState block, String boneName, LittleMaidEntity currentEntity) {}
+	protected void preRenderBlock(MatrixStack matrices, BlockState block, String boneName, LittleMaidEntity currentEntity) {
+		ModMathUtils.scaleMatrices(matrices, 2.0F);
+		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+		matrices.translate(0.0D, 0.2D, -0.15D);
+	}
 
 	@Override
 	protected void postRenderItem(MatrixStack PoseStack, ItemStack item, String boneName, LittleMaidEntity currentEntity, IBone bone) {}

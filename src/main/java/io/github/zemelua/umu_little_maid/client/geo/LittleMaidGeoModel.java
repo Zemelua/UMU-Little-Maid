@@ -17,8 +17,10 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	static final String KEY_ARMOR_RIGHT_LEG = "armorRightLeg";
 	static final String KEY_ITEM_LEFT_HAND = "itemLeftHand";
 	static final String KEY_ITEM_RIGHT_HAND = "itemRightHand";
+	static final String KEY_DRIPLEAF_RIGHT_HAND = "dripleaf_right_hand";
 
 	private static final Identifier MODEL_RESOURCE = UMULittleMaid.identifier("geo/little_maid.geo.json");
+	private static final Identifier MODEL_DRIPLEAF_RESOURCE = UMULittleMaid.identifier("geo/little_maid_dripleaf.geo.json");
 	private static final Identifier TEXTURE_RESOURCE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
 	private static final Identifier ANIMATION_RESOURCE = UMULittleMaid.identifier("animations/little_maid.animation.json");
 	private static final Identifier ANIMATION_TRANSFORM_RESOURCE = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
@@ -43,6 +45,8 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 
 	@Override
 	public Identifier getModelResource(LittleMaidEntity maid) {
+		// if (maid.isUsingDripleaf()) return MODEL_DRIPLEAF_RESOURCE;
+
 		return MODEL_RESOURCE;
 	}
 

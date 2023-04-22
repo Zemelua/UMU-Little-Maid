@@ -6,7 +6,7 @@
 				"identifier": "geometry.unknown",
 				"texture_width": 64,
 				"texture_height": 64,
-				"visible_bounds_width": 2,
+				"visible_bounds_width": 3,
 				"visible_bounds_height": 3.5,
 				"visible_bounds_offset": [0, 1.25, 0]
 			},
@@ -16,8 +16,26 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "left_leg",
+					"name": "glide_hand_bone",
 					"parent": "root",
+					"pivot": [-4, 21, 0]
+				},
+				{
+					"name": "dripleaf_right_hand",
+					"parent": "glide_hand_bone",
+					"pivot": [-4, 21, 0],
+					"cubes": [
+						{"origin": [-4, 20, 0], "size": [0, 2, 0], "uv": [2, 2]}
+					]
+				},
+				{
+					"name": "glide_body_bone",
+					"parent": "glide_hand_bone",
+					"pivot": [-4, 14.5, 0.5]
+				},
+				{
+					"name": "left_leg",
+					"parent": "glide_body_bone",
 					"pivot": [1.5, 7, 0],
 					"cubes": [
 						{"origin": [0, 0, -2], "size": [3, 7, 4], "uv": [50, 16]},
@@ -34,7 +52,7 @@
 				},
 				{
 					"name": "right_leg",
-					"parent": "root",
+					"parent": "glide_body_bone",
 					"pivot": [-1.5, 7, 0],
 					"cubes": [
 						{"origin": [-3, 0, -2], "size": [3, 7, 4], "uv": [36, 16]},
@@ -51,7 +69,7 @@
 				},
 				{
 					"name": "byebye_bone",
-					"parent": "root",
+					"parent": "glide_body_bone",
 					"pivot": [0, 7, 0]
 				},
 				{
