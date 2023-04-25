@@ -18,7 +18,6 @@ import java.util.Objects;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runnable> implements WindowEventHandler {
 	@Shadow @Nullable public ClientPlayerEntity player;
-
 	@Shadow protected int attackCooldown;
 
 	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)

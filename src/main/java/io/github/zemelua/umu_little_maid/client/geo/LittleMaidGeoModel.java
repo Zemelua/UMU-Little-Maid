@@ -12,6 +12,8 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	static final String KEY_HEAD = "head";
+	static final String KEY_LEFT_ARM = "left_arm";
+	static final String KEY_RIGHT_ARM = "right_arm";
 	static final String KEY_ARMOR_HEAD = "armorHead";
 	static final String KEY_ARMOR_LEFT_LEG = "armorLeftLeg";
 	static final String KEY_ARMOR_RIGHT_LEG = "armorRightLeg";

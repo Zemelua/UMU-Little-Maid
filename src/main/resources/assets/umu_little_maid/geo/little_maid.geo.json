@@ -127,7 +127,7 @@
 				{
 					"name": "itemRightHand",
 					"parent": "right_arm",
-					"pivot": [-4, 8, 0],
+					"pivot": [-4, 7, -0.5],
 					"cubes": [
 						{"origin": [-4, 8, 0], "size": [0, 0, 0], "uv": [0, 0]}
 					]

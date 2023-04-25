@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.renderers.geo.ExtendedGeoEntityRenderer;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
 public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidEntity> {
 
@@ -31,14 +32,23 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void renderEarly(LittleMaidEntity animatable, MatrixStack poseStack, float partialTick, VertexConsumerProvider bufferSource, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float partialTicks) {
+	public void renderEarly(LittleMaidEntity maid, MatrixStack poseStack, float partialTick, VertexConsumerProvider bufferSource, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float partialTicks) {
 		// アーマーボーンのテクスチャの一部がアーマーのテクスチャに置き換わる謎のバグがあるため
 		this.modelProvider.getAnimationProcessor().getModelRendererList().stream()
 				.filter(bone -> bone instanceof GeoBone)
 				.filter(bone -> this.isArmorBone((GeoBone) bone))
 				.forEach(bone -> ((GeoBone) bone).setHidden(true));
 
-		super.renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, partialTicks);
+		IBone head = this.modelProvider.getBone(LittleMaidGeoModel.KEY_HEAD);
+		GeckoLibCache.getInstance().parser.setValue("query.maid.head_pitch", head::getRotationX);
+		GeckoLibCache.getInstance().parser.setValue("query.maid.head_yaw", head::getRotationY);
+
+//		IBone leftArm = this.modelProvider.getBone(LittleMaidGeoModel.KEY_LEFT_ARM);
+//		IBone rightArm = this.modelProvider.getBone(LittleMaidGeoModel.KEY_RIGHT_ARM);
+//		IMaidArmsPose armsPose = getArmsPose(maid);
+//		armsPose.setArmsPose(maid, leftArm, rightArm, this.modelProvider);
+
+		super.renderEarly(maid, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, partialTicks);
 	}
 
 	@Override
@@ -146,8 +156,12 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 		ModMathUtils.scaleMatrices(matrices, 0.7F);
 		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 		if (item.equals(mainStack)) {
-			if (item.getItem() instanceof ShieldItem) {
+			if (item.isOf(Items.BOW)) {
+				matrices.translate(0.05D, 0.0D, -0.05D);
+			} else if (item.getItem() instanceof ShieldItem) {
 				matrices.translate(0.0F, 0.125F, -0.25F);
+			} else if (item.isOf(Items.CROSSBOW)) {
+				matrices.translate(0.0D, 0.04D, 0.0D);
 			}
 		}
 		else if (item.equals(offStack)) {
