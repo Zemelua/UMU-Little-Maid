@@ -14,6 +14,7 @@ import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
+import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -133,6 +134,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
 	private static final TrackedData<Collection<GlobalPos>> DELIVERY_BOXES;
 	private static final TrackedData<Optional<Integer>> ATTACK_TARGET;
+	private static final TrackedData<MaidAttackType> ATTACK_TYPE;
 
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
@@ -145,6 +147,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private final AnimationState headpattedAnimation = new AnimationState();
 
 	@Nonnull private MaidJob lastJob;
+
+	private int attackingTicks;
+	@Nullable private LivingEntity attackingTarget;
 
 	private int eatingTicks;
 	@Nullable private Consumer<ItemStack> onFinishEating;
@@ -245,6 +250,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.startTracking(ANCHOR, Optional.empty());
 		this.dataTracker.startTracking(DELIVERY_BOXES, new HashSet<>());
 		this.dataTracker.startTracking(ATTACK_TARGET, Optional.empty());
+		this.dataTracker.startTracking(ATTACK_TYPE, MaidAttackType.NO_ATTACKING);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -540,6 +546,28 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.updatePose();
 
+		//攻撃関係
+		MaidAttackType state = this.getAttackType();
+		switch (state) {
+			case SWING_SWORD_DOWNWARD_RIGHT, SWING_SWORD_DOWNWARD_LEFT -> {
+				if (this.attackingTicks == 3) {
+					this.tryAttack(this.attackingTarget);
+				} else if (attackingTicks >= 10) {
+					this.finishAttack();
+				}
+			} case SWEEP_SWORD -> {
+				if (this.attackingTicks == 5) {
+					this.tryAttack(this.attackingTarget);
+				} else if (attackingTicks >= 10) {
+					this.finishAttack();
+				}
+			}
+		}
+		if (state != MaidAttackType.NO_ATTACKING) {
+			this.getNavigation().stop();
+			this.attackingTicks++;
+		}
+
 		if (this.getPose() == POSE_EATING) {
 			this.eatingTicks++;
 			if (this.eatingTicks % 5 == 0) {
@@ -755,7 +783,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public void takeKnockback(double strength, double x, double z) {
-		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES)) {
+		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES) || this.getAttackType() != MaidAttackType.NO_ATTACKING) {
 			return;
 		}
 
@@ -817,7 +845,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				double xStrength = Math.sin(this.getYaw() * Math.PI / 180.0D);
 				double zStrength = -Math.cos(this.getYaw() * Math.PI / 180.0D);
 
-				living.takeKnockback(knockback * 0.5D, xStrength, zStrength);
+				// living.takeKnockback(knockback * 0.5D, xStrength, zStrength);
 
 				this.setVelocity(this.getVelocity().multiply(0.6D, 1.0D, 0.6D));
 			}
@@ -845,6 +873,18 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		}
 
 		return damagePassed;
+	}
+
+	public void startAttack(LivingEntity target, MaidAttackType type) {
+		this.setAttackType(type);
+		this.attackingTarget = target;
+		this.attackingTicks = 0;
+	}
+
+	public void finishAttack() {
+		this.setAttackType(MaidAttackType.NO_ATTACKING);
+		this.attackingTarget = null;
+		this.attackingTicks = 0;
 	}
 
 	/**
@@ -1512,6 +1552,14 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(ATTACK_TARGET, Optional.empty());
 	}
 
+	public MaidAttackType getAttackType() {
+		return this.dataTracker.get(ATTACK_TYPE);
+	}
+
+	public void setAttackType(MaidAttackType value) {
+		this.dataTracker.set(ATTACK_TYPE, value);
+	}
+
 	public void increaseCommitment(int value, boolean force) {
 		if (force) {
 			if (this.increasedCommitment + value > DAY_CEIL_COMMITMENT) {
@@ -1824,6 +1872,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					builder.addAnimation("headpatted", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (this.isEating()) {
 					builder.addAnimation("eat", ILoopType.EDefaultLoopTypes.LOOP);
+				} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
+					switch (this.getAttackType()) {
+						case SWING_SWORD_DOWNWARD_RIGHT -> builder.addAnimation("swing_sword_downward_right");
+						case SWING_SWORD_DOWNWARD_LEFT -> builder.addAnimation("swing_sword_downward_left");
+					}
 				} else if (this.isSitting()) {
 					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (e.isMoving()) {
@@ -1944,5 +1997,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		DELIVERY_BOXES = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.COLLECTION_GLOBAL_POS);
 		ATTACK_TARGET = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_INT);
+		ATTACK_TYPE = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_ATTACK_TYPE);
 	}
 }
