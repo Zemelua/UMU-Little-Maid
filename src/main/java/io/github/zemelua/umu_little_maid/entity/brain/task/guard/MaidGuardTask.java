@@ -78,7 +78,7 @@ public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).ifPresent(list -> list.stream()
 				.filter(living -> living instanceof MobEntity)
 				.map(living -> (MobEntity) living)
-				.forEach(mobValue -> mobValue.setTarget(mobValue))
+				.forEach(target -> target.setTarget(mob))
 		);
 
 		Optional<LivingEntity> guardTarget = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
