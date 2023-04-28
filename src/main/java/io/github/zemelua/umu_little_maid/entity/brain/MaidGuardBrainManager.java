@@ -11,6 +11,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidHeadbuttTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
@@ -52,10 +53,10 @@ public final class MaidGuardBrainManager {
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
+				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(ModMemories.GUARD_AGAINST))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberGuardTargetTask()),
-				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET))),
+				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(ModMemories.GUARD_AGAINST))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetGuardTargetTask<>())
 		));
@@ -93,11 +94,12 @@ public final class MaidGuardBrainManager {
 
 	public static void addGuardTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_GUARD, ImmutableList.of(
-				Pair.of(0, new MaidGuardTask<>(6.0D, 2.0D, 1.5F))
+				Pair.of(1, new MaidGuardTask<>(6.0D, 2.0D, 1.5F)),
+				Pair.of(0, new MaidHeadbuttTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_PRESENT)
 		), ImmutableSet.of(
-				ModEntities.MEMORY_GUARD_TARGET
+				ModMemories.GUARD_AGAINST
 		));
 	}
 

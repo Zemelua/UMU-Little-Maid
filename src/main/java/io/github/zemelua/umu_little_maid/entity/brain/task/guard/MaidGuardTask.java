@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT
+			ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final double moveStartDistance;
@@ -81,7 +82,7 @@ public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 				.forEach(target -> target.setTarget(mob))
 		);
 
-		Optional<LivingEntity> guardTarget = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
+		Optional<LivingEntity> guardTarget = brain.getOptionalMemory(ModMemories.GUARD_AGAINST);
 
 		if (guardTarget.isPresent()) {
 			boolean shouldGuard = mob.distanceTo(master.get()) <= this.guardStartDistance;

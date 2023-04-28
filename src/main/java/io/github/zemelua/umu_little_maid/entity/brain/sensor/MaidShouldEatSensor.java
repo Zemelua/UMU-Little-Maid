@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
@@ -29,7 +30,7 @@ public class MaidShouldEatSensor extends Sensor<LittleMaidEntity> {
 		}
 
 		if (brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET)
-				|| brain.hasMemoryModule(ModEntities.MEMORY_GUARD_TARGET)
+				|| brain.hasMemoryModule(ModMemories.GUARD_AGAINST)
 				|| brain.hasMemoryModule(ModEntities.MEMORY_SHOULD_HEAL)) {
 			if (maid.getHealth() < maid.getMaxHealth() * 0.4D) {
 				brain.remember(ModEntities.MEMORY_SHOULD_EAT, Unit.INSTANCE);

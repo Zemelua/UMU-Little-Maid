@@ -155,7 +155,26 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Nullable private Consumer<ItemStack> onFinishEating;
 
 	private int changingCostumeTicks;
+
+	/**
+	 * {@link LittleMaidEntity#damageShield(float)} で {@code true} になり、その後 {@link LittleMaidEntity#damage(DamageSource, float)}
+	 * で {@code false} になります。つまり、 {@link LittleMaidEntity#damageShield(float)} を呼び出した直後(通常は {@link LittleMaidEntity#damage(DamageSource, float)}
+	 * 内においてスーパーメソッドが呼び出された直後)にこのフィールドをチェックすることでダメージが盾によって防がれたかど
+	 * うかを得ることができます。
+	 */
 	private boolean damageBlocked;
+
+	/**
+	 * ダメージを受けたか攻撃を盾で防いだとき40が設定され、毎ティック1ずつ減少します。頭突きを発生させるかどうかの判定に
+	 * 使用します。サーバー側でのみ使用されます。
+	 */
+	private int attackedCooldown;
+
+	/**
+	 * 連続で攻撃を受けた回数。
+	 */
+	private int continuityAttackedCount;
+
 	private long lastClearCommitmentDayTime;
 	private int increasedCommitment;
 
@@ -561,6 +580,12 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				} else if (attackingTicks >= 10) {
 					this.finishAttack();
 				}
+			} case HEADBUTT -> {
+				if (this.attackingTicks == 24) {
+					this.headbutt();
+				} else if (attackingTicks >= 40) {
+					this.finishAttack();
+				}
 			}
 		}
 		if (state != MaidAttackType.NO_ATTACKING) {
@@ -621,6 +646,12 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
 				.ifPresentOrElse(this::setAttackTarget, this::removeAttackTarget);
+
+		if (this.attackedCooldown > 0) {
+			this.attackedCooldown--;
+		} else {
+			this.continuityAttackedCount = 0;
+		}
 	}
 
 	private void updatePose() {
@@ -875,6 +906,16 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return damagePassed;
 	}
 
+	private void headbutt() {
+		boolean damagePassed = Objects.requireNonNull(this.attackingTarget).damage(DamageSource.mob(this), 5.0F);
+
+		if (damagePassed) {
+			double xDir = Math.sin(this.getYaw() * Math.PI / 180.0D);
+			double zDir = -Math.cos(this.getYaw() * Math.PI / 180.0D);
+			this.attackingTarget.takeKnockback(1.6F, xDir, zDir);
+		}
+	}
+
 	public void startAttack(LivingEntity target, MaidAttackType type) {
 		this.setAttackType(type);
 		this.attackingTarget = target;
@@ -1008,6 +1049,16 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean result = super.damage(source, amount);
+
+		if (!this.world.isClient()) {
+			if (result || this.damageBlocked) {
+				if (this.attackedCooldown > 0) {
+					this.continuityAttackedCount++;
+				}
+
+				this.attackedCooldown = 40;
+			}
+		}
 
 		this.damageBlocked = false;
 
@@ -1575,6 +1626,14 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		}
 	}
 
+	public int getContinuityAttackedCount() {
+		return this.continuityAttackedCount;
+	}
+
+	public void resetContinuityAttackedCount() {
+		this.continuityAttackedCount = 0;
+	}
+
 	public float getSitProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastSitProgress, this.sitProgress);
 	}
@@ -1875,7 +1934,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
 					switch (this.getAttackType()) {
 						case SWING_SWORD_DOWNWARD_RIGHT -> builder.addAnimation("swing_sword_downward_right");
-						case SWING_SWORD_DOWNWARD_LEFT -> builder.addAnimation("swing_sword_downward_left");
+						case SWING_SWORD_DOWNWARD_LEFT  -> builder.addAnimation("swing_sword_downward_left");
+						case HEADBUTT                   -> builder.addAnimation("headbutt");
 					}
 				} else if (this.isSitting()) {
 					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
@@ -1962,7 +2022,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				ModEntities.MEMORY_HAS_ARROWS,
 				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
 				ModEntities.MEMORY_GUARDABLE_LIVING,
-				ModEntities.MEMORY_GUARD_TARGET,
+				ModMemories.GUARD_AGAINST,
 				ModEntities.MEMORY_SHOULD_HEAL,
 				ModEntities.MEMORY_FARMABLE_POSES,
 				ModEntities.MEMORY_FARM_POS,

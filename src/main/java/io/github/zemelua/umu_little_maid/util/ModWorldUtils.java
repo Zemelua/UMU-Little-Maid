@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,5 +38,9 @@ public final class ModWorldUtils {
 			Vec3d raycastVec = mContext.getStart().subtract(mContext.getEnd());
 			return BlockHitResult.createMissed(mContext.getEnd(), Direction.getFacing(raycastVec.getX(), raycastVec.getY(), raycastVec.getZ()), new BlockPos(mContext.getEnd()));
 		});
+	}
+
+	public static Box box(Vec3d centerPos, double radius) {
+		return new Box(centerPos, centerPos).expand(radius);
 	}
 }

@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class ForgetGuardTargetTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_GUARD_TARGET, MemoryModuleState.VALUE_PRESENT
+			ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_PRESENT
 	);
 
 	public ForgetGuardTargetTask() {
@@ -25,12 +25,12 @@ public class ForgetGuardTargetTask<E extends LivingEntity> extends Task<E> {
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		Optional<LivingEntity> target = brain.getOptionalMemory(ModEntities.MEMORY_GUARD_TARGET);
+		Optional<LivingEntity> target = brain.getOptionalMemory(ModMemories.GUARD_AGAINST);
 		if (target.isEmpty()) {
-			brain.forget(ModEntities.MEMORY_GUARD_TARGET);
+			brain.forget(ModMemories.GUARD_AGAINST);
 		} else {
 			if (!target.get().isAlive() || target.get().getWorld() != living.getWorld() || target.get().distanceTo(living) > 16.0D) {
-				brain.forget(ModEntities.MEMORY_GUARD_TARGET);
+				brain.forget(ModMemories.GUARD_AGAINST);
 			}
 		}
 	}

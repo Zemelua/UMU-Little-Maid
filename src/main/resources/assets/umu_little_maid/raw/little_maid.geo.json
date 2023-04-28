@@ -16,18 +16,8 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "headbatt_bone",
-					"parent": "root",
-					"pivot": [0, 0, -5]
-				},
-				{
-					"name": "ground_pivot_bone",
-					"parent": "headbatt_bone",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "glide_hand_bone",
-					"parent": "ground_pivot_bone",
+					"parent": "root",
 					"pivot": [-4, 21, 0]
 				},
 				{
