@@ -71,7 +71,8 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	@Override
 	public Identifier getTextureResource(LittleMaidEntity maid) {
 		if (maid.isHeadpatted()) {
-			if      (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER_KYUN;
+			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE_KYUN;
+			else if (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER_KYUN;
 			else if (maid.getJob().equals(ModEntities.JOB_ARCHER))   return RESOURCE_TEXTURE_ARCHER_KYUN;
 			else if (maid.getJob().equals(ModEntities.JOB_CRACKER))  return RESOURCE_TEXTURE_CRACKER_KYUN;
 			else if (maid.getJob().equals(ModEntities.JOB_GUARD))    return RESOURCE_TEXTURE_GUARD_KYUN;
@@ -81,7 +82,8 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 			else if (maid.getJob().equals(ModEntities.JOB_HUNTER))   return RESOURCE_TEXTURE_HUNTER_KYUN;
 			else                                                     return RESOURCE_TEXTURE_KYUN;
 		} else {
-			if      (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER;
+			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE;
+			else if (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER;
 			else if (maid.getJob().equals(ModEntities.JOB_ARCHER))   return RESOURCE_TEXTURE_ARCHER;
 			else if (maid.getJob().equals(ModEntities.JOB_CRACKER))  return RESOURCE_TEXTURE_CRACKER;
 			else if (maid.getJob().equals(ModEntities.JOB_GUARD))    return RESOURCE_TEXTURE_GUARD;
