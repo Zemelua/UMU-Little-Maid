@@ -102,7 +102,7 @@ public final class ClientCallbacks {
 		MinecraftClient client = MinecraftClient.getInstance();
 		Vec3d cameraPos = context.camera().getPos();
 
-		client.debugRenderer.pathfindingDebugRenderer.render(context.matrixStack(), context.consumers(), cameraPos.getX(), cameraPos.getY(), cameraPos.getZ());
+		// client.debugRenderer.pathfindingDebugRenderer.render(context.matrixStack(), context.consumers(), cameraPos.getX(), cameraPos.getY(), cameraPos.getZ());
 
 		InstructionRenderer.renderSitesOverlay(client, context);
 	}
