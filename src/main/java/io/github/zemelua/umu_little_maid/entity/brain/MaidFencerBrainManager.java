@@ -25,7 +25,7 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidFencerBrainManager {
-	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain) {
 		MaidFencerBrainManager.addCoreTasks(brain);
 		MaidFencerBrainManager.addIdleTasks(brain);
 		MaidFencerBrainManager.addSitTasks(brain);

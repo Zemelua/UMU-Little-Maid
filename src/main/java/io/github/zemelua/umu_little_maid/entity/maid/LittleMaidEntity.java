@@ -17,6 +17,8 @@ import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
+import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
+import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
 import io.github.zemelua.umu_little_maid.mixin.MobEntityAccessor;
 import io.github.zemelua.umu_little_maid.mixin.PersistentProjectileEntityAccessor;
@@ -146,8 +148,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private final AnimationState changeCostumeAnimation = new AnimationState();
 	private final AnimationState headpattedAnimation = new AnimationState();
 
-	@Nonnull private MaidJob lastJob;
-
 	private int attackingTicks;
 	@Nullable private LivingEntity attackingTarget;
 
@@ -195,7 +195,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
 
-		this.lastJob = ModEntities.JOB_NONE;
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
 
@@ -555,10 +554,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	protected void mobTick() {
 		this.updateJob();
-		if (!this.getJob().equals(this.lastJob)) {
-			this.onJobChanged((ServerWorld) this.world);
-		}
-		this.lastJob = this.getJob();
 
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
@@ -675,15 +670,15 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	private void updateJob() {
-		for (MaidJob job : ModRegistries.MAID_JOB.stream().toList()) {
-			if (job.canApply(this)) {
-				this.setJob(job);
+		IMaidJob job = MaidJobs.getAllJobs()
+				.filter(j -> j.canAssume(this))
+				.max(Comparator.comparingInt(IMaidJob::getPriority))
+				.orElse(MaidJobs.NONE);
 
-				return;
-			}
+		if (!job.equals(this.getJob())) {
+			this.setJob(JOB_NONE);
+			this.onJobChanged((ServerWorld) this.world);
 		}
-
-		this.setJob(ModEntities.JOB_NONE);
 	}
 
 	private void onJobChanged(ServerWorld world) {
@@ -1819,7 +1814,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		nbt.putInt(LittleMaidEntity.KEY_MODE, this.getMode().getId());
 
-		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
+		@Nullable Identifier job = ModRegistries.MAID_JOB_OLD.getId(this.getJob());
 		if (job != null) {
 			nbt.putString(LittleMaidEntity.KEY_JOB, job.toString());
 		}
@@ -1873,7 +1868,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.setMode(MaidMode.fromId(nbt.getInt(LittleMaidEntity.KEY_MODE)));
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
-			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
+			this.setJob(ModRegistries.MAID_JOB_OLD.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
 		}
 
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {

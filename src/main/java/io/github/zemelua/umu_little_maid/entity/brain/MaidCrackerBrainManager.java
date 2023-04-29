@@ -24,7 +24,7 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidCrackerBrainManager {
-	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain) {
 		MaidCrackerBrainManager.addCoreTasks(brain);
 		MaidCrackerBrainManager.addIdleTasks(brain);
 		MaidCrackerBrainManager.addSitTasks(brain);

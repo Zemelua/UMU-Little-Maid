@@ -29,7 +29,7 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidPoseidonBrainManager {
-	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain) {
 		MaidPoseidonBrainManager.addCoreTasks(brain);
 		MaidPoseidonBrainManager.addIdleTasks(brain);
 		MaidPoseidonBrainManager.addSitTasks(brain);
