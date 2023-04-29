@@ -7,9 +7,13 @@ import net.minecraft.util.registry.Registry;
 
 public final class ModParticles {
 	public static final DefaultParticleType TWINKLE = FabricParticleTypes.simple();
+	public static final DefaultParticleType SHOCK = FabricParticleTypes.simple();
+	public static final DefaultParticleType SHOCKWAVE = FabricParticleTypes.simple();
 
 	public static void init() {
 		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("twinkle"), TWINKLE);
+		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("shock"), SHOCK);
+		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("shockwave"), SHOCKWAVE);
 	}
 
 	private ModParticles() {}

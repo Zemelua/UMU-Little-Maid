@@ -839,6 +839,11 @@
 						}
 					}
 				}
+			},
+			"particle_effects": {
+				"1.1667": {
+					"effect": "shock"
+				}
 			}
 		}
 	}

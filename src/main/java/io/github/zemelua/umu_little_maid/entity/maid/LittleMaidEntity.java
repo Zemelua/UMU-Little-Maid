@@ -1952,17 +1952,29 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 			controller.setAnimation(builder);
 			controller.registerParticleListener(event -> {
-				double tick = event.getAnimationTick();
-				double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
-				Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-						.rotateY((float) rotate)
-						.add(this.getX(), this.getY() + 0.7D, this.getZ());
-				Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-						.rotateY((float) rotate)
-						.add(this.getX(), this.getY() + 0.7D, this.getZ());
+				switch (event.effect) {
+					case "kirakira" -> {
+						double tick = event.getAnimationTick();
+						double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
+						Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+								.rotateY((float) rotate)
+								.add(this.getX(), this.getY() + 0.7D, this.getZ());
+						Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+								.rotateY((float) rotate)
+								.add(this.getX(), this.getY() + 0.7D, this.getZ());
 
-				this.world.addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
-				this.world.addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+						this.world.addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
+						this.world.addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+					} case "shock" -> {
+						Vec3d pos = new Vec3d(0.0D, 0.0D, 1.6D)
+								.rotateY((float) Math.toRadians(-this.getYaw()))
+								.add(this.getPos())
+								.add(0.0D, 1.25D, 0.0D);
+
+						this.world.addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+						this.world.addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+					}
+				}
 			});
 
 			return PlayState.CONTINUE;

@@ -4,6 +4,8 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoRenderer;
 import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
+import io.github.zemelua.umu_little_maid.client.particle.ShockParticleFactory;
+import io.github.zemelua.umu_little_maid.client.particle.ShockwaveParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.TwinkleParticleFactory;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -63,7 +65,10 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidGeoRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
 		EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
+
 		ParticleFactoryRegistry.getInstance().register(ModParticles.TWINKLE, TwinkleParticleFactory::new);
+		ParticleFactoryRegistry.getInstance().register(ModParticles.SHOCK, ShockParticleFactory::new);
+		ParticleFactoryRegistry.getInstance().register(ModParticles.SHOCKWAVE, ShockwaveParticleFactory::new);
 
 		ClientTickEvents.START_CLIENT_TICK.register(ClientCallbacks::onStartTick);
 		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);

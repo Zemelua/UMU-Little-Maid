@@ -75,7 +75,19 @@ public final class ClientCallbacks {
 		registry.register(InstructionRenderer.ICON_HOME);
 		registry.register(InstructionRenderer.ICON_ANCHOR);
 		registry.register(InstructionRenderer.ICON_DELIVERY_BOX);
-		registry.register(UMULittleMaid.identifier("particle/twinkle"));
+		registry.register(UMULittleMaid.identifier("particle/shock_0"));
+		registry.register(UMULittleMaid.identifier("particle/shock_1"));
+		registry.register(UMULittleMaid.identifier("particle/shock_2"));
+		registry.register(UMULittleMaid.identifier("particle/shock_3"));
+		registry.register(UMULittleMaid.identifier("particle/shock_4"));
+		registry.register(UMULittleMaid.identifier("particle/shock_5"));
+		registry.register(UMULittleMaid.identifier("particle/shock_6"));
+		registry.register(UMULittleMaid.identifier("particle/shock_7"));
+		registry.register(UMULittleMaid.identifier("particle/shock_8"));
+		registry.register(UMULittleMaid.identifier("particle/shockwave_0"));
+		registry.register(UMULittleMaid.identifier("particle/shockwave_1"));
+		registry.register(UMULittleMaid.identifier("particle/shockwave_2"));
+		registry.register(UMULittleMaid.identifier("particle/shockwave_3"));
 	}
 
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {
