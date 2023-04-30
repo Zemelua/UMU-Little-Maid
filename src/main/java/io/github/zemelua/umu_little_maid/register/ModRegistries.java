@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.register;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.maid.MaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
@@ -14,7 +13,6 @@ public final class ModRegistries {
 	public static final Marker MARKER = MarkerManager.getMarker("REGISTRY").addParents(UMULittleMaid.MARKER);
 
 	public static final Registry<MaidPersonality> MAID_PERSONALITY;
-	public static final Registry<MaidJob> MAID_JOB_OLD;
 	public static final Registry<IMaidJob> MAID_JOB;
 	public static final Registry<IMaidFeeling> MAID_FEELING;
 
@@ -25,9 +23,6 @@ public final class ModRegistries {
 	static {
 		MAID_PERSONALITY = FabricRegistryBuilder
 				.createSimple(MaidPersonality.class, UMULittleMaid.identifier("maid_personality"))
-				.buildAndRegister();
-		MAID_JOB_OLD = FabricRegistryBuilder
-				.createSimple(MaidJob.class, UMULittleMaid.identifier("maid_job_old"))
 				.buildAndRegister();
 		MAID_JOB = FabricRegistryBuilder
 				.createSimple(IMaidJob.class, UMULittleMaid.identifier("maid_job"))

@@ -5,9 +5,10 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
-import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
-import io.github.zemelua.umu_little_maid.entity.maid.*;
+import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidMode;
+import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
 import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
@@ -48,7 +49,6 @@ public final class ModEntities {
 
 	public static final TrackedDataHandler<MaidMode> MODE_HANDLER;
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
-	public static final TrackedDataHandler<MaidJob> JOB_HANDLER;
 
 	public static final MemoryModuleType<UUID> MEMORY_OWNER;
 	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
@@ -104,17 +104,6 @@ public final class ModEntities {
 	public static final MaidPersonality PERSONALITY_LAZY;
 	public static final MaidPersonality PERSONALITY_TSUNDERE;
 
-	public static final MaidJob JOB_NONE;
-	public static final MaidJob JOB_FENCER;
-	public static final MaidJob JOB_CRACKER;
-	public static final MaidJob JOB_ARCHER;
-	public static final MaidJob JOB_GUARD;
-	public static final MaidJob JOB_FARMER;
-	public static final MaidJob JOB_HEALER;
-	public static final MaidJob JOB_POSEIDON;
-	public static final MaidJob JOB_HUNTER;
-	public static final MaidJob JOB_SHEPHERD;
-
 	private static boolean initialized = false;
 	public static void initialize() {
 		if (ModEntities.initialized) throw new IllegalStateException("Entities are already initialized!");
@@ -123,7 +112,6 @@ public final class ModEntities {
 
 		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
-		TrackedDataHandlerRegistry.register(ModEntities.JOB_HANDLER);
 
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.MEMORY_OWNER);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
@@ -226,17 +214,6 @@ public final class ModEntities {
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("lazy"), ModEntities.PERSONALITY_LAZY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("tsundere"), ModEntities.PERSONALITY_TSUNDERE);
 
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("none"), ModEntities.JOB_NONE);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("fencer"), ModEntities.JOB_FENCER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("cracker"), ModEntities.JOB_CRACKER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("archer"), ModEntities.JOB_ARCHER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("guard"), ModEntities.JOB_GUARD);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("farmer"), ModEntities.JOB_FARMER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("heal"), ModEntities.JOB_HEALER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("poseidon"), ModEntities.JOB_POSEIDON);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("hunter"), JOB_HUNTER);
-		Registry.register(ModRegistries.MAID_JOB_OLD, UMULittleMaid.identifier("shepherd"), JOB_SHEPHERD);
-
 		BiomeModifications.addSpawn(BiomeSelectors.includeByKey(
 				BiomeKeys.PLAINS, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.MEADOW,
 				BiomeKeys.DESERT,
@@ -265,7 +242,6 @@ public final class ModEntities {
 
 		MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
 		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
-		JOB_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_JOB_OLD);
 
 		MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
 		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
@@ -418,56 +394,5 @@ public final class ModEntities {
 						ModSounds.ENTITY_MAID_TSUNDERE_CONTRACT,
 						ModSounds.ENTITY_MAID_TSUNDERE_SIT,
 						ModSounds.ENTITY_MAID_TSUNDERE_ENGAGE);
-
-		JOB_NONE = new MaidJob(itemStack -> false,
-				MaidNoneBrainManager::initBrain,
-				MaidNoneBrainManager::tickBrain,
-				PointOfInterestType.NONE,
-				LittleMaidEntity.TEXTURE_NONE);
-		JOB_FENCER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FENCER_TOOLS),
-				MaidFencerBrainManager::initBrain,
-				MaidFencerBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_FENCER_SITE),
-				LittleMaidEntity.TEXTURE_FENCER);
-		JOB_CRACKER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_CRACKER_TOOLS),
-				MaidCrackerBrainManager::initBrain,
-				MaidCrackerBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_CRACKER_SITE),
-				LittleMaidEntity.TEXTURE_CRACKER);
-		JOB_ARCHER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_ARCHER_TOOLS),
-				MaidArcherBrainManager::initBrain,
-				MaidArcherBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_ARCHER_SITE),
-				LittleMaidEntity.TEXTURE_ARCHER);
-		JOB_GUARD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_GUARD_TOOLS),
-				MaidGuardBrainManager::initBrain,
-				MaidGuardBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_GUARD_SITE),
-				LittleMaidEntity.TEXTURE_GUARD);
-		JOB_FARMER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_FARMER_TOOLS),
-				MaidFarmerBrainManager::initBrain,
-				MaidFarmerBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_FARMER_SITE),
-				LittleMaidEntity.TEXTURE_FARMER);
-		JOB_HEALER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_HEALER_TOOLS),
-				MaidHealerBrainManager::initBrain,
-				MaidHealerBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_HEALER_SITE),
-				LittleMaidEntity.TEXTURE_HEALER);
-		JOB_POSEIDON = new PoseidonJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_POSEIDON_TOOLS),
-				MaidPoseidonBrainManager::initBrain,
-				MaidPoseidonBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_POSEIDON_SITE),
-				LittleMaidEntity.TEXTURE_POSEIDON);
-		JOB_HUNTER = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_HUNTER_TOOLS),
-				MaidHunterBrainManager::initBrain,
-				MaidHunterBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_HUNTER_SITE),
-				LittleMaidEntity.TEXTURE_HUNTER);
-		JOB_SHEPHERD = new MaidJob(itemStack -> itemStack.isIn(ModTags.ITEM_MAID_SHEPHERD_TOOLS),
-				MaidShepherdBrainManager::initializeBrain,
-				MaidShepherdBrainManager::tickBrain,
-				poi -> poi.isIn(ModTags.POI_MAID_SHEPHERD_SITE),
-				LittleMaidEntity.TEXTURE_NONE);
 	}
 }
