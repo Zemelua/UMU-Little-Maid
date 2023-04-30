@@ -49,6 +49,6 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 
 	@Override
 	public Identifier getTexture(LittleMaidEntity entity) {
-		return entity.getTexture();
+		return null;
 	}
 }

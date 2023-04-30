@@ -40,11 +40,11 @@ public final class MaidJobs {
 		FENCER = new BasicMaidJob(ModTags.ITEM_MAID_FENCER_TOOLS, MaidFencerBrainManager::initBrain, MaidFencerBrainManager::tickBrain);
 		CRACKER = new BasicMaidJob(ModTags.ITEM_MAID_CRACKER_TOOLS, MaidCrackerBrainManager::initBrain, MaidCrackerBrainManager::tickBrain);
 		ARCHER = new BasicMaidJob(ModTags.ITEM_MAID_ARCHER_TOOLS, MaidArcherBrainManager::initBrain, MaidArcherBrainManager::tickBrain);
-		HUNTER = new BasicMaidJob(ModTags.ITEM_MAID_ARCHER_TOOLS, MaidHunterBrainManager::initBrain, MaidHunterBrainManager::tickBrain);
-		POSEIDON = new BasicMaidJob(ModTags.ITEM_MAID_ARCHER_TOOLS, MaidPoseidonBrainManager::initBrain, MaidPoseidonBrainManager::tickBrain);
+		HUNTER = new BasicMaidJob(ModTags.ITEM_MAID_HUNTER_TOOLS, MaidHunterBrainManager::initBrain, MaidHunterBrainManager::tickBrain);
+		POSEIDON = new PoseidonJob(ModTags.ITEM_MAID_POSEIDON_TOOLS, MaidPoseidonBrainManager::initBrain, MaidPoseidonBrainManager::tickBrain);
 		GUARD = new BasicMaidJob(ModTags.ITEM_MAID_GUARD_TOOLS, MaidGuardBrainManager::initBrain, MaidGuardBrainManager::tickBrain);
-		HEALER = new BasicMaidJob(ModTags.ITEM_MAID_GUARD_TOOLS, MaidHealerBrainManager::initBrain, MaidHealerBrainManager::tickBrain);
-		FARMER = new BasicMaidJob(ModTags.ITEM_MAID_GUARD_TOOLS, MaidFarmerBrainManager::initBrain, MaidFarmerBrainManager::tickBrain);
+		HEALER = new BasicMaidJob(ModTags.ITEM_MAID_HEALER_TOOLS, MaidHealerBrainManager::initBrain, MaidHealerBrainManager::tickBrain);
+		FARMER = new BasicMaidJob(ModTags.ITEM_MAID_FARMER_TOOLS, MaidFarmerBrainManager::initBrain, MaidFarmerBrainManager::tickBrain);
 	}
 
 	private MaidJobs() {}

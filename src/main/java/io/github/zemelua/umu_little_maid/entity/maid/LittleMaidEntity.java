@@ -99,7 +99,6 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -126,7 +125,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	private static final TrackedData<Optional<UUID>> MASTER;
 	private static final TrackedData<MaidMode> MODE;
-	private static final TrackedData<MaidJob> JOB;
+	private static final TrackedData<IMaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<IMaidFeeling> FEELING;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
@@ -258,7 +257,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.dataTracker.startTracking(MASTER, Optional.empty());
 		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
-		this.dataTracker.startTracking(JOB, JOB_NONE);
+		this.dataTracker.startTracking(JOB, MaidJobs.NONE);
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
 		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
@@ -291,7 +290,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
-		this.getJob().initializeBrain(brain);
+		this.getJob().initBrain(brain);
 
 		return brain;
 	}
@@ -308,14 +307,14 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	public float getPathfindingPenalty(PathNodeType nodeType) {
 		if (nodeType == PathNodeType.WATER) {
-			return this.getJob() == JOB_POSEIDON ? 0.0F : 0.8F;
+			return this.getJob().equals(MaidJobs.POSEIDON) ? 0.0F : 0.8F;
 		}
 
 		return super.getPathfindingPenalty(nodeType);
 	}
 
 	public boolean canSwim() {
-		return this.isTouchingWater() && this.getJob() == JOB_POSEIDON;
+		return this.isTouchingWater() && this.getJob().equals(MaidJobs.POSEIDON);
 	}
 
 	private static final EntityDimensions DIMENSIONS_SLEEPING = EntityDimensions.fixed(0.2F, 0.2F);
@@ -366,8 +365,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
 		}
 
-		if (this.getJob() == JOB_ARCHER || this.getJob() == JOB_HUNTER) this.pickUpArrows();
-		if (this.getJob() == JOB_POSEIDON) this.pickUpTridents();
+		if (this.getJob().equals(MaidJobs.ARCHER) || this.getJob().equals(MaidJobs.HUNTER)) this.pickUpArrows();
+		if (this.getJob().equals(MaidJobs.POSEIDON)) this.pickUpTridents();
 
 		this.tickHandSwing();
 	}
@@ -376,11 +375,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private static final UUID ATTRIBUTE_ID_CRACKER_DAMAGE = UUID.fromString("56A32427-E09D-BA9C-EC1C-A1C7BAD8E88A");
 
 	private void updateAttributes() {
-		MaidJob job = this.getJob();
+		IMaidJob job = this.getJob();
 		EntityAttributeInstance speedAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 		EntityAttributeInstance attackAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 
-		if (job == JOB_CRACKER) {
+		if (job.equals(MaidJobs.CRACKER)) {
 			if (speedAttribute.getModifier(ATTRIBUTE_ID_CRACKER_SLOW) == null) {
 				speedAttribute.addTemporaryModifier(
 						new EntityAttributeModifier(ATTRIBUTE_ID_CRACKER_SLOW, "Cracker slow", -0.25D, Operation.MULTIPLY_TOTAL)
@@ -405,7 +404,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public void updateSwimming() {
-		if (this.getJob() == JOB_POSEIDON) {
+		if (this.getJob().equals(MaidJobs.POSEIDON)) {
 			this.navigation = this.canSwimNavigation;
 		} else {
 			this.navigation = this.landNavigation;
@@ -491,7 +490,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	public boolean canTeleport(BlockPos toPos) {
-		if (this.getJob() == JOB_POSEIDON) {
+		if (this.getJob().equals(MaidJobs.POSEIDON)) {
 			PathNodeType pathType = this.getNavigation().getNodeMaker()
 					.getDefaultNodeType(this.getWorld(), toPos.getX(), toPos.getY(), toPos.getZ());
 			if (pathType != PathNodeType.WALKABLE && pathType != PathNodeType.WATER) return false;
@@ -508,7 +507,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public boolean shouldAvoidRain() {
-		return this.getJob() != JOB_POSEIDON;
+		return !this.getJob().equals(MaidJobs.POSEIDON);
 	}
 
 	@Override
@@ -557,6 +556,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
+
+		UMULittleMaid.LOGGER.info(this.getBrain().getPossibleActivities());
 
 		this.updatePose();
 
@@ -613,7 +614,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
 			this.changingCostumeTicks++;
-			this.spawnChangingCostumeParticles();
 
 			this.navigation.stop();
 		}
@@ -676,7 +676,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				.orElse(MaidJobs.NONE);
 
 		if (!job.equals(this.getJob())) {
-			this.setJob(JOB_NONE);
+			this.setJob(job);
 			this.onJobChanged((ServerWorld) this.world);
 		}
 	}
@@ -685,8 +685,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		Brain<LittleMaidEntity> brain = this.getBrain();
 		brain.stopAllTasks(world, this);
 
+		// TODO: 村人のコードを参考にしてるんだけど、なんでコピーしとかなきゃなのかを確認する
 		this.brain = brain.copy();
-		this.getJob().initializeBrain(this.getBrain());
+		this.getJob().initBrain(this.getBrain());
 	}
 
 	@Override
@@ -830,10 +831,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	 */
 	@Override
 	public boolean tryAttack(Entity target) {
-		MaidJob job = this.getJob();
-		if (job == ModEntities.JOB_FENCER) {
+		IMaidJob job = this.getJob();
+		if (job.equals(MaidJobs.FENCER)) {
 			this.playFencerAttackSound();
-		} else if (job == ModEntities.JOB_CRACKER) {
+		} else if (job.equals(MaidJobs.CRACKER)) {
 			this.playCrackerAttackSound();
 		}
 
@@ -871,7 +872,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				double xStrength = Math.sin(this.getYaw() * Math.PI / 180.0D);
 				double zStrength = -Math.cos(this.getYaw() * Math.PI / 180.0D);
 
-				// living.takeKnockback(knockback * 0.5D, xStrength, zStrength);
+				living.takeKnockback(knockback * 0.5D, xStrength, zStrength);
 
 				this.setVelocity(this.getVelocity().multiply(0.6D, 1.0D, 0.6D));
 			}
@@ -933,7 +934,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void attack(LivingEntity target, float pullProgress) {
 		ItemStack mainStack = this.getMainHandStack();
 
-		if (this.getJob() == ModEntities.JOB_ARCHER) {
+		if (this.getJob().equals(MaidJobs.ARCHER)) {
 			ItemStack arrow = this.getArrowType(mainStack);
 			if (arrow.isEmpty()) return;
 
@@ -958,7 +959,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			if (consumeArrow) {
 				arrow.decrement(1);
 			}
-		} else if (this.getJob() == ModEntities.JOB_HUNTER) {
+		} else if (this.getJob().equals(MaidJobs.HUNTER)) {
 			this.shoot(this, 1.6F);
 		}
 	}
@@ -1016,7 +1017,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
-		return this.getJob() == ModEntities.JOB_ARCHER || this.getJob() == JOB_POSEIDON || this.getJob() == ModEntities.JOB_HUNTER;
+		return this.getJob().equals(MaidJobs.ARCHER) || this.getJob().equals(MaidJobs.POSEIDON) || this.getJob().equals(MaidJobs.HUNTER);
 	}
 
 	@Override
@@ -1272,21 +1273,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		}
 	}
 
-	public void spawnChangingCostumeParticles() {
-//		if (!this.world.isClient()) {
-//			double rotate = Math.toRadians(this.getYaw() + this.changingCostumeTicks * 360.0D / 10);
-//			Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-//					.rotateY((float) rotate)
-//					.add(this.getX(), this.getY() + 0.7D, this.getZ());
-//			Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-//					.rotateY((float) rotate)
-//					.add(this.getX(), this.getY() + 0.7D, this.getZ());
-//
-//			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, left.getX(), left.getY(), left.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
-//			((ServerWorld) this.world).spawnParticles(ParticleTypes.GLOW, right.getX(), right.getY(), right.getZ(), 0, 0.0D, 0.0D, 0.0D, 1.0D);
-//		}
-	}
-
 	public void spawnTeleportParticles() {
 		if (!this.world.isClient()) {
 			for (int i = 0; i < 128; i++) {
@@ -1337,7 +1323,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public boolean canPickupItem(ItemStack itemStack) {
-		if (this.getJob() == ModEntities.JOB_FARMER) {
+		if (this.getJob().equals(MaidJobs.FARMER)) {
 			return itemStack.isIn(ModTags.ITEM_MAID_PRODUCTS);
 		}
 
@@ -1532,11 +1518,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return world.getBlockState(pos).isIn(ModTags.BLOCK_MAID_SETTABLE_AS_DELIVERY_BOX);
 	}
 
-	public MaidJob getJob() {
+	public IMaidJob getJob() {
 		return this.dataTracker.get(LittleMaidEntity.JOB);
 	}
 
-	public void setJob(MaidJob value) {
+	public void setJob(IMaidJob value) {
 		this.dataTracker.set(LittleMaidEntity.JOB, value);
 	}
 
@@ -1549,6 +1535,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
+	@Deprecated
 	public IMaidFeeling getFeeling() {
 		return this.dataTracker.get(FEELING);
 	}
@@ -1755,21 +1742,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return 300;
 	}
 
-	public Identifier getTexture() {
-		Identifier id = this.isVariableCostume()
-				? this.getJob().getTexture()
-				: TEXTURE_NONE;
-		Optional<String> feelingLiteral = this.getFeeling().getTextureLiteral();
-
-		if (feelingLiteral.isEmpty()) return id;
-
-		StringBuilder builder = new StringBuilder(id.getPath());
-		int extIndex = builder.indexOf(".png");
-		builder.insert(extIndex, "_" + feelingLiteral.get());
-
-		return Identifier.of(id.getNamespace(), builder.toString());
-	}
-
 	//<editor-fold desc="Save/Load">
 	private static final String KEY_INVENTORY = "Inventory";
 	private static final String KEY_SLOT = "Slot";
@@ -1814,7 +1786,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		nbt.putInt(LittleMaidEntity.KEY_MODE, this.getMode().getId());
 
-		@Nullable Identifier job = ModRegistries.MAID_JOB_OLD.getId(this.getJob());
+		@Nullable Identifier job = ModRegistries.MAID_JOB.getId(this.getJob());
 		if (job != null) {
 			nbt.putString(LittleMaidEntity.KEY_JOB, job.toString());
 		}
@@ -1868,7 +1840,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.setMode(MaidMode.fromId(nbt.getInt(LittleMaidEntity.KEY_MODE)));
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
-			this.setJob(ModRegistries.MAID_JOB_OLD.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
+			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
 		}
 
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
@@ -1989,6 +1961,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		}));
 	}
 
+	@SuppressWarnings("SwitchStatementWithTooFewBranches")
 	private static Optional<IMaidItemAnimationSetter> getItemAnimation(LittleMaidEntity maid) {
 		ItemStack activeStack = maid.getActiveItem();
 		if (activeStack.isEmpty()) return Optional.empty();
@@ -1996,6 +1969,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		if (maid.getItemUseTimeLeft() > 0) {
 			UseAction useAction = activeStack.getUseAction();
 			return switch (useAction) {
+				// TODO: 他のアイテムもやる
 				case BOW ->Optional.of(MaidItemAnimationSetter.HOLD_BOW_RIGHT);
 				default -> Optional.empty();
 			};
@@ -2054,7 +2028,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
-		JOB = DataTracker.registerData(LittleMaidEntity.class, ModEntities.JOB_HANDLER);
+		JOB = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_JOB);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);

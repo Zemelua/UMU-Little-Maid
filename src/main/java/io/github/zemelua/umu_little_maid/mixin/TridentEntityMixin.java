@@ -1,8 +1,8 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TridentEntity.class)
 public abstract class TridentEntityMixin extends PersistentProjectileEntity {
-	@Shadow public abstract ItemStack asItemStack();
+	@Override @Shadow public abstract ItemStack asItemStack();
 
 	@Inject(method = "onPlayerCollision", at = @At(value = "HEAD"), cancellable = true)
 	private void onPlayerCollision(PlayerEntity player, CallbackInfo callback) {
 		if (this.getOwner() instanceof LittleMaidEntity maid) {
-			if (maid.getMaster().filter(master -> master.equals(player)).isPresent() && maid.getJob() != ModEntities.JOB_POSEIDON) {
+			if (maid.getMaster().filter(master -> master.equals(player)).isPresent() && maid.getJob().equals(MaidJobs.POSEIDON)) {
 				super.onPlayerCollision(player);
 
 				callback.cancel();
@@ -35,7 +35,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
 	private void tryPickup(PlayerEntity player, CallbackInfoReturnable<Boolean> callback) {
 		if (this.isNoClip()) {
 			if (this.getOwner() instanceof LittleMaidEntity maid) {
-				if (maid.getMaster().filter(master -> master.equals(player)).isPresent() && maid.getJob() != ModEntities.JOB_POSEIDON) {
+				if (maid.getMaster().filter(master -> master.equals(player)).isPresent() && maid.getJob().equals(MaidJobs.POSEIDON)) {
 					if (player.getInventory().insertStack(this.asItemStack())) {
 						callback.setReturnValue(true);
 					}

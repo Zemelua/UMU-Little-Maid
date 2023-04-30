@@ -1,8 +1,8 @@
 package io.github.zemelua.umu_little_maid.client.geo;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -72,25 +72,25 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	public Identifier getTextureResource(LittleMaidEntity maid) {
 		if (maid.isHeadpatted()) {
 			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_ARCHER))   return RESOURCE_TEXTURE_ARCHER_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_CRACKER))  return RESOURCE_TEXTURE_CRACKER_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_GUARD))    return RESOURCE_TEXTURE_GUARD_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_HEALER))   return RESOURCE_TEXTURE_HEALER_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_POSEIDON)) return RESOURCE_TEXTURE_POSEIDON_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_FARMER))   return RESOURCE_TEXTURE_FARMER_KYUN;
-			else if (maid.getJob().equals(ModEntities.JOB_HUNTER))   return RESOURCE_TEXTURE_HUNTER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.FENCER))   return RESOURCE_TEXTURE_FENCER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.ARCHER))   return RESOURCE_TEXTURE_ARCHER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.CRACKER))  return RESOURCE_TEXTURE_CRACKER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.GUARD))    return RESOURCE_TEXTURE_GUARD_KYUN;
+			else if (maid.getJob().equals(MaidJobs.HEALER))   return RESOURCE_TEXTURE_HEALER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.POSEIDON)) return RESOURCE_TEXTURE_POSEIDON_KYUN;
+			else if (maid.getJob().equals(MaidJobs.FARMER))   return RESOURCE_TEXTURE_FARMER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.HUNTER))   return RESOURCE_TEXTURE_HUNTER_KYUN;
 			else                                                     return RESOURCE_TEXTURE_KYUN;
 		} else {
 			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE;
-			else if (maid.getJob().equals(ModEntities.JOB_FENCER))   return RESOURCE_TEXTURE_FENCER;
-			else if (maid.getJob().equals(ModEntities.JOB_ARCHER))   return RESOURCE_TEXTURE_ARCHER;
-			else if (maid.getJob().equals(ModEntities.JOB_CRACKER))  return RESOURCE_TEXTURE_CRACKER;
-			else if (maid.getJob().equals(ModEntities.JOB_GUARD))    return RESOURCE_TEXTURE_GUARD;
-			else if (maid.getJob().equals(ModEntities.JOB_HEALER))   return RESOURCE_TEXTURE_HEALER;
-			else if (maid.getJob().equals(ModEntities.JOB_POSEIDON)) return RESOURCE_TEXTURE_POSEIDON;
-			else if (maid.getJob().equals(ModEntities.JOB_FARMER))   return RESOURCE_TEXTURE_FARMER;
-			else if (maid.getJob().equals(ModEntities.JOB_HUNTER))   return RESOURCE_TEXTURE_HUNTER;
+			else if (maid.getJob().equals(MaidJobs.FENCER))   return RESOURCE_TEXTURE_FENCER;
+			else if (maid.getJob().equals(MaidJobs.ARCHER))   return RESOURCE_TEXTURE_ARCHER;
+			else if (maid.getJob().equals(MaidJobs.CRACKER))  return RESOURCE_TEXTURE_CRACKER;
+			else if (maid.getJob().equals(MaidJobs.GUARD))    return RESOURCE_TEXTURE_GUARD;
+			else if (maid.getJob().equals(MaidJobs.HEALER))   return RESOURCE_TEXTURE_HEALER;
+			else if (maid.getJob().equals(MaidJobs.POSEIDON)) return RESOURCE_TEXTURE_POSEIDON;
+			else if (maid.getJob().equals(MaidJobs.FARMER))   return RESOURCE_TEXTURE_FARMER;
+			else if (maid.getJob().equals(MaidJobs.HUNTER))   return RESOURCE_TEXTURE_HUNTER;
 			else                                                     return RESOURCE_TEXTURE;
 		}
 	}
