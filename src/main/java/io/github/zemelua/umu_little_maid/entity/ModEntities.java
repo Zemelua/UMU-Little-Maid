@@ -9,7 +9,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidMode;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
-import io.github.zemelua.umu_little_maid.mixin.SpawnRestrictionAccessor;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import io.github.zemelua.umu_little_maid.tinker.EarlyRiser;
@@ -45,35 +44,33 @@ import java.util.UUID;
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
 
-	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
+	public static final MemoryModuleType<UUID> MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
+	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<Unit> MEMORY_HAS_ARROWS = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<List<BlockPos>> MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<TridentEntity> MEMORY_THROWN_TRIDENT = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<Unit> MEMORY_IS_HUNTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
+	public static final MemoryModuleType<List<LivingEntity>> MEMORY_SHEARABLE_SHEEP = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<LivingEntity> MEMORY_SHEAR_SHEEP = new MemoryModuleType<>(Optional.empty());
 
-	public static final TrackedDataHandler<MaidMode> MODE_HANDLER;
-	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER;
+	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
+	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
+	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
+	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
+	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
+	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
 
-	public static final MemoryModuleType<UUID> MEMORY_OWNER;
-	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING;
-	public static final MemoryModuleType<Unit> MEMORY_HAS_ARROWS;
-	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS;
-	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING;
-	public static final MemoryModuleType<List<BlockPos>> MEMORY_FARMABLE_POSES;
-	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS;
-	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN;
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL;
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT;
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP;
-	public static final MemoryModuleType<TridentEntity> MEMORY_THROWN_TRIDENT;
-	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN;
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH;
-	public static final MemoryModuleType<Unit> MEMORY_IS_HUNTING;
-	public static final MemoryModuleType<List<LivingEntity>> MEMORY_SHEARABLE_SHEEP;
-	public static final MemoryModuleType<LivingEntity> MEMORY_SHEAR_SHEEP;
-
-	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE;
-	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS;
-	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING;
-	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES;
-	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT;
-	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE;
+	public static final TrackedDataHandler<MaidMode> MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
+	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
 
 	public static final Activity ACTIVITY_SIT;
 	public static final Activity ACTIVITY_GUARD;
@@ -103,6 +100,8 @@ public final class ModEntities {
 	public static final MaidPersonality PERSONALITY_SHY;
 	public static final MaidPersonality PERSONALITY_LAZY;
 	public static final MaidPersonality PERSONALITY_TSUNDERE;
+
+	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
 	private static boolean initialized = false;
 	public static void initialize() {
@@ -147,7 +146,6 @@ public final class ModEntities {
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModEntities.ACTIVITY_BREATH);
 		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("shear_sheep"), ModEntities.ACTIVITY_SHEAR_SHEEP);
 
-		//noinspection ConstantConditions
 		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
 
 		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_TARGET,
@@ -223,10 +221,10 @@ public final class ModEntities {
 				BiomeKeys.SAVANNA, BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE, BiomeKeys.BAMBOO_JUNGLE,
 				BiomeKeys.GROVE, BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS,
 				BiomeKeys.LUSH_CAVES
-		), SpawnGroup.CREATURE, ModEntities.LITTLE_MAID, 100, 1, 1);
+		), SpawnGroup.CREATURE, LITTLE_MAID, 8, 3, 3);
 
-		SpawnRestrictionAccessor.callRegister(ModEntities.LITTLE_MAID, SpawnRestriction.Location.ON_GROUND,
-				Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn);
+//		SpawnRestrictionAccessor.callRegister(ModEntities.LITTLE_MAID, SpawnRestriction.Location.ON_GROUND,
+//				Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn);
 
 		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
@@ -235,38 +233,14 @@ public final class ModEntities {
 	private ModEntities() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
-		LITTLE_MAID = FabricEntityTypeBuilder
-				.create(SpawnGroup.CREATURE, LittleMaidEntity::new)
+		LITTLE_MAID = FabricEntityTypeBuilder.createMob()
+				.spawnGroup(SpawnGroup.CREATURE)
+				.entityFactory(LittleMaidEntity::new)
 				.dimensions(EntityDimensions.fixed(0.6F, 1.5F))
+				.trackRangeChunks(10)
+				// .defaultAttributes(LittleMaidEntity::createAttributes)
+				.spawnRestriction(SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn)
 				.build();
-
-		MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
-		PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
-
-		MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
-		MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_HAS_ARROWS = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
-		MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
-		MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
-		MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
-		MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_THROWN_TRIDENT = new MemoryModuleType<>(Optional.empty());
-		MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_IS_HUNTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-		MEMORY_SHEARABLE_SHEEP = new MemoryModuleType<>(Optional.empty());
-		MEMORY_SHEAR_SHEEP = new MemoryModuleType<>(Optional.empty());
-
-		SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
-		SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
-		SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
-		SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
-		SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
-		SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
 
 		ACTIVITY_SIT = new Activity("sit");
 		ACTIVITY_GUARD = new Activity("guard");
