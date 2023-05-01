@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.MaidFarmablePosesSensor;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.*;
@@ -27,8 +28,8 @@ import java.util.Optional;
 
 public class MaidFarmTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_PRESENT,
-			ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT
+			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT,
+			ModMemories.FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT
 	);
 
 	public MaidFarmTask() {
@@ -39,7 +40,7 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 	protected boolean shouldRun(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		return brain.getOptionalMemory(ModEntities.MEMORY_FARM_POS)
+		return brain.getOptionalMemory(ModMemories.FARM_POS)
 				.map(blockPos -> blockPos.isWithinDistance(maid.getPos(), 1.0D))
 				.orElse(false);
 	}
@@ -47,7 +48,7 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
-		Optional<BlockPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_POS);
+		Optional<BlockPos> pos = brain.getOptionalMemory(ModMemories.FARM_POS);
 
 		pos.ifPresent(posValue -> {
 			ItemStack crop = maid.getHasCrop();
@@ -66,7 +67,7 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 			}
 
 			if (MaidFarmablePosesSensor.canAnyFarm(world, maid, posValue)) {
-				brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POSES).ifPresent(poses -> poses.add(posValue));
+				brain.getOptionalMemory(ModMemories.FARMABLE_POSES).ifPresent(poses -> poses.add(posValue));
 			}
 		});
 	}
@@ -83,9 +84,9 @@ public class MaidFarmTask extends Task<LittleMaidEntity> {
 	}
 
 	private static void resetMemories(Brain<LittleMaidEntity> brain, BlockPos pos) {
-		brain.remember(ModEntities.MEMORY_FARM_COOLDOWN, Unit.INSTANCE, 20L);
-		brain.getOptionalMemory(ModEntities.MEMORY_FARMABLE_POSES).ifPresent(poses -> poses.remove(pos));
-		brain.forget(ModEntities.MEMORY_FARM_POS);
+		brain.remember(ModMemories.FARM_COOLDOWN, Unit.INSTANCE, 20L);
+		brain.getOptionalMemory(ModMemories.FARMABLE_POSES).ifPresent(poses -> poses.remove(pos));
+		brain.forget(ModMemories.FARM_POS);
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		brain.forget(MemoryModuleType.LOOK_TARGET);
 	}

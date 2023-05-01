@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow;
 
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.mixin.CrossbowAttackTaskAccessor;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +20,7 @@ public class SucceedCrossbowAttackTask<E extends MobEntity & CrossbowUser, UNUSE
 	protected boolean shouldRun(ServerWorld world, E living) {
 		Brain<?> brain = living.getBrain();
 
-		return brain.hasMemoryModule(ModEntities.MEMORY_HAS_ARROWS) && super.shouldRun(world, living);
+		return brain.hasMemoryModule(ModMemories.HAS_ARROWS) && super.shouldRun(world, living);
 	}
 
 	@Override

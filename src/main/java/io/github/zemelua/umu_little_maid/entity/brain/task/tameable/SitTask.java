@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class SitTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT
+			ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT
 	);
 
 	public SitTask() {
@@ -31,7 +31,7 @@ public class SitTask extends Task<LittleMaidEntity> {
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		return maid.getBrain().hasMemoryModule(ModEntities.MEMORY_IS_SITTING);
+		return maid.getBrain().hasMemoryModule(ModMemories.IS_SITTING);
 	}
 
 	@Override

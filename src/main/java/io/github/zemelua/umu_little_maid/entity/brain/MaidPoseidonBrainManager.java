@@ -89,7 +89,7 @@ public final class MaidPoseidonBrainManager {
 				Pair.of(0, new SitTask()),
 				Pair.of(1, new StayAboveWaterTask(0.8F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -97,7 +97,7 @@ public final class MaidPoseidonBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_BREATH, ImmutableList.of(
 				Pair.of(0, new BreathAirTask<>())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_BREATH, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.SHOULD_BREATH, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -105,16 +105,16 @@ public final class MaidPoseidonBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	public static void addGoGetTridentTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModEntities.ACTIVITY_GO_GET_TRIDENT, ImmutableList.of(
 				Pair.of(0, new GoGetTridentTask<>())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_THROWN_TRIDENT, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.THROWN_TRIDENT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.THROWN_TRIDENT_COOLDOWN, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

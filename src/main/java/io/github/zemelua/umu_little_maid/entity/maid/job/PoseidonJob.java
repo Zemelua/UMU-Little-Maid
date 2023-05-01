@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid.job;
 
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.item.Item;
@@ -15,6 +15,6 @@ public class PoseidonJob extends BasicMaidJob {
 
 	@Override
 	public boolean canAssume(LittleMaidEntity maid) {
-		return super.canAssume(maid) || maid.getBrain().hasMemoryModule(ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN);
+		return super.canAssume(maid) || maid.getBrain().hasMemoryModule(ModMemories.THROWN_TRIDENT_COOLDOWN);
 	}
 }

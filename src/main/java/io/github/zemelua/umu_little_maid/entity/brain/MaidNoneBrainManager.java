@@ -80,7 +80,7 @@ public final class MaidNoneBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -88,9 +88,9 @@ public final class MaidNoneBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
@@ -100,7 +100,7 @@ public final class MaidNoneBrainManager {
 //				Pair.of(2, new FollowMasterTask<>(10.0F))
 				// Pair.of(1, new WalkHomeTask(0.8F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(ModMemories.CANT_REACH_HOME, MemoryModuleState.VALUE_ABSENT)
 		));

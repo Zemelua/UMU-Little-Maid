@@ -2,6 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.eat;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class MaidEatTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT
+			ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT
 	);
 
 	public MaidEatTask() {

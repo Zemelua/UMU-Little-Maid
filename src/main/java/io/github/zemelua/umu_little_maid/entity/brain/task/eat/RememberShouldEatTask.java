@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.eat;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public class RememberShouldEatTask extends Task<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_ABSENT
+			ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_ABSENT
 	);
 
 	private final Predicate<LittleMaidEntity> postpone;
@@ -39,7 +39,7 @@ public class RememberShouldEatTask extends Task<LittleMaidEntity> {
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		brain.remember(ModEntities.MEMORY_SHOULD_EAT, Unit.INSTANCE);
+		brain.remember(ModMemories.SHOULD_EAT, Unit.INSTANCE);
 	}
 
 	public static boolean shouldEat(LittleMaidEntity maid, Predicate<LittleMaidEntity> postpone) {

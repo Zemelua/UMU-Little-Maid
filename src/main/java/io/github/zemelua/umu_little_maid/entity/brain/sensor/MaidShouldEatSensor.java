@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -24,32 +23,32 @@ public class MaidShouldEatSensor extends Sensor<LittleMaidEntity> {
 
 		if (brain.hasMemoryModule(MemoryModuleType.IS_PANICKING)
 				|| MaidEatTask.searchHealItems(maid).isEmpty()) {
-			brain.forget(ModEntities.MEMORY_SHOULD_EAT);
+			brain.forget(ModMemories.SHOULD_EAT);
 
 			return;
 		}
 
 		if (brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET)
 				|| brain.hasMemoryModule(ModMemories.GUARD_AGAINST)
-				|| brain.hasMemoryModule(ModEntities.MEMORY_SHOULD_HEAL)) {
+				|| brain.hasMemoryModule(ModMemories.SHOULD_HEAL)) {
 			if (maid.getHealth() < maid.getMaxHealth() * 0.4D) {
-				brain.remember(ModEntities.MEMORY_SHOULD_EAT, Unit.INSTANCE);
+				brain.remember(ModMemories.SHOULD_EAT, Unit.INSTANCE);
 
 				return;
 			}
 		} else {
 			if (maid.getHealth() < maid.getMaxHealth()) {
-				brain.remember(ModEntities.MEMORY_SHOULD_EAT, Unit.INSTANCE);
+				brain.remember(ModMemories.SHOULD_EAT, Unit.INSTANCE);
 
 				return;
 			}
 		}
 
-		brain.forget(ModEntities.MEMORY_SHOULD_EAT);
+		brain.forget(ModMemories.SHOULD_EAT);
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT);
+		return ImmutableSet.of(ModMemories.SHOULD_EAT);
 	}
 }

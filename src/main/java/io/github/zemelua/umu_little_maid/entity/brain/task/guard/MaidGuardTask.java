@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
@@ -76,7 +75,7 @@ public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 		Optional<PlayerEntity> master = mob.getMaster();
 		if (master.isEmpty()) return;
 
-		brain.getOptionalMemory(ModEntities.MEMORY_ATTRACTABLE_LIVINGS).ifPresent(list -> list.stream()
+		brain.getOptionalMemory(ModMemories.ATTRACTABLE_LIVINGS).ifPresent(list -> list.stream()
 				.filter(living -> living instanceof MobEntity)
 				.map(living -> (MobEntity) living)
 				.forEach(target -> target.setTarget(mob))

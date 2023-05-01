@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ForgetShouldHealTask<E extends LivingEntity & IHasMaster> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT
+			ModMemories.SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT
 	);
 
 	public ForgetShouldHealTask() {
@@ -30,6 +30,6 @@ public class ForgetShouldHealTask<E extends LivingEntity & IHasMaster> extends T
 	protected void run(ServerWorld world, E tameable, long time) {
 		Brain<?> brain = tameable.getBrain();
 
-		brain.forget(ModEntities.MEMORY_SHOULD_HEAL);
+		brain.forget(ModMemories.SHOULD_HEAL);
 	}
 }

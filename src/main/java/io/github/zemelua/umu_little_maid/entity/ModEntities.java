@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
@@ -20,14 +19,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.util.Unit;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
@@ -37,30 +31,8 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
-
-	public static final MemoryModuleType<UUID> MEMORY_OWNER = new MemoryModuleType<>(Optional.of(DynamicSerializableUuid.CODEC));
-	public static final MemoryModuleType<Unit> MEMORY_IS_SITTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<Unit> MEMORY_HAS_ARROWS = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<List<LivingEntity>> MEMORY_ATTRACTABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<LivingEntity> MEMORY_GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<List<BlockPos>> MEMORY_FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<BlockPos> MEMORY_FARM_POS = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<Unit> MEMORY_FARM_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_EAT = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_SLEEP = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<TridentEntity> MEMORY_THROWN_TRIDENT = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<Unit> MEMORY_THROWN_TRIDENT_COOLDOWN = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<Unit> MEMORY_SHOULD_BREATH = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<Unit> MEMORY_IS_HUNTING = new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE)));
-	public static final MemoryModuleType<List<LivingEntity>> MEMORY_SHEARABLE_SHEEP = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<LivingEntity> MEMORY_SHEAR_SHEEP = new MemoryModuleType<>(Optional.empty());
 
 	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
 	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
@@ -111,24 +83,6 @@ public final class ModEntities {
 
 		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
-
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("owner"), ModEntities.MEMORY_OWNER);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_sitting"), ModEntities.MEMORY_IS_SITTING);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("has_arrows"), ModEntities.MEMORY_HAS_ARROWS);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("attractable_livings"), ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), ModEntities.MEMORY_GUARDABLE_LIVING);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), ModEntities.MEMORY_FARMABLE_POSES);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), ModEntities.MEMORY_FARM_POS);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_cooldown"), ModEntities.MEMORY_FARM_COOLDOWN);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), ModEntities.MEMORY_SHOULD_HEAL);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.MEMORY_SHOULD_EAT);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_sleep"), ModEntities.MEMORY_SHOULD_SLEEP);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident"), ModEntities.MEMORY_THROWN_TRIDENT);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("thrown_trident_cooldown"), ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_breath"), ModEntities.MEMORY_SHOULD_BREATH);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("is_hunting"), MEMORY_IS_HUNTING);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shearable_sheep"), MEMORY_SHEARABLE_SHEEP);
-		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shear_sheep"), MEMORY_SHEAR_SHEEP);
 
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), SENSOR_MAID_ATTACKABLE);
 		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);

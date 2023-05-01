@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.Optional;
 import java.util.Set;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.MEMORY_IS_HUNTING;
+import static io.github.zemelua.umu_little_maid.entity.brain.ModMemories.IS_HUNTING;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.NEAREST_ATTACKABLE;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.VISIBLE_MOBS;
 
@@ -31,7 +31,7 @@ public class MaidAttackableSensor extends Sensor<LittleMaidEntity> {
 			return;
 		}
 
-		if (brain.hasMemoryModule(MEMORY_IS_HUNTING)) {
+		if (brain.hasMemoryModule(IS_HUNTING)) {
 			Optional<LivingEntity> chase = mobs
 					.flatMap(mobsObj -> mobsObj
 							.findFirst(living -> isChase(maid, living)));

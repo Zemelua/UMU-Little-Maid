@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.MEMORY_IS_HUNTING;
+import static io.github.zemelua.umu_little_maid.entity.brain.ModMemories.IS_HUNTING;
 import static io.github.zemelua.umu_little_maid.mixin.MixinUtils.*;
 
 @Mixin(GoatHornItem.class)
@@ -29,7 +29,7 @@ public abstract class GoatHornItemMixin extends Item {
 			Box box = user.getBoundingBox().expand(10, 3, 10);
 			List<LittleMaidEntity> maids = world.getEntitiesByClass(LittleMaidEntity.class, box, maid -> maid.getOwner() == user);
 			for (LittleMaidEntity maid : maids) {
-				maid.getBrain().remember(MEMORY_IS_HUNTING, Unit.INSTANCE, 600);
+				maid.getBrain().remember(IS_HUNTING, Unit.INSTANCE, 600);
 			}
 		}
 	}

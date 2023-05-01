@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
@@ -16,7 +16,7 @@ public class ApproachToHealTask<E extends LivingEntity & IHasMaster> extends Tas
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
-			ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT
+			ModMemories.SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final float speed;

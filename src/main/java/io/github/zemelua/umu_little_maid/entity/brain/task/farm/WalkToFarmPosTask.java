@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -17,8 +17,8 @@ import java.util.Optional;
 public class WalkToFarmPosTask<E extends PathAwareEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
-			ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_PRESENT,
-			ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT
+			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT,
+			ModMemories.FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT
 	);
 
 	private final float speed;
@@ -32,7 +32,7 @@ public class WalkToFarmPosTask<E extends PathAwareEntity> extends Task<E> {
 	@Override
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
-		Optional<BlockPos> pos = brain.getOptionalMemory(ModEntities.MEMORY_FARM_POS);
+		Optional<BlockPos> pos = brain.getOptionalMemory(ModMemories.FARM_POS);
 
 		pos.ifPresent(posValue -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(posValue, this.speed, 0)));
 	}

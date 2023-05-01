@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow;
 
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.ForgetHasArrowsTask;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -12,7 +12,7 @@ public class HunterForgetHasArrowsTask<E extends LivingEntity> extends ForgetHas
 		Brain<?> brain = living.getBrain();
 
 		if (!HunterRememberHasArrowsTask.hasArrow(living)) {
-			brain.forget(ModEntities.MEMORY_HAS_ARROWS);
+			brain.forget(ModMemories.HAS_ARROWS);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.swim;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class RememberShouldBreathTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_SHOULD_BREATH, MemoryModuleState.VALUE_ABSENT
+			ModMemories.SHOULD_BREATH, MemoryModuleState.VALUE_ABSENT
 	);
 
 	private final int shouldBreathAir;
@@ -34,6 +34,6 @@ public class RememberShouldBreathTask<E extends LivingEntity> extends Task<E> {
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		brain.remember(ModEntities.MEMORY_SHOULD_BREATH, Unit.INSTANCE);
+		brain.remember(ModMemories.SHOULD_BREATH, Unit.INSTANCE);
 	}
 }

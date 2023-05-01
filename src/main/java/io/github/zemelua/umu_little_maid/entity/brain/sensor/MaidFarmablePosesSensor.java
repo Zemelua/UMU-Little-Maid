@@ -2,7 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -35,15 +35,15 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 		}
 
 		if (!list.isEmpty()) {
-			brain.remember(ModEntities.MEMORY_FARMABLE_POSES, list);
+			brain.remember(ModMemories.FARMABLE_POSES, list);
 		} else {
-			brain.forget(ModEntities.MEMORY_FARMABLE_POSES);
+			brain.forget(ModMemories.FARMABLE_POSES);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(ModEntities.MEMORY_FARMABLE_POSES);
+		return ImmutableSet.of(ModMemories.FARMABLE_POSES);
 	}
 
 	public static boolean canAnyFarm(ServerWorld world, LittleMaidEntity maid, BlockPos pos) {

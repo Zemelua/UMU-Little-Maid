@@ -83,7 +83,7 @@ public final class MaidArcherBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -91,8 +91,8 @@ public final class MaidArcherBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
@@ -100,7 +100,7 @@ public final class MaidArcherBrainManager {
 				Pair.of(3, new MaidBowAttackTask(15.0D, 1.0F, 20))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_PRESENT)
 		), ImmutableSet.of(
 				MemoryModuleType.ATTACK_TARGET
 		));
@@ -111,9 +111,9 @@ public final class MaidArcherBrainManager {
 				Pair.of(0, new WalkToHomeTask<>(0.8F)),
 				Pair.of(1, new SleepTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_ABSENT)
+				Pair.of(ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_ABSENT)
 		));
 	}
 

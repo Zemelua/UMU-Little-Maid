@@ -79,7 +79,7 @@ public final class MaidFarmerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -87,9 +87,9 @@ public final class MaidFarmerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	private static void addFarmTasks(Brain<LittleMaidEntity> brain) {
@@ -97,10 +97,10 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new MaidFarmTask()),
 				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_FARM_POS, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT),
 				// Pair.of(ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModEntities.MEMORY_FARM_POS, ModEntities.MEMORY_FARM_COOLDOWN));
+		), ImmutableSet.of(ModMemories.FARM_POS, ModMemories.FARM_COOLDOWN));
 	}
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
@@ -108,7 +108,7 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new SleepTask()),
 				Pair.of(1, new WalkToHomeTask<>(0.8F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
 		));
 	}

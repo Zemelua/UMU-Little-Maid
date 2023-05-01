@@ -73,7 +73,7 @@ public final class MaidCrackerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -81,8 +81,8 @@ public final class MaidCrackerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {

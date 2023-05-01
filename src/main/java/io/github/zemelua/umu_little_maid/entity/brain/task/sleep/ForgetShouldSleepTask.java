@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ForgetShouldSleepTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT
+			ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final long sleepStartTime;
@@ -33,6 +33,6 @@ public class ForgetShouldSleepTask<E extends LivingEntity> extends Task<E> {
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		brain.forget(ModEntities.MEMORY_SHOULD_SLEEP);
+		brain.forget(ModMemories.SHOULD_SLEEP);
 	}
 }

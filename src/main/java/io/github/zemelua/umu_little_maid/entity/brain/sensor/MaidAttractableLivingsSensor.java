@@ -1,8 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -34,11 +34,11 @@ public class MaidAttractableLivingsSensor extends Sensor<LittleMaidEntity> {
 		list.sort(Comparator.comparingDouble(maid::squaredDistanceTo));
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
-		brain.remember(ModEntities.MEMORY_ATTRACTABLE_LIVINGS, list);
+		brain.remember(ModMemories.ATTRACTABLE_LIVINGS, list);
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(ModEntities.MEMORY_ATTRACTABLE_LIVINGS);
+		return ImmutableSet.of(ModMemories.ATTRACTABLE_LIVINGS);
 	}
 }

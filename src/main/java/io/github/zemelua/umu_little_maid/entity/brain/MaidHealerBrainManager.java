@@ -81,7 +81,7 @@ public final class MaidHealerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_IS_SITTING, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 
@@ -89,9 +89,9 @@ public final class MaidHealerBrainManager {
 		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_EAT));
+		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
 	public static void addHealTasks(Brain<LittleMaidEntity> brain) {
@@ -99,9 +99,9 @@ public final class MaidHealerBrainManager {
 				Pair.of(0, new MaidHealOwnerTask()),
 				Pair.of(1, new ApproachToHealTask<>(1.0F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_HEAL, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModEntities.MEMORY_SHOULD_HEAL));
+		), ImmutableSet.of(ModMemories.SHOULD_HEAL));
 	}
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
@@ -109,9 +109,9 @@ public final class MaidHealerBrainManager {
 				Pair.of(0, new SleepTask()),
 				Pair.of(1, new WalkToHomeTask<>(0.8F))
 		), ImmutableSet.of(
-				Pair.of(ModEntities.MEMORY_SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModEntities.MEMORY_SHOULD_HEAL, MemoryModuleState.VALUE_ABSENT)
+				Pair.of(ModMemories.SHOULD_HEAL, MemoryModuleState.VALUE_ABSENT)
 		));
 	}
 

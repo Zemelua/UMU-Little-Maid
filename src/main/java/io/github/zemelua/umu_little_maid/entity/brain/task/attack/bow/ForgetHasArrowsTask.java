@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
-			ModEntities.MEMORY_HAS_ARROWS, MemoryModuleState.VALUE_PRESENT
+			ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_PRESENT
 	);
 
 	public ForgetHasArrowsTask() {
@@ -25,7 +25,7 @@ public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
 		Brain<?> brain = living.getBrain();
 
 		if (living.getArrowType(living.getMainHandStack()).isEmpty()) {
-			brain.forget(ModEntities.MEMORY_HAS_ARROWS);
+			brain.forget(ModMemories.HAS_ARROWS);
 		}
 	}
 }

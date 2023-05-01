@@ -987,9 +987,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		if (mainStack.getCount() <= 0) {
 			this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
 
-			this.brain.remember(ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN, Unit.INSTANCE, 200);
+			this.brain.remember(ModMemories.THROWN_TRIDENT_COOLDOWN, Unit.INSTANCE, 200);
 			if (EnchantmentHelper.getLoyalty(trident.asItemStack()) <= 0) {
-				this.brain.remember(ModEntities.MEMORY_THROWN_TRIDENT, trident, 200);
+				this.brain.remember(ModMemories.THROWN_TRIDENT, trident, 200);
 			}
 		}
 	}
@@ -1421,9 +1421,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(LittleMaidEntity.MODE, value);
 
 		if (value == MaidMode.WAIT) {
-			this.brain.remember(ModEntities.MEMORY_IS_SITTING, Unit.INSTANCE);
+			this.brain.remember(ModMemories.IS_SITTING, Unit.INSTANCE);
 		} else {
-			this.brain.forget(ModEntities.MEMORY_IS_SITTING);
+			this.brain.forget(ModMemories.IS_SITTING);
 		}
 
 		if (value == MaidMode.FREE) {
@@ -1990,9 +1990,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				MemoryModuleType.HURT_BY,
 				MemoryModuleType.HURT_BY_ENTITY,
 				MemoryModuleType.IS_PANICKING,
-				ModEntities.MEMORY_IS_SITTING,
-				ModEntities.MEMORY_SHOULD_EAT,
-				ModEntities.MEMORY_SHOULD_SLEEP,
+				ModMemories.IS_SITTING,
+				ModMemories.SHOULD_EAT,
+				ModMemories.SHOULD_SLEEP,
 				MemoryModuleType.NEAREST_BED,
 				MemoryModuleType.HOME,
 				MemoryModuleType.LAST_WOKEN,
@@ -2000,18 +2000,18 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				MemoryModuleType.NEAREST_ATTACKABLE,
 				MemoryModuleType.ATTACK_TARGET,
 				MemoryModuleType.ATTACK_COOLING_DOWN,
-				ModEntities.MEMORY_HAS_ARROWS,
-				ModEntities.MEMORY_ATTRACTABLE_LIVINGS,
-				ModEntities.MEMORY_GUARDABLE_LIVING,
+				ModMemories.HAS_ARROWS,
+				ModMemories.ATTRACTABLE_LIVINGS,
+				ModMemories.GUARDABLE_LIVING,
 				ModMemories.GUARD_AGAINST,
-				ModEntities.MEMORY_SHOULD_HEAL,
-				ModEntities.MEMORY_FARMABLE_POSES,
-				ModEntities.MEMORY_FARM_POS,
-				ModEntities.MEMORY_FARM_COOLDOWN,
-				ModEntities.MEMORY_THROWN_TRIDENT,
-				ModEntities.MEMORY_THROWN_TRIDENT_COOLDOWN,
-				ModEntities.MEMORY_SHOULD_BREATH,
-				MEMORY_IS_HUNTING,
+				ModMemories.SHOULD_HEAL,
+				ModMemories.FARMABLE_POSES,
+				ModMemories.FARM_POS,
+				ModMemories.FARM_COOLDOWN,
+				ModMemories.THROWN_TRIDENT,
+				ModMemories.THROWN_TRIDENT_COOLDOWN,
+				ModMemories.SHOULD_BREATH,
+				ModMemories.IS_HUNTING,
 				ModMemories.ANCHOR,
 				ModMemories.DELIVERY_BOXES,
 				ModMemories.CANT_REACH_HOME
