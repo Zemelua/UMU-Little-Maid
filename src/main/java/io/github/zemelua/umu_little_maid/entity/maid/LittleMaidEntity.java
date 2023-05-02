@@ -14,6 +14,7 @@ import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
@@ -128,6 +129,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private static final TrackedData<IMaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<IMaidFeeling> FEELING;
+	private static final TrackedData<Optional<MaidAction>> ACTION;
 	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
@@ -1535,6 +1537,18 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
+	public Optional<MaidAction> getAction() {
+		return this.dataTracker.get(ACTION);
+	}
+
+	public void setAction(MaidAction value) {
+		this.dataTracker.set(ACTION, Optional.of(value));
+	}
+
+	public void removeAction() {
+		this.dataTracker.set(ACTION, Optional.empty());
+	}
+
 	@Deprecated
 	public IMaidFeeling getFeeling() {
 		return this.dataTracker.get(FEELING);
@@ -2030,6 +2044,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		MODE = DataTracker.registerData(LittleMaidEntity.class, MODE_HANDLER);
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_JOB);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
+		ACTION = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION);
 		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
