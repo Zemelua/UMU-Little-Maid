@@ -114,15 +114,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public static final int MAX_COMMITMENT = 300;
 	public static final int DAY_CEIL_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
-	public static final Identifier TEXTURE_NONE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
-	public static final Identifier TEXTURE_FENCER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_fencer.png");
-	public static final Identifier TEXTURE_CRACKER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_cracker.png");
-	public static final Identifier TEXTURE_ARCHER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_archer.png");
-	public static final Identifier TEXTURE_GUARD = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_guard.png");
-	public static final Identifier TEXTURE_FARMER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_farmer.png");
-	public static final Identifier TEXTURE_HEALER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_healer.png");
-	public static final Identifier TEXTURE_POSEIDON = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_poseidon.png");
-	public static final Identifier TEXTURE_HUNTER = UMULittleMaid.identifier("textures/entity/little_maid/little_maid_hunter.png");
 
 	private static final TrackedData<Optional<UUID>> MASTER;
 	private static final TrackedData<MaidMode> MODE;
@@ -143,11 +134,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private final EntityNavigation canSwimNavigation;
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final List<Item> givenFoods = new ArrayList<>();
-	private final AnimationState eatAnimation = new AnimationState();
-	private final AnimationState healAnimation = new AnimationState();
-	private final AnimationState useDripleafAnimation = new AnimationState();
-	private final AnimationState changeCostumeAnimation = new AnimationState();
-	private final AnimationState headpattedAnimation = new AnimationState();
+	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState eatAnimation = new AnimationState();
+	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState healAnimation = new AnimationState();
+	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState useDripleafAnimation = new AnimationState();
+	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState changeCostumeAnimation = new AnimationState();
+	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState headpattedAnimation = new AnimationState();
 
 	private int attackingTicks;
 	@Nullable private LivingEntity attackingTarget;
@@ -558,8 +549,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.world, this);
-
-		UMULittleMaid.LOGGER.info(this.getBrain().getPossibleActivities());
 
 		this.updatePose();
 
@@ -1537,14 +1526,17 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
+	@SuppressWarnings("unused")
 	public Optional<MaidAction> getAction() {
 		return this.dataTracker.get(ACTION);
 	}
 
+	@SuppressWarnings("unused")
 	public void setAction(MaidAction value) {
 		this.dataTracker.set(ACTION, Optional.of(value));
 	}
 
+	@SuppressWarnings("unused")
 	public void removeAction() {
 		this.dataTracker.set(ACTION, Optional.empty());
 	}
