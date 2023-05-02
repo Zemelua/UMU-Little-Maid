@@ -1907,7 +1907,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				} else if (this.isSitting()) {
 					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (e.isMoving()) {
-					if (this.getTarget() != null) {
+					if (this.getTarget() != null && this.getJob().equals(MaidJobs.FENCER)) {
 						builder.addAnimation("chase_sword", ILoopType.EDefaultLoopTypes.LOOP);
 					} else {
 						builder.addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);
