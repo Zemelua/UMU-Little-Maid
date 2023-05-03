@@ -121,7 +121,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<IMaidFeeling> FEELING;
 	private static final TrackedData<Optional<MaidAction>> ACTION;
-	private static final TrackedData<Boolean> IS_USING_DRIPLEAF;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
 	private static final TrackedData<Optional<GlobalPos>> HOME;
@@ -251,9 +250,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.startTracking(MASTER, Optional.empty());
 		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
 		this.dataTracker.startTracking(JOB, MaidJobs.NONE);
+		this.dataTracker.startTracking(ACTION, Optional.empty());
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
-		this.dataTracker.startTracking(IS_USING_DRIPLEAF, false);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(COMMITMENT, 0);
 		this.dataTracker.startTracking(HOME, Optional.empty());
@@ -341,20 +340,20 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void tickMovement() {
 		super.tickMovement();
 
-		if (!this.onGround) {
-			if (!this.isUsingDripleaf() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 2) {
-				this.setUsingDripleaf(true);
+		if (this.getAction().isEmpty()) {
+			if (!this.isOnGround() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 3) {
+				this.setAction(MaidAction.GLIDING);
 			}
-		} else {
-			if (this.isUsingDripleaf()) {
-				this.setUsingDripleaf(false);
+		} else if (this.isGliding()) {
+			if (this.isOnGround() || !this.hasDripleaf()) {
+				this.removeAction();
 			}
 		}
 
 		this.updateAttributes();
 
 		Vec3d velocity = this.getVelocity();
-		if (this.isUsingDripleaf() && velocity.getY() < 0.0D) {
+		if (this.isGliding() && velocity.getY() < 0.0D) {
 			this.setVelocity(velocity.multiply(1.0D, 0.6D, 1.0D));
 		}
 
@@ -507,6 +506,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void tick() {
 		super.tick();
 
+		UMULittleMaid.LOGGER.info(this.isGliding());
+
 		this.lastSitProgress = this.sitProgress;
 		if (this.isSitting()) {
 			this.sitProgress += (1.0F - this.sitProgress) * 0.4F;
@@ -646,7 +647,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			return;
 		}
 
-		if (this.isUsingDripleaf()) {
+		if (this.isGliding()) {
 			this.setPose(ModEntities.POSE_USING_DRIPLEAF);
 
 			return;
@@ -1058,7 +1059,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource source) {
-		if (this.isUsingDripleaf()) {
+		if (this.isGliding()) {
 			return false;
 		} else {
 			return super.handleFallDamage(fallDistance, damageMultiplier, source);
@@ -1554,12 +1555,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return this.brain.hasActivity(Activity.IDLE);
 	}
 
-	public boolean isUsingDripleaf() {
-		return this.dataTracker.get(LittleMaidEntity.IS_USING_DRIPLEAF);
-	}
-
-	public void setUsingDripleaf(boolean value) {
-		this.dataTracker.set(LittleMaidEntity.IS_USING_DRIPLEAF, value);
+	public boolean isGliding() {
+		return this.getAction()
+				.map(action -> action.equals(MaidAction.GLIDING))
+				.orElse(false);
 	}
 
 	public boolean isVariableCostume() {
@@ -1895,7 +1894,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			}
 
 			if (!itemAnimated.get()) {
-				if (this.isUsingDripleaf()) {
+				if (this.isGliding()) {
 					builder.addRepeatingAnimation("wait", 1);
 					builder.addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (this.isTransforming()) {
@@ -1957,8 +1956,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			AnimationController<LittleMaidEntity> controller = event.getController();
 			AnimationBuilder builder = new AnimationBuilder();
 
-			if (this.isUsingDripleaf()) {
+			if (this.isGliding()) {
 				builder.addAnimation("glide_root", ILoopType.EDefaultLoopTypes.LOOP);
+			} else {
+				return PlayState.STOP;
 			}
 
 			controller.setAnimation(builder);
@@ -2038,7 +2039,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		ACTION = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION);
 		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
-		IS_USING_DRIPLEAF = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);

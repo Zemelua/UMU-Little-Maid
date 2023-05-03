@@ -27,7 +27,7 @@ public class LittleMaidEntityRenderer extends MobEntityRenderer<LittleMaidEntity
 
 	@Override
 	public void render(LittleMaidEntity maid, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		this.model.setUsingDripleaf(maid.isUsingDripleaf());
+		this.model.setUsingDripleaf(maid.isGliding());
 
 		super.render(maid, f, g, matrixStack, vertexConsumerProvider, i);
 	}

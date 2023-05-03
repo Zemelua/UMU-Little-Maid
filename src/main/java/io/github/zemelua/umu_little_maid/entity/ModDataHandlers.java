@@ -27,6 +27,7 @@ public final class ModDataHandlers {
 		TrackedDataHandlerRegistry.register(OPTIONAL_INT);
 		TrackedDataHandlerRegistry.register(COLLECTION_GLOBAL_POS);
 		TrackedDataHandlerRegistry.register(MAID_JOB);
+		TrackedDataHandlerRegistry.register(OPTIONAL_MAID_ACTION);
 		TrackedDataHandlerRegistry.register(MAID_FEELING);
 		TrackedDataHandlerRegistry.register(MAID_ATTACK_TYPE);
 	}

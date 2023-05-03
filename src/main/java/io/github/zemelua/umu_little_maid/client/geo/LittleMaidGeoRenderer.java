@@ -130,7 +130,7 @@ public class LittleMaidGeoRenderer extends ExtendedGeoEntityRenderer<LittleMaidE
 	@Override
 	@Nullable
 	protected BlockState getHeldBlockForBone(String boneName, LittleMaidEntity maid) {
-		if (maid.isUsingDripleaf()) {
+		if (maid.isGliding()) {
 			if (boneName.equals(LittleMaidGeoModel.KEY_DRIPLEAF_RIGHT_HAND)) {
 				return Blocks.BIG_DRIPLEAF.getDefaultState();
 			}

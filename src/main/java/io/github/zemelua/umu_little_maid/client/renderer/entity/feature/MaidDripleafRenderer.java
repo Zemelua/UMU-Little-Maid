@@ -28,7 +28,7 @@ public class MaidDripleafRenderer<T extends LittleMaidEntity, M extends SinglePa
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T maid,
 	                   float limbAngle,float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-		if (maid.isUsingDripleaf()) {
+		if (maid.isGliding()) {
 			Optional<ModelPart> bone = this.getContextModel().getChild(LittleMaidEntityModel.KEY_BONE_USING_DRIPLEAF);
 
 			bone.ifPresent(boneObject -> {
