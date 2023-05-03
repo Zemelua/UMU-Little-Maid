@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -21,8 +22,15 @@ public class MaidShouldEatSensor extends Sensor<LittleMaidEntity> {
 	protected void sense(ServerWorld world, LittleMaidEntity maid) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
+		if (maid.isEating()) {
+			brain.remember(ModMemories.SHOULD_EAT, Unit.INSTANCE);
+
+			return;
+		}
+
 		if (brain.hasMemoryModule(MemoryModuleType.IS_PANICKING)
-				|| MaidEatTask.searchHealItems(maid).isEmpty()) {
+				|| MaidEatTask.searchHealItems(maid).isEmpty()
+				|| !maid.canAction(MaidAction.EATING)) {
 			brain.forget(ModMemories.SHOULD_EAT);
 
 			return;

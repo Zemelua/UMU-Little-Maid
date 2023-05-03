@@ -544,6 +544,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.eatingTicks = 0;
 			this.getOffHandStack().decrement(1);
 			this.setPose(EntityPose.STANDING);
+			this.removeAction();
 		} else if (this.getPose() == EntityPose.STANDING) {
 			this.onFinishEating = null;
 			this.eatingTicks = 0;
@@ -763,6 +764,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
 		this.setPose(POSE_EATING);
+		this.setAction(MaidAction.EATING);
 	}
 
 	/**
@@ -1442,6 +1444,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(LittleMaidEntity.PERSONALITY, value);
 	}
 
+	@Override
 	@SuppressWarnings("unused")
 	public Optional<MaidAction> getAction() {
 		return this.dataTracker.get(ACTION);
@@ -1473,6 +1476,13 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public boolean isGliding() {
 		return this.getAction()
 				.map(action -> action.equals(MaidAction.GLIDING))
+				.orElse(false);
+	}
+
+	@Override
+	public boolean isEating() {
+		return this.getAction()
+				.map(action -> action.equals(MaidAction.EATING))
 				.orElse(false);
 	}
 
