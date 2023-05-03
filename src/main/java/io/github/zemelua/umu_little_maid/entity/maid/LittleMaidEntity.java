@@ -8,7 +8,6 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
-import io.github.zemelua.umu_little_maid.client.model.entity.LittleMaidEntityModel;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -28,8 +27,6 @@ import io.github.zemelua.umu_little_maid.network.NetworkHandler;
 import io.github.zemelua.umu_little_maid.particle.ModParticles;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.*;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.LeavesBlock;
@@ -133,11 +130,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private final EntityNavigation canSwimNavigation;
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final List<Item> givenFoods = new ArrayList<>();
-	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState eatAnimation = new AnimationState();
-	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState healAnimation = new AnimationState();
-	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState useDripleafAnimation = new AnimationState();
-	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState changeCostumeAnimation = new AnimationState();
-	@Deprecated @SuppressWarnings("DeprecatedIsStillUsed") private final AnimationState headpattedAnimation = new AnimationState();
 
 	private int attackingTicks;
 	@Nullable private LivingEntity attackingTarget;
@@ -169,30 +161,13 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private long lastClearCommitmentDayTime;
 	private int increasedCommitment;
 
-	private float sitProgress;
-	private float lastSitProgress;
-	private float begProgress;
-	private float lastBegProgress;
-
 	private final AnimationFactory animationFactory = GeckoLibUtil.createFactory(this);
-
-	/**
-	 * この二つのフィールドは、なでなでされるアニメーションの繋がりをなめらかにするためのものです。
-	 * 基本的に {@link LittleMaidEntityModel} からset/getされます。
-	 */
-	@Environment(EnvType.CLIENT) private float lastHeadPitch;
-	@Environment(EnvType.CLIENT) private float virtualHeadPitch;
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
 
 		this.changingCostumeTicks = 0;
 		this.damageBlocked = false;
-
-		this.begProgress = 0.0F;
-		this.lastBegProgress = 0.0F;
-		this.sitProgress = 0.0F;
-		this.lastSitProgress = 0.0F;
 
 		this.moveControl = new MaidControl(this);
 
@@ -505,34 +480,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	public void tick() {
 		super.tick();
-
-		UMULittleMaid.LOGGER.info(this.isGliding());
-
-		this.lastSitProgress = this.sitProgress;
-		if (this.isSitting()) {
-			this.sitProgress += (1.0F - this.sitProgress) * 0.4F;
-		} else {
-			this.sitProgress += (0.0F - this.sitProgress) * 0.4F;
-		}
-
-		this.lastBegProgress = this.begProgress;
-		if (this.getOwner() != null && this.isSitting() && this.distanceTo(this.getOwner()) < 7.0F) {
-			this.begProgress += (1.0F - this.begProgress) * 0.4F;
-
-			if (!this.world.isClient()) {
-				this.lookControl.lookAt(this.getOwner());
-			}
-		} else {
-			this.begProgress += (0.0F - this.begProgress) * 0.4F;
-		}
-
-		if (this.world.isClient()) {
-			if (HeadpatManager.isHeadpatted(this)) {
-				this.headpattedAnimation.startIfNotRunning(this.age);
-			} else if (this.headpattedAnimation.isRunning()) {
-				this.headpattedAnimation.stop();
-			}
-		}
 
 		if (HeadpatManager.isHeadpatted(this)) {
 			this.setFeeling(MaidFeeling.HAPPY);
@@ -1332,38 +1279,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (data.equals(Entity.POSE)) {
-			EntityPose pose = this.getPose();
-			if (pose == POSE_EATING) {
-				this.eatAnimation.start(this.age);
-			} else {
-				this.eatAnimation.stop();
-			}
-
-			if (pose == ModEntities.POSE_USING_DRIPLEAF) {
-				this.useDripleafAnimation.start(this.age);
-			} else {
-				this.useDripleafAnimation.stop();
-			}
-
-			if (pose == ModEntities.POSE_CHANGING_COSTUME) {
-				this.changeCostumeAnimation.start(this.age);
-			} else {
-				this.changeCostumeAnimation.stop();
-			}
-
-			if (pose == ModEntities.POSE_HEALING) {
-				this.healAnimation.start(this.age);
-			} else {
-				this.healAnimation.stop();
-			}
-		}
-
-		super.onTrackedDataSet(data);
-	}
-
-	@Override
 	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
@@ -1619,54 +1534,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	public void resetContinuityAttackedCount() {
 		this.continuityAttackedCount = 0;
-	}
-
-	public float getSitProgress(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.lastSitProgress, this.sitProgress);
-	}
-
-	public float getBegProgress(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.lastBegProgress, this.begProgress);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getLastHeadPitch() {
-		return this.lastHeadPitch;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void setLastHeadPitch(float value) {
-		this.lastHeadPitch = value;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getVirtualHeadPitch() {
-		return this.virtualHeadPitch;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void setVirtualHeadPitch(float value) {
-		this.virtualHeadPitch = value;
-	}
-
-	public AnimationState getEatAnimation() {
-		return this.eatAnimation;
-	}
-
-	public AnimationState getHealAnimation() {
-		return this.healAnimation;
-	}
-
-	public AnimationState getUseDripleafAnimation() {
-		return this.useDripleafAnimation;
-	}
-
-	public AnimationState getChangeCostumeAnimation() {
-		return this.changeCostumeAnimation;
-	}
-
-	public AnimationState getHeadpattedAnimation() {
-		return this.headpattedAnimation;
 	}
 
 	@Override

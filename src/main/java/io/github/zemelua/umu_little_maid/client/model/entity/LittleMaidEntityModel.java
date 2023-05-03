@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.client.model.entity;
 
-import io.github.zemelua.umu_little_maid.client.UMULittleMaidClient;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
@@ -142,27 +141,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 		this.leftArmPose = maid.getMainArm().equals(Arm.LEFT) ? mainPose : offPose;
 		this.rightArmPose = maid.getMainArm().equals(Arm.RIGHT) ? mainPose : offPose;
-
-		float sitProgress = maid.getSitProgress(tickDelta);
-		this.leftArm.pitch = (float) Math.toRadians(-42.0F * sitProgress);
-		this.leftArm.roll = (float) Math.toRadians(-15.0F + 40.0F * sitProgress);
-		this.rightArm.pitch = (float) Math.toRadians(-42.0 * sitProgress);
-		this.rightArm.roll = (float) Math.toRadians(15.0F - 40.0F * sitProgress);
-
-		if (!maid.getHeadpattedAnimation().isRunning()) {
-			float begProgress = maid.getBegProgress(tickDelta);
-			this.head.roll = (float) Math.toRadians(13.7F * begProgress);
-		}
-
-		float lastHeadPitch = maid.getLastHeadPitch();
-		float virtualHeadPitch = maid.getVirtualHeadPitch();
-		if (maid.getHeadpattedAnimation().isRunning()) {
-			this.head.pitch = (float) MathHelper.lerp(tickDelta, lastHeadPitch, lastHeadPitch + (Math.toRadians(27.0F) - lastHeadPitch) * 0.4);
-		} else if (lastHeadPitch > 0.0F) {
-			this.head.pitch = (float) MathHelper.lerp(tickDelta, lastHeadPitch, lastHeadPitch - (lastHeadPitch - virtualHeadPitch) * 0.4);
-			if (this.head.pitch <= 0.00001F) this.head.pitch = 0.0F;
-		}
-		maid.setLastHeadPitch(this.head.pitch);
 	}
 
 	@Override
@@ -186,23 +164,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 
 		Arm arm = maid.preferredHand == Hand.MAIN_HAND ? maid.getMainArm() : maid.getMainArm().getOpposite();
 		this.adaptAttackingAngel(arm);
-
-		this.updateAnimation(maid.getEatAnimation(), UMULittleMaidClient.ANIMATION_MAID_EAT, animationProgress);
-		if (maid.getUseDripleafAnimation().isRunning()) {
-			this.setStandingAngle(limbAngle, limbDistance);
-		}
-		if (maid.isLeftHanded()) {
-			this.updateAnimation(maid.getUseDripleafAnimation(), UMULittleMaidClient.ANIMATION_MAID_USE_DRIPLEAF_RIGHT, animationProgress);
-		} else {
-			this.updateAnimation(maid.getUseDripleafAnimation(), UMULittleMaidClient.ANIMATION_MAID_USE_DRIPLEAF_LEFT, animationProgress);
-		}
-		this.updateAnimation(maid.getHealAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEAL, animationProgress);
-		if (maid.getChangeCostumeAnimation().isRunning()) {
-			this.preChangeCostumeAnimation(maid.getChangeCostumeAnimation(), limbAngle, limbDistance);
-		}
-		this.updateAnimation(maid.getChangeCostumeAnimation(), UMULittleMaidClient.ANIMATION_MAID_CHANGE_COSTUME, animationProgress);
-
-		this.updateAnimation(maid.getHeadpattedAnimation(), UMULittleMaidClient.ANIMATION_MAID_HEADPATTED, animationProgress);
 	}
 
 	@Override
@@ -250,10 +211,6 @@ public class LittleMaidEntityModel extends SinglePartEntityModel<LittleMaidEntit
 		float lerped = isSwimming
 				? ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, -0.7853982F)
 				: ModUtils.lerpAngle(this.leaningPitch, this.head.pitch, (float) Math.toRadians(headPitch));
-		maid.setVirtualHeadPitch(isRolling ? -0.7853982F : this.leaningPitch > 0.0F ? lerped : (float) Math.toRadians(headPitch));
-		if (this.head.pitch == 0.0F) {
-			this.head.pitch = maid.getVirtualHeadPitch();
-		}
 
 		this.head.yaw = (float) Math.toRadians(headYaw);
 	}
