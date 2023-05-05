@@ -10,6 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
+import net.minecraft.world.poi.PointOfInterestStorage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -42,5 +43,9 @@ public final class ModWorldUtils {
 
 	public static Box box(Vec3d centerPos, double radius) {
 		return new Box(centerPos, centerPos).expand(radius);
+	}
+
+	public static boolean isAnyPoi(PointOfInterestStorage storage, BlockPos pos) {
+		return storage.getType(pos).isPresent();
 	}
 }
