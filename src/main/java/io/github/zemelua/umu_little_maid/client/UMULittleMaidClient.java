@@ -7,6 +7,7 @@ import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
 import io.github.zemelua.umu_little_maid.client.particle.ShockParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.ShockwaveParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.TwinkleParticleFactory;
+import io.github.zemelua.umu_little_maid.client.particle.ZZZParticleFactory;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
@@ -69,6 +70,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		ParticleFactoryRegistry.getInstance().register(ModParticles.TWINKLE, TwinkleParticleFactory::new);
 		ParticleFactoryRegistry.getInstance().register(ModParticles.SHOCK, ShockParticleFactory::new);
 		ParticleFactoryRegistry.getInstance().register(ModParticles.SHOCKWAVE, ShockwaveParticleFactory::new);
+		ParticleFactoryRegistry.getInstance().register(ModParticles.ZZZ, ZZZParticleFactory::new);
 
 		ClientTickEvents.START_CLIENT_TICK.register(ClientCallbacks::onStartTick);
 		ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(ClientCallbacks::onRegisterSpritesWithBlockAtlas);

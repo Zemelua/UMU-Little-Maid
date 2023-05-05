@@ -85,7 +85,12 @@
 				{
 					"name": "body",
 					"parent": "byebye_bone",
-					"pivot": [0, 7, 0],
+					"pivot": [0, 7, 0]
+				},
+				{
+					"name": "trunk",
+					"parent": "body",
+					"pivot": [0, 14, 1],
 					"cubes": [
 						{"origin": [-3, 7, -2], "size": [6, 9, 4], "uv": [0, 16]},
 						{"origin": [-3, 7, -2], "size": [6, 9, 4], "inflate": 0.25, "uv": [0, 48]}

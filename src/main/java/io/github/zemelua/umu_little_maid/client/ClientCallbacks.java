@@ -88,6 +88,7 @@ public final class ClientCallbacks {
 		registry.register(UMULittleMaid.identifier("particle/shockwave_1"));
 		registry.register(UMULittleMaid.identifier("particle/shockwave_2"));
 		registry.register(UMULittleMaid.identifier("particle/shockwave_3"));
+		registry.register(UMULittleMaid.identifier("particle/zzz"));
 	}
 
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {

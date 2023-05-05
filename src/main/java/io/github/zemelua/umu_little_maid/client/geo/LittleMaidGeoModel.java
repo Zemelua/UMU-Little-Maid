@@ -42,6 +42,15 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	private static final Identifier RESOURCE_TEXTURE_POSEIDON_KYUN = UMULittleMaid.identifier("textures/entity/little_maid/kyun/little_maid_poseidon_kyun.png");
 	private static final Identifier RESOURCE_TEXTURE_FARMER_KYUN = UMULittleMaid.identifier("textures/entity/little_maid/kyun/little_maid_farmer_kyun.png");
 	private static final Identifier RESOURCE_TEXTURE_HUNTER_KYUN = UMULittleMaid.identifier("textures/entity/little_maid/kyun/little_maid_hunter_kyun.png");
+	private static final Identifier RESOURCE_TEXTURE_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_FENCER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_fencer_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_ARCHER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_archer_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_CRACKER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_cracker_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_GUARD_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_guard_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_HEALER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_healer_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_POSEIDON_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_poseidon_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_FARMER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_farmer_sleeping.png");
+	private static final Identifier RESOURCE_TEXTURE_HUNTER_SLEEPING = UMULittleMaid.identifier("textures/entity/little_maid/sleeping/little_maid_hunter_sleeping.png");
 	private static final Identifier RESOURCE_ANIMATION = UMULittleMaid.identifier("animations/little_maid.animation.json");
 	private static final Identifier RESOURCE_ANIMATION_TRANSFORM = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
 
@@ -71,18 +80,29 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	@Override
 	public Identifier getTextureResource(LittleMaidEntity maid) {
 		if (maid.isHeadpatted()) {
-			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE_KYUN;
-			else if (maid.getJob().equals(MaidJobs.FENCER))   return RESOURCE_TEXTURE_FENCER_KYUN;
-			else if (maid.getJob().equals(MaidJobs.ARCHER))   return RESOURCE_TEXTURE_ARCHER_KYUN;
-			else if (maid.getJob().equals(MaidJobs.CRACKER))  return RESOURCE_TEXTURE_CRACKER_KYUN;
-			else if (maid.getJob().equals(MaidJobs.GUARD))    return RESOURCE_TEXTURE_GUARD_KYUN;
-			else if (maid.getJob().equals(MaidJobs.HEALER))   return RESOURCE_TEXTURE_HEALER_KYUN;
+			if (!maid.isVariableCostume()) return RESOURCE_TEXTURE_KYUN;
+			else if (maid.getJob().equals(MaidJobs.FENCER)) return RESOURCE_TEXTURE_FENCER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.ARCHER)) return RESOURCE_TEXTURE_ARCHER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.CRACKER)) return RESOURCE_TEXTURE_CRACKER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.GUARD)) return RESOURCE_TEXTURE_GUARD_KYUN;
+			else if (maid.getJob().equals(MaidJobs.HEALER)) return RESOURCE_TEXTURE_HEALER_KYUN;
 			else if (maid.getJob().equals(MaidJobs.POSEIDON)) return RESOURCE_TEXTURE_POSEIDON_KYUN;
-			else if (maid.getJob().equals(MaidJobs.FARMER))   return RESOURCE_TEXTURE_FARMER_KYUN;
-			else if (maid.getJob().equals(MaidJobs.HUNTER))   return RESOURCE_TEXTURE_HUNTER_KYUN;
-			else                                                     return RESOURCE_TEXTURE_KYUN;
+			else if (maid.getJob().equals(MaidJobs.FARMER)) return RESOURCE_TEXTURE_FARMER_KYUN;
+			else if (maid.getJob().equals(MaidJobs.HUNTER)) return RESOURCE_TEXTURE_HUNTER_KYUN;
+			else return RESOURCE_TEXTURE_KYUN;
+		} else if (maid.isSleeping()) {
+			if (!maid.isVariableCostume()) return RESOURCE_TEXTURE_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.FENCER)) return RESOURCE_TEXTURE_FENCER_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.ARCHER)) return RESOURCE_TEXTURE_ARCHER_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.CRACKER)) return RESOURCE_TEXTURE_CRACKER_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.GUARD)) return RESOURCE_TEXTURE_GUARD_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.HEALER)) return RESOURCE_TEXTURE_HEALER_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.POSEIDON)) return RESOURCE_TEXTURE_POSEIDON_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.FARMER)) return RESOURCE_TEXTURE_FARMER_SLEEPING;
+			else if (maid.getJob().equals(MaidJobs.HUNTER)) return RESOURCE_TEXTURE_HUNTER_SLEEPING;
+			else return RESOURCE_TEXTURE_SLEEPING;
 		} else {
-			if      (!maid.isVariableCostume())                      return RESOURCE_TEXTURE;
+			if      (!maid.isVariableCostume())               return RESOURCE_TEXTURE;
 			else if (maid.getJob().equals(MaidJobs.FENCER))   return RESOURCE_TEXTURE_FENCER;
 			else if (maid.getJob().equals(MaidJobs.ARCHER))   return RESOURCE_TEXTURE_ARCHER;
 			else if (maid.getJob().equals(MaidJobs.CRACKER))  return RESOURCE_TEXTURE_CRACKER;
@@ -91,7 +111,7 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 			else if (maid.getJob().equals(MaidJobs.POSEIDON)) return RESOURCE_TEXTURE_POSEIDON;
 			else if (maid.getJob().equals(MaidJobs.FARMER))   return RESOURCE_TEXTURE_FARMER;
 			else if (maid.getJob().equals(MaidJobs.HUNTER))   return RESOURCE_TEXTURE_HUNTER;
-			else                                                     return RESOURCE_TEXTURE;
+			else                                              return RESOURCE_TEXTURE;
 		}
 	}
 

@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.client.particle.ZZZParticle;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
@@ -1780,6 +1781,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					builder.addAnimation("headpatted", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (this.isEating()) {
 					builder.addAnimation("eat", ILoopType.EDefaultLoopTypes.LOOP);
+				} else if (this.isSleeping()) {
+					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
 					switch (this.getAttackType()) {
 						case SWING_SWORD_DOWNWARD_RIGHT -> builder.addAnimation("swing_sword_downward_right");
@@ -1822,6 +1825,27 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 						this.world.addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
 						this.world.addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+					} case "zzz" -> {
+						double rotateX = Math.toRadians(this.random.nextGaussian() * 5.0D);
+						double rotateY = Math.toRadians(Objects.requireNonNull(this.getSleepingDirection()).asRotation() + this.random.nextGaussian() * 5.0D);
+						double rotateZ = Math.toRadians(this.random.nextGaussian() * 5.0D);
+
+						Vec3d vel = new Vec3d(0.34D, 0.78D, 0.34D)
+								.rotateX((float) rotateX)
+								.rotateY((float) rotateY)
+								.rotateZ((float) rotateZ)
+								.normalize()
+								.multiply(0.2D);
+						Vec3d pos = vel.normalize()
+								.multiply(0.8D)
+								.add(this.getPos());
+						double xVel = 0.2D + (this.random.nextDouble() - 0.5D) * 0.2;
+						double yVel = 0.4D + (this.random.nextDouble() - 0.5D) * 0.2;
+						double zVel = 0.2D + (this.random.nextDouble() - 0.5D) * 0.2;
+
+						this.world.addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+						this.world.addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+						this.world.addParticle(new ZZZParticle.Mediator(2), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
 					}
 				}
 			});

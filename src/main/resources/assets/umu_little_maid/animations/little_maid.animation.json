@@ -845,6 +845,58 @@
 					"effect": "shock"
 				}
 			}
+		},
+		"sleeping": {
+			"loop": true,
+			"animation_length": 3.6,
+			"bones": {
+				"head": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * 100) * -2", 0, 0]
+					},
+					"position": {
+						"vector": [0, 0, "Math.sin(query.anim_time * 100) * -0.1"]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * 100) * 2", 0, -15]
+					},
+					"position": {
+						"vector": [0, 0, "Math.sin(query.anim_time * 100) * -0.1"]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * 100) * 2", 0, 15]
+					},
+					"position": {
+						"vector": [0, 0, "Math.sin(query.anim_time * 100) * -0.1"]
+					}
+				},
+				"skirt": {
+					"rotation": {
+						"vector": ["1 + Math.sin(query.anim_time * 100) * 1", 0, 0]
+					},
+					"position": {
+						"vector": [0, 0, "0.8 + Math.sin(query.anim_time * 100) * -0.1"]
+					}
+				},
+				"trunk": {
+					"scale": {
+						"vector": [
+							"1.03 + Math.sin(query.anim_time * 100) * 0.03",
+							"1.03 + Math.sin(query.anim_time * 100) * 0.03",
+							"1.03 + Math.sin(query.anim_time * 100) * 0.03"
+						]
+					}
+				}
+			},
+			"particle_effects": {
+				"3.1667": {
+					"effect": "zzz"
+				}
+			}
 		}
 	}
 }
