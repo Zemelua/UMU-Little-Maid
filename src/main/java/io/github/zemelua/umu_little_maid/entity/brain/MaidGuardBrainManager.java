@@ -15,6 +15,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidHeadbuttTas
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
@@ -58,7 +59,8 @@ public final class MaidGuardBrainManager {
 				Pair.of(98, new RememberGuardTargetTask()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(ModMemories.GUARD_AGAINST))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetGuardTargetTask<>())
+				Pair.of(99, new ForgetGuardTargetTask<>()),
+				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 

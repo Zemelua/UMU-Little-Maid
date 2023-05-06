@@ -10,6 +10,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.MaidMele
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
@@ -52,7 +53,8 @@ public final class MaidFencerBrainManager {
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
-				Pair.of(99, new ForgetAttackTargetTask<>())
+				Pair.of(99, new ForgetAttackTargetTask<>()),
+				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 

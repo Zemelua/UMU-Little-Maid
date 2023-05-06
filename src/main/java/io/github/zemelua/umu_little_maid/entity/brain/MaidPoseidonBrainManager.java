@@ -12,6 +12,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.Triden
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.RememberShouldBreathTask;
@@ -66,7 +67,8 @@ public final class MaidPoseidonBrainManager {
 				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(99, new ForgetShouldBreathTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
-				Pair.of(99, new ForgetAttackTargetTask<>())
+				Pair.of(99, new ForgetAttackTargetTask<>()),
+				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 

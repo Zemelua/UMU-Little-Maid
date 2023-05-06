@@ -54,7 +54,7 @@ public class AvailableBedSensor extends Sensor<MobEntity> {
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			if (ModWorldUtils.isAnyPoi(poiStorage, blockPos)) {
-				mob.getBrain().remember(ModMemories.AVAILABLE_BED, blockPos);
+				mob.getBrain().remember(ModMemories.AVAILABLE_BED, blockPos, 100);
 			}
 		} else if (this.tries < 5) {
 			this.pos2ExpiryTime.entrySet().removeIf(entry -> entry.getValue() < this.expiryTime);

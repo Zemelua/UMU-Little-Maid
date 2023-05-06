@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public final class ModMemories {
 	public static final MemoryModuleType<BlockPos> AVAILABLE_BED = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<BlockPos> SLEEP_POS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<GlobalPos> ANCHOR = new MemoryModuleType<>(Optional.of(GlobalPos.CODEC));
 	public static final MemoryModuleType<List<GlobalPos>> DELIVERY_BOXES = new MemoryModuleType<>(Optional.of(ModUtils.Conversions.GLOBAL_POS_COLLECTION_CODEC));
 	public static final MemoryModuleType<Unit> CANT_REACH_HOME = new MemoryModuleType<>(Optional.empty());
@@ -37,6 +38,7 @@ public final class ModMemories {
 
 	public static void init() {
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("available_bed"), AVAILABLE_BED);
+		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("sleep_bed"), SLEEP_POS);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("anchor"), ANCHOR);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("delivery_boxes"), DELIVERY_BOXES);
 		Registry.register(Registry.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("cant_reach_home"), CANT_REACH_HOME);

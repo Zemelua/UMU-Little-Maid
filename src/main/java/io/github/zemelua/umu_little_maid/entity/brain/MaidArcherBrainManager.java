@@ -61,7 +61,8 @@ public final class MaidArcherBrainManager {
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new ForgetAttackTargetTask<>()),
-				Pair.of(99, new ForgetHasArrowsTask<>())
+				Pair.of(99, new ForgetHasArrowsTask<>()),
+				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 
@@ -108,12 +109,11 @@ public final class MaidArcherBrainManager {
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
-				Pair.of(0, new WalkToHomeTask<>(0.8F)),
-				Pair.of(1, new SleepTask())
+				Pair.of(0, new MaidSleepTask()),
+				Pair.of(1, new WalkToSleepPosTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_ABSENT)
+				Pair.of(ModMemories.SLEEP_POS, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

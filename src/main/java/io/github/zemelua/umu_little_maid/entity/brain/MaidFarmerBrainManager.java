@@ -57,7 +57,8 @@ public final class MaidFarmerBrainManager {
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, new RememberFarmPosTask<>()),
 				Pair.of(99, new ForgetShouldEatTask()),
-				Pair.of(99, new ForgetShouldSleepTask<>(12000L))
+				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
+				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 
@@ -105,11 +106,11 @@ public final class MaidFarmerBrainManager {
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
-				Pair.of(0, new SleepTask()),
-				Pair.of(1, new WalkToHomeTask<>(0.8F))
+				Pair.of(0, new MaidSleepTask()),
+				Pair.of(1, new WalkToSleepPosTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT)
+				Pair.of(ModMemories.SLEEP_POS, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

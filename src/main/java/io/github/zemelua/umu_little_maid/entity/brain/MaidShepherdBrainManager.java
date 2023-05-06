@@ -32,6 +32,8 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
+// 未実装
+@Deprecated
 public final class MaidShepherdBrainManager {
 	public static void initializeBrain(Brain<LittleMaidEntity> brain) {
 		addCoreTasks(brain);
@@ -110,7 +112,7 @@ public final class MaidShepherdBrainManager {
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.REST, ImmutableList.of(
 				Pair.of(0, new SleepTask()),
-				Pair.of(1, new WalkToHomeTask<>(0.8F))
+				Pair.of(1, new WalkToSleepPosTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT),

@@ -13,6 +13,7 @@ import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
+import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
@@ -494,6 +495,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	 */
 	@Override
 	protected void mobTick() {
+		UMULittleMaid.LOGGER.info("should: " + this.getBrain().hasMemoryModule(ModMemories.SHOULD_SLEEP));
+		UMULittleMaid.LOGGER.info("pos: " + this.getBrain().hasMemoryModule(ModMemories.SLEEP_POS));
+		UMULittleMaid.LOGGER.info("ac: " + this.getBrain().getPossibleActivities());
+
 		this.updateJob();
 
 		this.getJob().tickBrain(this.getBrain());
@@ -1085,6 +1090,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		super.wakeUp();
 
 		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
+		this.brain.forget(ModMemories.SLEEP_POS);
 	}
 
 	@Override
@@ -1922,12 +1928,15 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				ModMemories.IS_HUNTING,
 				ModMemories.ANCHOR,
 				ModMemories.DELIVERY_BOXES,
-				ModMemories.CANT_REACH_HOME
+				ModMemories.CANT_REACH_HOME,
+				ModMemories.AVAILABLE_BED,
+				ModMemories.SLEEP_POS
 		);
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
 				SensorType.HURT_BY,
 				ModEntities.SENSOR_HOME_CANDIDATE,
+				ModSensors.AVAILABLE_BED,
 				ModEntities.SENSOR_MAID_ATTACKABLE,
 				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
