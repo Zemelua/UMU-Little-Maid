@@ -1,10 +1,8 @@
 package io.github.zemelua.umu_little_maid.entity;
 
 import com.chocohead.mm.api.ClassTinkerers;
-import com.google.common.collect.ImmutableSet;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
-import io.github.zemelua.umu_little_maid.entity.brain.sensor.*;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidMode;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
@@ -15,55 +13,25 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.poi.PointOfInterestType;
-import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 public final class ModEntities {
 	public static final Marker MARKER = MarkerManager.getMarker("ENTITY").addParents(UMULittleMaid.MARKER);
 
-	public static final SensorType<MaidAttackableSensor> SENSOR_MAID_ATTACKABLE = new SensorType<>(MaidAttackableSensor::new);
-	public static final SensorType<MaidAttractableLivingsSensor> SENSOR_MAID_ATTRACTABLE_LIVINGS = new SensorType<>(MaidAttractableLivingsSensor::new);
-	public static final SensorType<MaidGuardableLivingSensor> SENSOR_MAID_GUARDABLE_LIVING = new SensorType<>(MaidGuardableLivingSensor::new);
-	public static final SensorType<MaidFarmablePosesSensor> SENSOR_MAID_FARMABLE_POSES = new SensorType<>(MaidFarmablePosesSensor::new);
-	public static final SensorType<MaidShouldEatSensor> SENSOR_SHOULD_EAT = new SensorType<>(MaidShouldEatSensor::new);
-	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
-
 	public static final TrackedDataHandler<MaidMode> MODE_HANDLER = TrackedDataHandler.ofEnum(MaidMode.class);
 	public static final TrackedDataHandler<MaidPersonality> PERSONALITY_HANDLER = TrackedDataHandler.of(ModRegistries.MAID_PERSONALITY);
-
-	public static final Activity ACTIVITY_SIT;
-	public static final Activity ACTIVITY_GUARD;
-	public static final Activity ACTIVITY_EAT;
-	public static final Activity ACTIVITY_FARM;
-	public static final Activity ACTIVITY_HEAL;
-	public static final Activity ACTIVITY_GO_GET_TRIDENT;
-	public static final Activity ACTIVITY_BREATH;
-	public static final Activity ACTIVITY_SHEAR_SHEEP;
 
 	public static final EntityPose POSE_EATING;
 	public static final EntityPose POSE_USING_DRIPLEAF;
 	public static final EntityPose POSE_CHANGING_COSTUME;
 	public static final EntityPose POSE_HEALING;
-
-	public static final RegistryKey<PointOfInterestType> POI_TARGET;
-	public static final RegistryKey<PointOfInterestType> POI_SCARECROW;
-	public static final RegistryKey<PointOfInterestType> POI_AMETHYST_BLOCK;
-	public static final RegistryKey<PointOfInterestType> POI_CONDUIT;
-	public static final RegistryKey<PointOfInterestType> POI_BANNER;
-	public static final RegistryKey<PointOfInterestType> POI_DESSERT;
 
 	public static final MaidPersonality PERSONALITY_BRAVERY;
 	public static final MaidPersonality PERSONALITY_DILIGENT;
@@ -75,88 +43,15 @@ public final class ModEntities {
 
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
 
-	private static boolean initialized = false;
+	@SuppressWarnings({"ConstantValue", "DataFlowIssue"})
 	public static void initialize() {
-		if (ModEntities.initialized) throw new IllegalStateException("Entities are already initialized!");
-
-		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), ModEntities.LITTLE_MAID);
+		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), LITTLE_MAID);
 
 		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
 
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), SENSOR_MAID_ATTACKABLE);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModEntities.SENSOR_MAID_GUARDABLE_LIVING);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModEntities.SENSOR_MAID_FARMABLE_POSES);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("should_eat"), ModEntities.SENSOR_SHOULD_EAT);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("home"), ModEntities.SENSOR_HOME_CANDIDATE);
-
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModEntities.ACTIVITY_SIT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModEntities.ACTIVITY_GUARD);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("eat"), ModEntities.ACTIVITY_EAT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("farm"), ModEntities.ACTIVITY_FARM);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModEntities.ACTIVITY_HEAL);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModEntities.ACTIVITY_GO_GET_TRIDENT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModEntities.ACTIVITY_BREATH);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("shear_sheep"), ModEntities.ACTIVITY_SHEAR_SHEEP);
-
-		FabricDefaultAttributeRegistry.register(ModEntities.LITTLE_MAID, LittleMaidEntity.createAttributes());
-
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_TARGET,
-				PointOfInterestTypes.getStatesOfBlock(Blocks.TARGET), 1, 1);
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_SCARECROW,
-				ImmutableSet.<BlockState>builder()
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.OAK_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ACACIA_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.DARK_OAK_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.SPRUCE_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BIRCH_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.JUNGLE_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CRIMSON_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WARPED_FENCE))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MANGROVE_FENCE))
-						.build(), 1, 1);
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_AMETHYST_BLOCK,
-				PointOfInterestTypes.getStatesOfBlock(Blocks.AMETHYST_BLOCK), 1, 1);
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, ModEntities.POI_CONDUIT,
-				PointOfInterestTypes.getStatesOfBlock(Blocks.CONDUIT), 1, 1);
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, POI_BANNER,
-				ImmutableSet.<BlockState>builder()
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WHITE_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ORANGE_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MAGENTA_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_BLUE_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.YELLOW_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIME_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PINK_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GRAY_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_GRAY_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CYAN_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PURPLE_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLUE_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BROWN_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GREEN_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.RED_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLACK_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.WHITE_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.ORANGE_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.MAGENTA_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_BLUE_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.YELLOW_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIME_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PINK_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GRAY_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.LIGHT_GRAY_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.CYAN_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.PURPLE_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLUE_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BROWN_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.GREEN_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.RED_WALL_BANNER))
-						.addAll(PointOfInterestTypes.getStatesOfBlock(Blocks.BLACK_WALL_BANNER))
-						.build(), 1, 1);
-		PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, POI_DESSERT,
-				PointOfInterestTypes.getStatesOfBlock(Blocks.CAKE), 1, 1);
+		// FabricEntityTypeBuilder#defaultAttributesが動作しないためここで登録します。修正され次第移行します。
+		FabricDefaultAttributeRegistry.register(LITTLE_MAID, LittleMaidEntity.createAttributes());
 
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("bravery"), ModEntities.PERSONALITY_BRAVERY);
 		Registry.register(ModRegistries.MAID_PERSONALITY, UMULittleMaid.identifier("diligent"), ModEntities.PERSONALITY_DILIGENT);
@@ -177,14 +72,10 @@ public final class ModEntities {
 				BiomeKeys.LUSH_CAVES
 		), SpawnGroup.CREATURE, LITTLE_MAID, 8, 3, 3);
 
-//		SpawnRestrictionAccessor.callRegister(ModEntities.LITTLE_MAID, SpawnRestriction.Location.ON_GROUND,
-//				Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn);
-
-		ModEntities.initialized = true;
 		UMULittleMaid.LOGGER.info(ModEntities.MARKER, "Entities are initialized!");
 	}
 
-	private ModEntities() throws IllegalAccessException {throw new IllegalAccessException();}
+	private ModEntities() {}
 
 	static {
 		LITTLE_MAID = FabricEntityTypeBuilder.createMob()
@@ -192,30 +83,13 @@ public final class ModEntities {
 				.entityFactory(LittleMaidEntity::new)
 				.dimensions(EntityDimensions.fixed(0.6F, 1.5F))
 				.trackRangeChunks(10)
-				// .defaultAttributes(LittleMaidEntity::createAttributes)
 				.spawnRestriction(SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn)
 				.build();
-
-		ACTIVITY_SIT = new Activity("sit");
-		ACTIVITY_GUARD = new Activity("guard");
-		ACTIVITY_EAT = new Activity("eat");
-		ACTIVITY_FARM = new Activity("farm");
-		ACTIVITY_HEAL = new Activity("heal");
-		ACTIVITY_GO_GET_TRIDENT = new Activity("go_get_trident");
-		ACTIVITY_BREATH = new Activity("breath");
-		ACTIVITY_SHEAR_SHEEP = new Activity("shear_sheep");
 
 		POSE_EATING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_EATING);
 		POSE_USING_DRIPLEAF = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_USING_DRIPLEAF);
 		POSE_CHANGING_COSTUME = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_CHANGING_COSTUME);
 		POSE_HEALING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_HEALING);
-
-		POI_TARGET = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("target"));
-		POI_SCARECROW = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("scarecrow"));
-		POI_AMETHYST_BLOCK = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("amethyst_block"));
-		POI_CONDUIT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("conduit"));
-		POI_BANNER = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("banner"));
-		POI_DESSERT = RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, UMULittleMaid.identifier("dessert"));
 
 		PERSONALITY_BRAVERY = new MaidPersonality.Builder().setMaxHealth(18.0D).setAttackDamage(1.3D).setAttackKnockback(0.7D)
 				.setHostiles(living -> living.getType().isIn(ModTags.ENTITY_MAID_BRAVERY_HOSTILES))

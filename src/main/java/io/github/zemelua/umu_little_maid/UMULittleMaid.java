@@ -3,6 +3,8 @@ package io.github.zemelua.umu_little_maid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.ModPOIs;
+import io.github.zemelua.umu_little_maid.entity.brain.ModActivities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
@@ -40,7 +42,9 @@ public class UMULittleMaid implements ModInitializer {
 
 		ModMemories.init();
 		ModSensors.init();
+		ModActivities.init();
 		ModDataHandlers.init();
+		ModPOIs.init();
 		ModInventories.initialize();
 		ModSounds.initialize();
 		ModTags.initialize();
@@ -50,8 +54,6 @@ public class UMULittleMaid implements ModInitializer {
 
 		UseBlockCallback.EVENT.register(Callbacks::onUseBlock);
 		UseEntityCallback.EVENT.register(Callbacks::onUseEntity);
-//		AttackBlockCallback.EVENT.register(Callbacks::onAttackBlock);
-//		AttackEntityCallback.EVENT.register(Callbacks::onAttackEntity);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}

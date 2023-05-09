@@ -30,8 +30,6 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
-
 // 未実装
 @Deprecated
 public final class MaidShepherdBrainManager {
@@ -48,7 +46,7 @@ public final class MaidShepherdBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModActivities.ACTIVITY_SIT, ModActivities.ACTIVITY_EAT, Activity.REST, Activity.IDLE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -93,7 +91,7 @@ public final class MaidShepherdBrainManager {
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
@@ -101,7 +99,7 @@ public final class MaidShepherdBrainManager {
 	}
 
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),

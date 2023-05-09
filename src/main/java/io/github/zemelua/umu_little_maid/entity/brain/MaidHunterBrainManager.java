@@ -44,7 +44,7 @@ public final class MaidHunterBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, Activity.FIGHT, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModActivities.ACTIVITY_SIT, ModActivities.ACTIVITY_EAT, Activity.REST, Activity.FIGHT, Activity.IDLE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -82,7 +82,7 @@ public final class MaidHunterBrainManager {
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
@@ -90,7 +90,7 @@ public final class MaidHunterBrainManager {
 	}
 
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)

@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
@@ -43,7 +42,7 @@ public final class MaidHealerBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, ModEntities.ACTIVITY_HEAL, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModActivities.ACTIVITY_SIT, ModActivities.ACTIVITY_EAT, Activity.REST, ModActivities.ACTIVITY_HEAL, Activity.IDLE));
 	}
 
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -79,7 +78,7 @@ public final class MaidHealerBrainManager {
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
@@ -87,7 +86,7 @@ public final class MaidHealerBrainManager {
 	}
 
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
@@ -96,7 +95,7 @@ public final class MaidHealerBrainManager {
 	}
 
 	public static void addHealTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_HEAL, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_HEAL, ImmutableList.of(
 				Pair.of(0, new MaidHealOwnerTask()),
 				Pair.of(1, new ApproachToHealTask<>(1.0F))
 		), ImmutableSet.of(

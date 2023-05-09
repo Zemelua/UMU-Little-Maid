@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
@@ -46,10 +45,10 @@ public final class MaidPoseidonBrainManager {
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
 		brain.resetPossibleActivities(ImmutableList.of(
-				ModEntities.ACTIVITY_SIT,
-				ModEntities.ACTIVITY_BREATH,
-				ModEntities.ACTIVITY_EAT,
-				ModEntities.ACTIVITY_GO_GET_TRIDENT,
+				ModActivities.ACTIVITY_SIT,
+				ModActivities.ACTIVITY_BREATH,
+				ModActivities.ACTIVITY_EAT,
+				ModActivities.ACTIVITY_GO_GET_TRIDENT,
 				Activity.FIGHT,
 				Activity.IDLE
 		));
@@ -87,7 +86,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask()),
 				Pair.of(1, new StayAboveWaterTask(0.8F))
 		), ImmutableSet.of(
@@ -96,7 +95,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addBreathTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_BREATH, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_BREATH, ImmutableList.of(
 				Pair.of(0, new BreathAirTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_BREATH, MemoryModuleState.VALUE_PRESENT)
@@ -104,7 +103,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
@@ -112,7 +111,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addGoGetTridentTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_GO_GET_TRIDENT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_GO_GET_TRIDENT, ImmutableList.of(
 				Pair.of(0, new GoGetTridentTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.THROWN_TRIDENT, MemoryModuleState.VALUE_PRESENT),

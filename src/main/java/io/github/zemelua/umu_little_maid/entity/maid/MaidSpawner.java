@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.ModPOIs;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,8 +17,6 @@ import net.minecraft.world.spawner.Spawner;
 
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
 public class MaidSpawner implements Spawner {
 	private static final int INTERVAL = 600;
@@ -37,7 +36,7 @@ public class MaidSpawner implements Spawner {
 
 		Random random = world.getRandom();
 		PointOfInterestStorage poiStorage = world.getPointOfInterestStorage();
-		Stream<PointOfInterest> pois = poiStorage.getInCircle(poi -> poi.matchesKey(POI_DESSERT), player.get().getBlockPos(), 48, OccupationStatus.ANY);
+		Stream<PointOfInterest> pois = poiStorage.getInCircle(poi -> poi.matchesKey(ModPOIs.POI_DESSERT), player.get().getBlockPos(), 48, OccupationStatus.ANY);
 
 		long spawnCount = pois.filter(poi -> {
 			int x = (8 + random.nextInt(24)) * (random.nextBoolean() ? 1 : -1);

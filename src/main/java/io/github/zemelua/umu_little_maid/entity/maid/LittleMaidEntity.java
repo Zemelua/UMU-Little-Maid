@@ -1845,9 +1845,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						Vec3d pos = vel.normalize()
 								.multiply(0.8D)
 								.add(this.getPos());
-						double xVel = 0.2D + (this.random.nextDouble() - 0.5D) * 0.2;
-						double yVel = 0.4D + (this.random.nextDouble() - 0.5D) * 0.2;
-						double zVel = 0.2D + (this.random.nextDouble() - 0.5D) * 0.2;
 
 						this.world.addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
 						this.world.addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
@@ -1935,12 +1932,12 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		SENSORS = ImmutableSet.of(
 				SensorType.NEAREST_LIVING_ENTITIES,
 				SensorType.HURT_BY,
-				ModEntities.SENSOR_HOME_CANDIDATE,
+				ModSensors.SENSOR_HOME_CANDIDATE,
 				ModSensors.AVAILABLE_BED,
-				ModEntities.SENSOR_MAID_ATTACKABLE,
-				ModEntities.SENSOR_MAID_ATTRACTABLE_LIVINGS,
-				ModEntities.SENSOR_MAID_GUARDABLE_LIVING,
-				ModEntities.SENSOR_MAID_FARMABLE_POSES
+				ModSensors.SENSOR_MAID_ATTACKABLE,
+				ModSensors.SENSOR_MAID_ATTRACTABLE_LIVINGS,
+				ModSensors.SENSOR_MAID_GUARDABLE_LIVING,
+				ModSensors.SENSOR_MAID_FARMABLE_POSES
 		);
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);

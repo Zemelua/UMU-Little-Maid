@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
@@ -42,7 +41,7 @@ public final class MaidFarmerBrainManager {
 	}
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModEntities.ACTIVITY_SIT, ModEntities.ACTIVITY_EAT, Activity.REST, ModEntities.ACTIVITY_FARM, Activity.IDLE));
+		brain.resetPossibleActivities(ImmutableList.of(ModActivities.ACTIVITY_SIT, ModActivities.ACTIVITY_EAT, Activity.REST, ModActivities.ACTIVITY_FARM, Activity.IDLE));
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -77,7 +76,7 @@ public final class MaidFarmerBrainManager {
 	}
 
 	private static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
 				Pair.of(0, new SitTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
@@ -85,7 +84,7 @@ public final class MaidFarmerBrainManager {
 	}
 
 	private static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
@@ -94,7 +93,7 @@ public final class MaidFarmerBrainManager {
 	}
 
 	private static void addFarmTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModEntities.ACTIVITY_FARM, ImmutableList.of(
+		brain.setTaskList(ModActivities.ACTIVITY_FARM, ImmutableList.of(
 				Pair.of(0, new MaidFarmTask()),
 				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
 		), ImmutableSet.of(
