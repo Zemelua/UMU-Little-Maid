@@ -12,9 +12,10 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.heal.ForgetShouldHealTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.heal.RememberShouldHealTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtBlockTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.ForgetShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.RememberShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
@@ -80,7 +81,6 @@ public final class MaidShepherdBrainManager {
 				Pair.of(3, new RandomTask<>(ImmutableList.of(
 						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 1),
 						Pair.of(new LookAtEntityTask<>((self, target) -> target instanceof SheepEntity), 1),
-						Pair.of(new LookAtBlockTask<>(POI_BANNER), 2),
 						Pair.of(new WaitTask(30, 60), 4)
 				)))
 		));
