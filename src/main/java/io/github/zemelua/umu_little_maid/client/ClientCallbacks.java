@@ -1,13 +1,12 @@
 package io.github.zemelua.umu_little_maid.client;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.c_component.headpatting.IHeadpattingComponent;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
 import io.github.zemelua.umu_little_maid.client.renderer.InstructionRenderer;
 import io.github.zemelua.umu_little_maid.client.renderer.gui.overlay.OverlayRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,7 +22,6 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -75,20 +73,6 @@ public final class ClientCallbacks {
 		registry.register(InstructionRenderer.ICON_HOME);
 		registry.register(InstructionRenderer.ICON_ANCHOR);
 		registry.register(InstructionRenderer.ICON_DELIVERY_BOX);
-		registry.register(UMULittleMaid.identifier("particle/shock_0"));
-		registry.register(UMULittleMaid.identifier("particle/shock_1"));
-		registry.register(UMULittleMaid.identifier("particle/shock_2"));
-		registry.register(UMULittleMaid.identifier("particle/shock_3"));
-		registry.register(UMULittleMaid.identifier("particle/shock_4"));
-		registry.register(UMULittleMaid.identifier("particle/shock_5"));
-		registry.register(UMULittleMaid.identifier("particle/shock_6"));
-		registry.register(UMULittleMaid.identifier("particle/shock_7"));
-		registry.register(UMULittleMaid.identifier("particle/shock_8"));
-		registry.register(UMULittleMaid.identifier("particle/shockwave_0"));
-		registry.register(UMULittleMaid.identifier("particle/shockwave_1"));
-		registry.register(UMULittleMaid.identifier("particle/shockwave_2"));
-		registry.register(UMULittleMaid.identifier("particle/shockwave_3"));
-		registry.register(UMULittleMaid.identifier("particle/zzz"));
 	}
 
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {
@@ -113,9 +97,6 @@ public final class ClientCallbacks {
 
 	static void beforeRenderDebug(WorldRenderContext context) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		Vec3d cameraPos = context.camera().getPos();
-
-		// client.debugRenderer.pathfindingDebugRenderer.render(context.matrixStack(), context.consumers(), cameraPos.getX(), cameraPos.getY(), cameraPos.getZ());
 
 		InstructionRenderer.renderSitesOverlay(client, context);
 	}
