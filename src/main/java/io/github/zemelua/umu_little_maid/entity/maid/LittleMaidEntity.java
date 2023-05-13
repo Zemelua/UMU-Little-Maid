@@ -1789,11 +1789,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					builder.addAnimation("eat", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (this.isSleeping()) {
 					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
-				} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
-					switch (this.getAttackType()) {
-						case SWING_SWORD_DOWNWARD_RIGHT -> builder.addAnimation("swing_sword_downward_right");
-						case SWING_SWORD_DOWNWARD_LEFT  -> builder.addAnimation("swing_sword_downward_left");
-						case HEADBUTT                   -> builder.addAnimation("headbutt");
+				} else if (this.isSleeping()) {
+					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
+				} else if (this.getItemUseTimeLeft() > 0) {
+					switch (this.getActiveItem().getUseAction()) {
+						case BOW -> builder.addAnimation("hold_bow_right", ILoopType.EDefaultLoopTypes.LOOP);
 					}
 				} else if (this.isSitting()) {
 					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
