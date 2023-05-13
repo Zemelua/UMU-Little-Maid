@@ -47,7 +47,7 @@ public final class MaidNoneBrainManager {
 				Pair.of(0, new OpenDoorsTask()),
 				Pair.of(0, new WakeUpTask()),
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
-				Pair.of(1, new WalkTask(1.0F)),
+				Pair.of(1, new WalkTask(1.0F)), // パニック
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldEatTask()),

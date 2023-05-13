@@ -1,7 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -22,8 +21,6 @@ public class UpdateSleepPosTask extends Task<LittleMaidEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LittleMaidEntity entity) {
-		UMULittleMaid.LOGGER.info("sssss");
-
 		return super.shouldRun(world, entity);
 	}
 

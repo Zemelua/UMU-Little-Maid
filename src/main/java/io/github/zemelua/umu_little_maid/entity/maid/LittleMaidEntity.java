@@ -495,9 +495,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	 */
 	@Override
 	protected void mobTick() {
-		UMULittleMaid.LOGGER.info("should: " + this.getBrain().hasMemoryModule(ModMemories.SHOULD_SLEEP));
-		UMULittleMaid.LOGGER.info("pos: " + this.getBrain().hasMemoryModule(ModMemories.SLEEP_POS));
-		UMULittleMaid.LOGGER.info("ac: " + this.getBrain().getPossibleActivities());
+		UMULittleMaid.LOGGER.info("task: " + this.getBrain().getRunningTasks());
 
 		this.updateJob();
 
