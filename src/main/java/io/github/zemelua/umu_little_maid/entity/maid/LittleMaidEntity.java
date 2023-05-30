@@ -1294,6 +1294,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return (Brain<LittleMaidEntity>) super.getBrain();
 	}
 
+	@Override
+	public EntityPose getPose() {
+		return super.getPose();
+	}
+
 	@Nullable
 	private UUID getMasterUuid() {
 		return this.dataTracker.get(LittleMaidEntity.MASTER).orElse(null);
