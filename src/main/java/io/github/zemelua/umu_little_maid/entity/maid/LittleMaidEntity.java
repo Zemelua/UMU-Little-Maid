@@ -495,8 +495,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	 */
 	@Override
 	protected void mobTick() {
-		UMULittleMaid.LOGGER.info("task: " + this.getBrain().getRunningTasks());
-
 		this.updateJob();
 
 		this.getJob().tickBrain(this.getBrain());
@@ -1791,7 +1789,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
 				} else if (this.getItemUseTimeLeft() > 0) {
 					switch (this.getActiveItem().getUseAction()) {
-						case BOW -> builder.addAnimation("hold_bow_right", ILoopType.EDefaultLoopTypes.LOOP);
+						case BOW -> MaidItemAnimationSetter.BOW.setItemAnimation(this, builder);
+						case SPEAR -> MaidItemAnimationSetter.SPEAR.setItemAnimation(this, builder);
 					}
 				} else if (this.isSitting()) {
 					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
@@ -1879,7 +1878,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			UseAction useAction = activeStack.getUseAction();
 			return switch (useAction) {
 				// TODO: 他のアイテムもやる
-				case BOW ->Optional.of(MaidItemAnimationSetter.HOLD_BOW_RIGHT);
+				case BOW ->Optional.of(MaidItemAnimationSetter.BOW);
 				default -> Optional.empty();
 			};
 		}

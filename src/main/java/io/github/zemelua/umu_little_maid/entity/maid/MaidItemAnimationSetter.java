@@ -6,10 +6,10 @@ import software.bernie.geckolib3.core.builder.ILoopType;
 import java.util.function.Consumer;
 
 public enum MaidItemAnimationSetter implements IMaidItemAnimationSetter {
-	HOLD_BOW_RIGHT(
-			builder -> builder.addAnimation("hold_bow_right", ILoopType.EDefaultLoopTypes.PLAY_ONCE),
-			builder -> builder.addAnimation("hold_bow_right", ILoopType.EDefaultLoopTypes.PLAY_ONCE))
-	;
+	BOW(builder -> builder.addAnimation("hold_bow_right", ILoopType.EDefaultLoopTypes.LOOP),
+			builder -> builder.addAnimation("hold_bow_left", ILoopType.EDefaultLoopTypes.LOOP)),
+	SPEAR(builder -> builder.addAnimation("hold_spear_right", ILoopType.EDefaultLoopTypes.LOOP),
+			builder -> builder.addAnimation("hold_spear_left", ILoopType.EDefaultLoopTypes.LOOP));
 
 	private final Consumer<AnimationBuilder> setterWhenLeftIsActive;
 	private final Consumer<AnimationBuilder> setterWhenRightIsActive;
