@@ -40,11 +40,11 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modLocalRuntime 'com.github.Zemelua:UMU-Debugger:2ac40b6806'
+    // modLocalRuntime 'com.github.Zemelua:UMU-Debugger:2ac40b6806'
 
     modImplementation include("com.github.Chocohead:fabric-asm:v2.3")
-    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
-    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.19:3.1.40'
+    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.1")
+    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.20:4.2'
 }
 
 processResources {
