@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * メイドさんが攻撃できる状態にあるとき、一度タスクを中断することなくそのタスク内で次の攻撃を実行します。
  * これは、中断することで他のタスクが実行されないようにするためです。
  */
-public class MaidMeleeAttackTask extends Task<LittleMaidEntity> {
+public class MaidMeleeAttackTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT);
 
 	private int attackProgress = 0;

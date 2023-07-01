@@ -2,26 +2,26 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.guard;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
-import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionfc;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 
-public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
+public class MaidGuardTask<E extends MobEntity & IHasMaster> extends MultiTickTask<E> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_PRESENT
 	);
@@ -52,7 +52,7 @@ public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 	@Override
 	@SuppressWarnings("unchecked")
 	protected boolean shouldKeepRunning(ServerWorld world, E mob, long time) {
-		return this.shouldRun(world, mob) && ((TaskAccessor<E>) this).callHasRequiredMemoryState(mob);
+		return this.shouldRun(world, mob) && this.hasRequiredMemoryState(mob);
 	}
 
 	@Override
@@ -102,14 +102,14 @@ public class MaidGuardTask<E extends MobEntity & IHasMaster> extends Task<E> {
 			Vec3d guardPos = ownerPos.add(guardTargetPos.subtract(ownerPos).normalize());
 
 			Vec3d maidPos = mob.getPos();
-			Vec3f moveVec = new Vec3f(maidPos.subtract(guardPos));
-			Vec3f lookVec = new Vec3f(mob.getRotationVector().multiply(1.0D, 0.0D, 1.0D));
+			Vector3f moveVec = maidPos.subtract(guardPos).toVector3f();
+			Vector3f lookVec = mob.getRotationVector().multiply(1.0D, 0.0D, 1.0D).toVector3f();
 
-			Vec3f forwardVec = lookVec.copy();
+			Vector3f forwardVec = new Vector3f(lookVec);
 
-			Quaternion quaternion = new Quaternion(Vec3f.POSITIVE_Y, -90.0F, true);
-			lookVec.rotate(quaternion);
-			Vec3f sidewaysVec = lookVec.copy();
+			Quaternionfc quaternion = RotationAxis.POSITIVE_Y.rotationDegrees(-90);
+			quaternion.transform(lookVec);
+			Vector3f sidewaysVec = new Vector3f(lookVec);
 
 			moveVec.normalize();
 			float speed = mob.isBlocking() ? this.guardSpeed : this.normalSpeed;

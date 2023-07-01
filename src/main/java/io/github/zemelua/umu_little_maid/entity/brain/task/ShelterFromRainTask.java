@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,7 @@ import java.util.Map;
 import static net.minecraft.entity.ai.brain.MemoryModuleState.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
-public class ShelterFromRainTask<E extends PathAwareEntity & IAvoidRain> extends Task<E> {
+public class ShelterFromRainTask<E extends PathAwareEntity & IAvoidRain> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			WALK_TARGET, VALUE_ABSENT
 	);

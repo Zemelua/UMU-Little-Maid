@@ -18,6 +18,8 @@ import io.github.zemelua.umu_little_maid.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +56,7 @@ public class UMULittleMaid implements ModInitializer {
 
 		UseBlockCallback.EVENT.register(Callbacks::onUseBlock);
 		UseEntityCallback.EVENT.register(Callbacks::onUseEntity);
+		ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(Callbacks::onRegisterSpawnEggItemGroup);
 
 		UMULittleMaid.LOGGER.info(UMULittleMaid.MARKER, "Succeeded initializing mod!");
 	}

@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class FollowOwnerTask extends Task<LittleMaidEntity> {
+public class FollowOwnerTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 	);
 

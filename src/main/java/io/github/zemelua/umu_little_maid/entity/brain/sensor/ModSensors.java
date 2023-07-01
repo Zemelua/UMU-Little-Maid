@@ -2,7 +2,8 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class ModSensors {
 	public static final SensorType<AvailableBedSensor> AVAILABLE_BED = new SensorType<>(AvailableBedSensor::new);
@@ -13,12 +14,12 @@ public final class ModSensors {
 	public static final SensorType<HomeCandidateSensor> SENSOR_HOME_CANDIDATE = new SensorType<>(HomeCandidateSensor::new);
 
 	public static void init() {
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("available_bed"), AVAILABLE_BED);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModSensors.SENSOR_MAID_ATTACKABLE);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModSensors.SENSOR_MAID_ATTRACTABLE_LIVINGS);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModSensors.SENSOR_MAID_GUARDABLE_LIVING);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModSensors.SENSOR_MAID_FARMABLE_POSES);
-		Registry.register(Registry.SENSOR_TYPE, UMULittleMaid.identifier("home"), ModSensors.SENSOR_HOME_CANDIDATE);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("available_bed"), AVAILABLE_BED);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("maid_attackable"), ModSensors.SENSOR_MAID_ATTACKABLE);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("maid_attractable_livings"), ModSensors.SENSOR_MAID_ATTRACTABLE_LIVINGS);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("maid_guardable_living"), ModSensors.SENSOR_MAID_GUARDABLE_LIVING);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("maid_farmable_poses"), ModSensors.SENSOR_MAID_FARMABLE_POSES);
+		Registry.register(Registries.SENSOR_TYPE, UMULittleMaid.identifier("home"), ModSensors.SENSOR_HOME_CANDIDATE);
 	}
 
 	private ModSensors() {}

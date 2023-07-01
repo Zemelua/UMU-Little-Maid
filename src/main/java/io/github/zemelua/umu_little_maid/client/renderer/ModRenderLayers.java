@@ -7,7 +7,7 @@ public final class ModRenderLayers extends RenderLayer {
 			"instruction_overlay_target", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS, RenderLayer.TRANSLUCENT_BUFFER_SIZE, false, false,
 			RenderLayer.MultiPhaseParameters.builder()
 					.layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-					.shader(RenderPhase.POSITION_TEXTURE_SHADER)
+					.program(RenderPhase.POSITION_TEXTURE_PROGRAM)
 					.texture(BLOCK_ATLAS_TEXTURE)
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.build(false));
@@ -16,7 +16,7 @@ public final class ModRenderLayers extends RenderLayer {
 			RenderLayer.MultiPhaseParameters.builder()
 					.layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
 					.depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
-					.shader(RenderPhase.POSITION_TEXTURE_SHADER)
+					.program(RenderPhase.POSITION_TEXTURE_PROGRAM)
 					.texture(BLOCK_ATLAS_TEXTURE)
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.build(false));

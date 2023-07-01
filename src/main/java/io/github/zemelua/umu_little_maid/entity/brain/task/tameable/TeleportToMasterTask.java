@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -16,7 +16,7 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Map;
 import java.util.Optional;
 
-public class TeleportToMasterTask<E extends PathAwareEntity & ITameable> extends Task<E> {
+public class TeleportToMasterTask<E extends PathAwareEntity & ITameable> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 	);
 

@@ -5,21 +5,25 @@ import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * {@link net.minecraft.entity.ai.brain.task.SleepTask} の、{@link ModMemories#SLEEP_POS} 版です。
  */
-public class MaidSleepTask extends Task<LittleMaidEntity> {
+public class MaidSleepTask extends MultiTickTask<LittleMaidEntity> {
 	private long startTime;
 
 	public MaidSleepTask() {
@@ -56,7 +60,11 @@ public class MaidSleepTask extends Task<LittleMaidEntity> {
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity entity, long time) {
 		if (time > this.startTime) {
-			OpenDoorsTask.pathToDoor(world, entity, null, null);
+			Brain<?> brain = entity.getBrain();
+			// TODO pathTodoorの引数なに
+			Set<GlobalPos> set = brain.getOptionalRegisteredMemory(MemoryModuleType.DOORS_TO_CLOSE).get();
+			Optional<List<LivingEntity>> optional = brain.hasMemoryModule(MemoryModuleType.MOBS) ? brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS) : Optional.empty();
+			OpenDoorsTask.pathToDoor(world, entity, null, null, set, optional);
 			entity.sleep(entity.getBrain().getOptionalMemory(ModMemories.SLEEP_POS).get());
 		}
 	}

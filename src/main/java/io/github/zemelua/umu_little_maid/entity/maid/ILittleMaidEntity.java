@@ -5,12 +5,12 @@ import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.EntityPose;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 
 import java.util.Optional;
 
 // LittleMaidEntity クラスがめっっちゃ長くなってきたので、こっちに書けるものはこっちに書いときます。
-public sealed interface ILittleMaidEntity extends IAnimatable, ITameable, IHeadpattable permits LittleMaidEntity {
+public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable permits LittleMaidEntity {
 	Optional<MaidAction> getAction();
 
 	default boolean canAction(MaidAction action) {

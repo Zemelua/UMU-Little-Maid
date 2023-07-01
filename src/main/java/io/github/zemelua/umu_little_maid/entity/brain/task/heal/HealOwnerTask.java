@@ -8,8 +8,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-public class HealOwnerTask<E extends LivingEntity & IHasMaster> extends Task<E> {
+public class HealOwnerTask<E extends LivingEntity & IHasMaster> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
 	protected int cooldown;
@@ -77,7 +76,7 @@ public class HealOwnerTask<E extends LivingEntity & IHasMaster> extends Task<E> 
 
 		if (this.cooldown >= 30) {
 			master.get().heal(5.0F);
-			living.damage(DamageSource.MAGIC, 3.0F);
+			living.damage(living.getDamageSources().magic(), 3.0F);
 
 			for (int i = 0; i < 5; i++) {
 				double posX = living.getParticleX(1.0);

@@ -6,10 +6,10 @@ import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestStorage.OccupationStatus;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -20,7 +20,7 @@ import java.util.Optional;
 import static net.minecraft.entity.ai.brain.MemoryModuleState.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
-public class LookAtBlockTask<E extends LivingEntity> extends Task<E> {
+public class LookAtBlockTask<E extends LivingEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			LOOK_TARGET, VALUE_ABSENT,
 			WALK_TARGET, VALUE_ABSENT

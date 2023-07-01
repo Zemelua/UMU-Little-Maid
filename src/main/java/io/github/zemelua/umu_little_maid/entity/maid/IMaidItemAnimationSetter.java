@@ -2,10 +2,10 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib.core.animation.RawAnimation;
 
 public interface IMaidItemAnimationSetter {
-	default void setItemAnimation(LittleMaidEntity maid, AnimationBuilder builder) {
+	default void setItemAnimation(LittleMaidEntity maid, RawAnimation builder) {
 		if (maid.getMainArm().equals(Arm.LEFT)) {
 			if (maid.getActiveHand().equals(Hand.MAIN_HAND)) {
 				this.setItemAnimationWhenLeftIsActive(builder);
@@ -21,6 +21,6 @@ public interface IMaidItemAnimationSetter {
 		}
 	}
 
-	void setItemAnimationWhenLeftIsActive(AnimationBuilder builder);
-	void setItemAnimationWhenRightIsActive(AnimationBuilder builder);
+	void setItemAnimationWhenLeftIsActive(RawAnimation builder);
+	void setItemAnimationWhenRightIsActive(RawAnimation builder);
 }

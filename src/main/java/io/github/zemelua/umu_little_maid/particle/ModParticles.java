@@ -6,7 +6,8 @@ import io.github.zemelua.umu_little_maid.client.particle.ZZZParticle;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class ModParticles {
 	public static final DefaultParticleType TWINKLE = FabricParticleTypes.simple();
@@ -20,10 +21,10 @@ public final class ModParticles {
 	};
 
 	public static void init() {
-		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("twinkle"), TWINKLE);
-		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("shock"), SHOCK);
-		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("shockwave"), SHOCKWAVE);
-		Registry.register(Registry.PARTICLE_TYPE, UMULittleMaid.identifier("zzz"), ZZZ);
+		Registry.register(Registries.PARTICLE_TYPE, UMULittleMaid.identifier("twinkle"), TWINKLE);
+		Registry.register(Registries.PARTICLE_TYPE, UMULittleMaid.identifier("shock"), SHOCK);
+		Registry.register(Registries.PARTICLE_TYPE, UMULittleMaid.identifier("shockwave"), SHOCKWAVE);
+		Registry.register(Registries.PARTICLE_TYPE, UMULittleMaid.identifier("zzz"), ZZZ);
 	}
 
 	private ModParticles() {}

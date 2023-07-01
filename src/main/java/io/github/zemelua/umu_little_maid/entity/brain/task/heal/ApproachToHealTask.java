@@ -5,14 +5,14 @@ import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.util.IHasMaster;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 import java.util.Optional;
 
-public class ApproachToHealTask<E extends LivingEntity & IHasMaster> extends Task<E> {
+public class ApproachToHealTask<E extends LivingEntity & IHasMaster> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,

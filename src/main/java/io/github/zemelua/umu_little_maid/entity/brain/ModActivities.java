@@ -2,7 +2,8 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class ModActivities {
 	public static final Activity ACTIVITY_SIT = new Activity("sit");
@@ -15,14 +16,14 @@ public final class ModActivities {
 	public static final Activity ACTIVITY_SHEAR_SHEEP = new Activity("shear_sheep");  // 未使用
 
 	public static void init() {
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("sit"), ModActivities.ACTIVITY_SIT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("guard"), ModActivities.ACTIVITY_GUARD);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("eat"), ModActivities.ACTIVITY_EAT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("farm"), ModActivities.ACTIVITY_FARM);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("heal"), ModActivities.ACTIVITY_HEAL);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModActivities.ACTIVITY_GO_GET_TRIDENT);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("breath"), ModActivities.ACTIVITY_BREATH);
-		Registry.register(Registry.ACTIVITY, UMULittleMaid.identifier("shear_sheep"), ModActivities.ACTIVITY_SHEAR_SHEEP);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("sit"), ModActivities.ACTIVITY_SIT);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("guard"), ModActivities.ACTIVITY_GUARD);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("eat"), ModActivities.ACTIVITY_EAT);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("farm"), ModActivities.ACTIVITY_FARM);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("heal"), ModActivities.ACTIVITY_HEAL);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("go_get_trident"), ModActivities.ACTIVITY_GO_GET_TRIDENT);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("breath"), ModActivities.ACTIVITY_BREATH);
+		Registry.register(Registries.ACTIVITY, UMULittleMaid.identifier("shear_sheep"), ModActivities.ACTIVITY_SHEAR_SHEEP);
 	}
 
 	private ModActivities() {}

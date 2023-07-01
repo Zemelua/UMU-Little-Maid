@@ -4,7 +4,7 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.*;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 import java.util.stream.Stream;
 

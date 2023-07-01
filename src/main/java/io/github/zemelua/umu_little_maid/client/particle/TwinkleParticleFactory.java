@@ -6,7 +6,7 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.util.Color;
+import software.bernie.geckolib.core.object.Color;
 
 public class TwinkleParticleFactory implements ParticleFactory<DefaultParticleType> {
 	private static final Color YELLOW = Color.ofOpaque(0xfff759);

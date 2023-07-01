@@ -6,13 +6,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
 
 import java.util.Map;
 
-public class RememberShouldBreathTask<E extends LivingEntity> extends Task<E> {
+public class RememberShouldBreathTask<E extends LivingEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.SHOULD_BREATH, MemoryModuleState.VALUE_ABSENT
 	);

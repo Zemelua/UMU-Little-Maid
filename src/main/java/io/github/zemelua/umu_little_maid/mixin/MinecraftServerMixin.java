@@ -21,7 +21,7 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
 
 	@ModifyVariable(method = "createWorlds",
 			at = @At(value = "INVOKE",
-					target = "Lnet/minecraft/world/gen/GeneratorOptions;getDimensions()Lnet/minecraft/util/registry/Registry;"))
+					target = "Lnet/minecraft/registry/Registry;get(Lnet/minecraft/registry/RegistryKey;)Ljava/lang/Object;"))
 	@SuppressWarnings("SpellCheckingInspection")
 	private List<Spawner> createWorlds(List<Spawner> spawners) {
 		return ImmutableList.<Spawner>builder().addAll(spawners).add(new MaidSpawner()).build();

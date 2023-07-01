@@ -6,11 +6,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * {@code MemoryModuleType.NEAREST_BED} をもとにして {@code MemoryModuleType.HOME} の値を設定するよ！
  */
-public class RememberHomeTask<E extends LivingEntity> extends Task<E> {
+public class RememberHomeTask<E extends LivingEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.NEAREST_BED, MemoryModuleState.VALUE_PRESENT,
 			MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT
@@ -43,6 +43,6 @@ public class RememberHomeTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	public static boolean isHome(BlockState blockState) {
-		return Objects.requireNonNull(Registry.POINT_OF_INTEREST_TYPE.get(PointOfInterestTypes.HOME)).contains(blockState);
+		return Objects.requireNonNull(Registries.POINT_OF_INTEREST_TYPE.get(PointOfInterestTypes.HOME)).contains(blockState);
 	}
 }

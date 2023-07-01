@@ -23,7 +23,7 @@ public class HunterRememberHasArrowsTask<E extends LivingEntity> extends Remembe
 
 	public static <E extends LivingEntity> boolean hasArrow(E living) {
 		ItemStack crossbow = living.getStackInHand(ProjectileUtil.getHandPossiblyHolding(living, Items.CROSSBOW));
-		boolean hasArrowInInventory = !living.getArrowType(living.getMainHandStack()).isEmpty();
+		boolean hasArrowInInventory = !living.getProjectileType(living.getMainHandStack()).isEmpty();
 		boolean hasArrowOnCrossbow = CrossbowItem.isCharged(crossbow);
 
 		return hasArrowInInventory || hasArrowOnCrossbow;

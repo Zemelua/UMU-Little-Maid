@@ -42,10 +42,7 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -58,7 +55,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity.PickupPermission;
@@ -75,29 +71,29 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,7 +102,7 @@ import java.util.function.Predicate;
 
 import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 
-public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILittleMaidEntity, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable, IHeadpattable, IAnimatable {
+public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILittleMaidEntity, InventoryOwner, RangedAttackMob, IPoseidonMob, CrossbowUser, ITameable, IAvoidRain, IInstructable, IHeadpattable, GeoEntity {
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
@@ -163,7 +159,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private long lastClearCommitmentDayTime;
 	private int increasedCommitment;
 
-	private final AnimationFactory animationFactory = GeckoLibUtil.createFactory(this);
+	private final AnimatableInstanceCache animationFactory = GeckoLibUtil.createInstanceCache(this);
 
 	public LittleMaidEntity(EntityType<? extends PathAwareEntity> type, World world) {
 		super(type, world);
@@ -174,7 +170,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.moveControl = new MaidControl(this);
 
 		this.landNavigation = new MobNavigation(this, world);
-		this.canSwimNavigation = new AxolotlSwimNavigation(this, world);
+		this.canSwimNavigation = new AmphibiousSwimNavigation(this, world);
 		((MobNavigation) this.landNavigation).setCanPathThroughDoors(true);
 		((MobNavigation) this.landNavigation).setCanEnterOpenDoors(true);
 
@@ -318,7 +314,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		super.tickMovement();
 
 		if (this.getAction().isEmpty()) {
-			if (!this.isOnGround() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.world, this) >= 3) {
+			if (!this.isOnGround() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.getWorld(), this) >= 3) {
 				this.setAction(MaidAction.GLIDING);
 			}
 		} else if (this.isGliding()) {
@@ -383,7 +379,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	private void pickUpArrows() {
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
 			Predicate<? super PersistentProjectileEntity> filter = arrow -> {
 				@Nullable Entity owner = arrow.getOwner();
@@ -395,8 +391,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			};
 
 			List<? extends PersistentProjectileEntity> collideArrows = ImmutableList.<PersistentProjectileEntity>builder()
-					.addAll(this.world.getEntitiesByType(EntityType.ARROW, box, filter))
-					.addAll(this.world.getEntitiesByType(EntityType.SPECTRAL_ARROW, box, filter)).build();
+					.addAll(this.getWorld().getEntitiesByType(EntityType.ARROW, box, filter))
+					.addAll(this.getWorld().getEntitiesByType(EntityType.SPECTRAL_ARROW, box, filter)).build();
 
 			for (PersistentProjectileEntity arrow : collideArrows) {
 				ItemStack arrowStack = ((PersistentProjectileEntityAccessor) arrow).callAsItemStack();
@@ -411,7 +407,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	private void pickUpTridents() {
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			Box box = this.getBoundingBox().expand(1.0D, 0.5D, 1.0D);
 			Predicate<TridentEntity> filter = trident -> {
 				@Nullable Entity owner = trident.getOwner();
@@ -423,7 +419,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						&& ((TridentEntityAccessor) trident).isDealtDamage();
 			};
 
-			List<TridentEntity> collideTridents = this.world.getEntitiesByType(EntityType.TRIDENT, box, filter);
+			List<TridentEntity> collideTridents = this.getWorld().getEntitiesByType(EntityType.TRIDENT, box, filter);
 
 			for (TridentEntity trident : collideTridents) {
 				ItemStack tridentStack = ((PersistentProjectileEntityAccessor) trident).callAsItemStack();
@@ -444,7 +440,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public boolean teleport(double x, double y, double z, boolean spawnParticles) {
-		if (this.canTeleport(new BlockPos(x, y, z))) {
+		if (this.canTeleport(BlockPos.ofFloored(x, y, z))) {
 			this.navigation.stop();
 			this.requestTeleport(x, y, z);
 
@@ -498,7 +494,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.updateJob();
 
 		this.getJob().tickBrain(this.getBrain());
-		this.getBrain().tick((ServerWorld) this.world, this);
+		this.getBrain().tick((ServerWorld) this.getWorld(), this);
 
 		this.updatePose();
 
@@ -570,7 +566,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.changingCostumeTicks = 0;
 		}
 
-		long dayTime = this.world.getTimeOfDay();
+		long dayTime = this.getWorld().getTimeOfDay();
 		long currentDay = dayTime / 24000L;
 		long lastDay = this.lastClearCommitmentDayTime / 24000L;
 		if (currentDay > lastDay) {
@@ -619,7 +615,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (!job.equals(this.getJob())) {
 			this.setJob(job);
-			this.onJobChanged((ServerWorld) this.world);
+			this.onJobChanged((ServerWorld) this.getWorld());
 		}
 	}
 
@@ -639,13 +635,13 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		if (this.isTamed()) {
 			if (player == this.getOwner()) {
 				if (player.isSneaking()) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						player.openHandledScreen(new LittleMaidScreenHandlerFactory(this));
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.getPose() != POSE_EATING) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, foodArg -> this.heal(6.5F));
 
@@ -656,14 +652,14 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						}
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != POSE_EATING) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, (foodArg) -> {
 							if (food.isFood()) {
 								for (Pair<StatusEffectInstance, Float> effect : Objects.requireNonNull(food.getItem().getFoodComponent()).getStatusEffects()) {
-									if (this.world.getRandom().nextFloat() < effect.getSecond()) {
+									if (this.getWorld().getRandom().nextFloat() < effect.getSecond()) {
 										this.addStatusEffect(new StatusEffectInstance(effect.getFirst()));
 									}
 								}
@@ -677,9 +673,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						}
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.getPose() != ModEntities.POSE_CHANGING_COSTUME) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						this.setPose(ModEntities.POSE_CHANGING_COSTUME);
 						this.navigation.stop();
 						// this.jump();
@@ -689,9 +685,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						}
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 						if (instructionComponent.isInstructing()) {
 							instructionComponent.cancelInstruction();
@@ -700,9 +696,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						}
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else if (interactItem.isOf(Items.DEBUG_STICK)) {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						List<MaidPersonality> allPersonalities = ModRegistries.MAID_PERSONALITY.stream().toList();
 						int currentIndex = allPersonalities.indexOf(this.getPersonality());
 
@@ -721,19 +717,19 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						), true);
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				} else {
-					if (!this.world.isClient()) {
+					if (!this.getWorld().isClient()) {
 						this.setMode(this.getMode().getNext());
 						player.sendMessage(this.getMode().getMessage(this), true);
 					}
 
-					return ActionResult.success(this.world.isClient());
+					return ActionResult.success(this.getWorld().isClient());
 				}
 			}
 		} else {
 			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != POSE_EATING) {
-				if (!this.world.isClient()) {
+				if (!this.getWorld().isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 					this.eatFood(food, (foodArg) -> {
 						this.setMaster(player);
@@ -743,7 +739,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 					this.brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(player, true));
 				}
 
-				return ActionResult.success(this.world.isClient());
+				return ActionResult.success(this.getWorld().isClient());
 			}
 		}
 
@@ -806,7 +802,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			target.setOnFireFor(fireLevel * 4);
 		}
 
-		boolean damagePassed = target.damage(DamageSource.mob(this), (float) damage);
+		boolean damagePassed = target.damage(target.getDamageSources().mobAttack(this), (float) damage);
 
 		if (damagePassed) {
 			ItemStack itemStack = this.getMainHandStack();
@@ -846,7 +842,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	private void headbutt() {
-		boolean damagePassed = Objects.requireNonNull(this.attackingTarget).damage(DamageSource.mob(this), 5.0F);
+		boolean damagePassed = Objects.requireNonNull(this.attackingTarget).damage(this.attackingTarget.getDamageSources().mobAttack(this), 5.0F);
 
 		if (damagePassed) {
 			double xDir = Math.sin(this.getYaw() * Math.PI / 180.0D);
@@ -878,7 +874,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		ItemStack mainStack = this.getMainHandStack();
 
 		if (this.getJob().equals(MaidJobs.ARCHER)) {
-			ItemStack arrow = this.getArrowType(mainStack);
+			ItemStack arrow = this.getProjectileType(mainStack);
 			if (arrow.isEmpty()) return;
 
 			boolean consumeArrow = !ModUtils.hasEnchantment(Enchantments.INFINITY, mainStack)
@@ -893,7 +889,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			projectile.setVelocity(xVelocity, yVelocity + power * 0.2D, zVelocity, 1.6F, 6);
 			projectile.pickupType = consumeArrow ? PickupPermission.ALLOWED : PickupPermission.CREATIVE_ONLY;
 
-			this.world.spawnEntity(projectile);
+			this.getWorld().spawnEntity(projectile);
 
 			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 			this.playArcherAttackSound();
@@ -989,7 +985,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public boolean damage(DamageSource source, float amount) {
 		boolean result = super.damage(source, amount);
 
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			if (result || this.damageBlocked) {
 				if (this.attackedCooldown > 0) {
 					this.continuityAttackedCount++;
@@ -1001,7 +997,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.damageBlocked = false;
 
-		if (!this.world.isClient() && this.isSitting()) {
+		if (!this.getWorld().isClient() && this.isSitting()) {
 			this.setMode(MaidMode.FREE);
 		}
 
@@ -1031,7 +1027,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private void damageArmor(DamageSource source, float amount, ItemStack itemStack) {
 		if (amount <= 0.0f) return;
 		if (!(itemStack.getItem() instanceof ArmorItem)) return;
-		if (source.isFire() && itemStack.getItem().isFireproof()) return;
+		if (source.isIn(DamageTypeTags.IS_FIRE) && itemStack.getItem().isFireproof()) return;
 
 		if ((amount /= 4.0f) < 1.0f) {
 			amount = 1.0f;
@@ -1046,8 +1042,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.damageBlocked = true;
 
-		if (!this.world.isClient) {
-			this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 0.8F + this.world.getRandom().nextFloat() * 0.4F);
+		if (!this.getWorld().isClient) {
+			this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 0.8F + this.getWorld().getRandom().nextFloat() * 0.4F);
 		}
 		if (amount >= 3.0f) {
 			int damage = 1 + MathHelper.floor(amount);
@@ -1062,7 +1058,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				}
 
 				this.activeItemStack = ItemStack.EMPTY;
-				this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.world.getRandom().nextFloat() * 0.4F);
+				this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.getWorld().getRandom().nextFloat() * 0.4F);
 			}
 		}
 	}
@@ -1085,7 +1081,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void wakeUp() {
 		super.wakeUp();
 
-		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
+		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.getWorld().getTime());
 		this.brain.forget(ModMemories.SLEEP_POS);
 	}
 
@@ -1097,7 +1093,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	public ItemStack getArrowType(ItemStack itemStack) {
+	public ItemStack getProjectileType(ItemStack itemStack) {
 		if (itemStack.getItem() instanceof RangedWeaponItem rangedItem) {
 			Predicate<ItemStack> projectiles = rangedItem.getHeldProjectiles();
 			ItemStack heldProjectile = RangedWeaponItem.getHeldProjectile(this, projectiles);
@@ -1169,7 +1165,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+				this.getWorld().addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 			}
 		} else {
 			super.handleStatus(status);
@@ -1184,12 +1180,12 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			double y = this.random.nextGaussian() * 0.02;
 			double z = this.random.nextGaussian() * 0.02;
 
-			((ServerWorld) this.world).spawnParticles(particle, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0, x, y, z, 1.0D);
+			((ServerWorld) this.getWorld()).spawnParticles(particle, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0, x, y, z, 1.0D);
 		}
 	}
 
 	public void spawnEatingParticles() {
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			for (int i = 0; i < 6; i++) {
 				double y = -this.random.nextDouble() * 0.6D - 0.3D;
 				Vec3d pos = new Vec3d((this.random.nextDouble() - 0.5D) * 0.3D, y, 0.6D)
@@ -1201,7 +1197,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						.rotateX(-this.getPitch() * ((float) Math.PI / 180))
 						.rotateY(-this.getYaw() * ((float) Math.PI / 180));
 
-				for (ServerPlayerEntity target : ((ServerWorld) this.world).getPlayers()) {
+				for (ServerPlayerEntity target : ((ServerWorld) this.getWorld()).getPlayers()) {
 					PacketByteBuf packet = PacketByteBufs.create();
 					packet.writeItemStack(this.getOffHandStack());
 					packet.writeDouble(pos.getX());
@@ -1218,7 +1214,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	public void spawnTeleportParticles() {
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			for (int i = 0; i < 128; i++) {
 				double delta = i / 127.0D;
 				double xPos = MathHelper.lerp(delta, this.prevX, this.getX()) + (this.random.nextDouble() - 0.5D) * this.getWidth() * 2.0D;
@@ -1228,14 +1224,14 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				float yDelta = (this.random.nextFloat() - 0.5F) * 0.2F;
 				float zDelta = (this.random.nextFloat() - 0.5F) * 0.2F;
 
-				((ServerWorld) this.world).spawnParticles(ParticleTypes.PORTAL, xPos, yPos, zPos, 0, xDelta, yDelta, zDelta, 1.0D);
+				((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.PORTAL, xPos, yPos, zPos, 0, xDelta, yDelta, zDelta, 1.0D);
 			}
 		}
 	}
 
 	private void spawnSingleParticle(@SuppressWarnings("SameParameterValue") ParticleEffect particle) {
-		if (!this.world.isClient()) {
-			((ServerWorld) this.world).spawnParticles(particle, this.getX(), this.getY() + 1.2D, this.getZ(), 0, 1.0D, 0.0D, 0.0D, 1.0D);
+		if (!this.getWorld().isClient()) {
+			((ServerWorld) this.getWorld()).spawnParticles(particle, this.getX(), this.getY() + 1.2D, this.getZ(), 0, 1.0D, 0.0D, 0.0D, 1.0D);
 		}
 	}
 
@@ -1309,12 +1305,12 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (uuid == null) return null;
 
-		return this.world.getPlayerByUuid(uuid);
+		return this.getWorld().getPlayerByUuid(uuid);
 	}
 
 	@Override
 	public Optional<PlayerEntity> getMaster() {
-		return Optional.ofNullable(this.getMasterUuid()).map(id -> this.world.getPlayerByUuid(id));
+		return Optional.ofNullable(this.getMasterUuid()).map(id -> this.getWorld().getPlayerByUuid(id));
 	}
 
 	private void setMaster(PlayerEntity master) {
@@ -1340,7 +1336,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (value == MaidMode.FREE) {
 			// TODO: おうちから離れてるときのみアンカーを設定するように
-			this.setAnchor(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos()));
+			this.setAnchor(GlobalPos.create(this.getWorld().getRegistryKey(), this.getBlockPos()));
 		} else {
 			this.removeAnchor();
 		}
@@ -1406,6 +1402,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
+		UMULittleMaid.LOGGER.info(this.dataTracker.get(DELIVERY_BOXES).size());
+
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
 
@@ -1413,15 +1411,17 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void addDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.add(value);
-		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
 		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
+
+		UMULittleMaid.LOGGER.info("agsergfeasrg");
 	}
 
 	@Override
 	public void removeDeliveryBox(GlobalPos value) {
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
-		this.dataTracker.set(DELIVERY_BOXES, boxes);
+		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
 		this.brain.forget(ModMemories.DELIVERY_BOXES);
 	}
 
@@ -1507,7 +1507,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	public Optional<LivingEntity> getAttackTarget() {
 		return this.dataTracker.get(ATTACK_TARGET)
-				.map(id -> (LivingEntity) this.world.getEntityById(id));
+				.map(id -> (LivingEntity) this.getWorld().getEntityById(id));
 	}
 
 	public void setAttackTarget(LivingEntity value) {
@@ -1579,7 +1579,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public void playAmbientSound() {
-		if (!this.world.isClient() && this.isIdle()) {
+		if (!this.getWorld().isClient() && this.isIdle()) {
 			this.playSound(this.getAmbientSound(), this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
@@ -1660,7 +1660,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		NbtList givenFoodsNbt = new NbtList();
 		for (Item givenFood : this.givenFoods) {
-			givenFoodsNbt.add(NbtString.of(Registry.ITEM.getId(givenFood).toString()));
+			givenFoodsNbt.add(NbtString.of(Registries.ITEM.getId(givenFood).toString()));
 		}
 		nbt.put(KEY_GIVEN_FOODS, givenFoodsNbt);
 
@@ -1707,7 +1707,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		NbtList givenFoodsNbt = nbt.getList(KEY_GIVEN_FOODS, NbtElement.STRING_TYPE);
 		for (int i = 0; i < givenFoodsNbt.size(); i++) {
-			Item foodType = Registry.ITEM.get(Identifier.tryParse(givenFoodsNbt.getString(i)));
+			Item foodType = Registries.ITEM.get(Identifier.tryParse(givenFoodsNbt.getString(i)));
 			if (foodType != Items.AIR) {
 				this.givenFoods.add(foodType);
 			}
@@ -1754,15 +1754,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.animationFactory;
-	}
-
-	@Override
-	public void registerControllers(AnimationData data) {
-		data.addAnimationController(new AnimationController<>(this, "behavior", 1.5F, e -> {
-			AnimationController<LittleMaidEntity> controller = e.getController();
-			AnimationBuilder builder = new AnimationBuilder();
+	public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+		controllers.add(new AnimationController<>(this, "main", 1, state -> {
+			RawAnimation builder = RawAnimation.begin();
 
 			AtomicBoolean itemAnimated = new AtomicBoolean(false);
 			if (this.getItemUseTimeLeft() > 0) {
@@ -1775,98 +1769,101 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 			if (!itemAnimated.get()) {
 				if (this.isGliding()) {
-					builder.addRepeatingAnimation("wait", 1);
-					builder.addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenPlayXTimes("wait", 1);
+					builder.thenLoop("glide");
 				} else if (this.isTransforming()) {
-					builder.addAnimation("transform", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+					builder.thenPlay("transform");
 				} else if (this.isHeadpatted()) {
-					builder.addAnimation("headpatted", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenLoop("headpatted");
 				} else if (this.isEating()) {
-					builder.addAnimation("eat", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenLoop("eat");
 				} else if (this.isSleeping()) {
-					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenLoop("sleeping");
 				} else if (this.isSleeping()) {
-					builder.addAnimation("sleeping", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenLoop("sleeping");
 				} else if (this.getItemUseTimeLeft() > 0) {
 					switch (this.getActiveItem().getUseAction()) {
 						case BOW -> MaidItemAnimationSetter.BOW.setItemAnimation(this, builder);
 						case SPEAR -> MaidItemAnimationSetter.SPEAR.setItemAnimation(this, builder);
 					}
 				} else if (this.isSitting()) {
-					builder.addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP);
-				} else if (e.isMoving()) {
+					builder.thenLoop("sit");
+				} else if (state.isMoving()) {
 					if (this.getTarget() != null && this.getJob().equals(MaidJobs.FENCER)) {
-						builder.addAnimation("chase_sword", ILoopType.EDefaultLoopTypes.LOOP);
+						builder.thenLoop("chase_sword");
 					} else {
-						builder.addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);
+						builder.thenLoop("walk");
 					}
 				} else {
-					builder.addAnimation("stand", ILoopType.EDefaultLoopTypes.LOOP);
+					builder.thenLoop("stand");
 				}
 			}
 
-			controller.setAnimation(builder);
-			controller.registerParticleListener(event -> {
-				switch (event.effect) {
-					case "kirakira" -> {
-						double tick = event.getAnimationTick();
-						double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
-						Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-								.rotateY((float) rotate)
-								.add(this.getX(), this.getY() + 0.7D, this.getZ());
-						Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-								.rotateY((float) rotate)
-								.add(this.getX(), this.getY() + 0.7D, this.getZ());
-
-						this.world.addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
-						this.world.addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
-					} case "shock" -> {
-						Vec3d pos = new Vec3d(0.0D, 0.0D, 1.6D)
-								.rotateY((float) Math.toRadians(-this.getYaw()))
-								.add(this.getPos())
-								.add(0.0D, 1.25D, 0.0D);
-
-						this.world.addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
-						this.world.addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
-					} case "zzz" -> {
-						double rotateX = Math.toRadians(this.random.nextGaussian() * 5.0D);
-						double rotateY = Math.toRadians(Objects.requireNonNull(this.getSleepingDirection()).asRotation() + this.random.nextGaussian() * 5.0D);
-						double rotateZ = Math.toRadians(this.random.nextGaussian() * 5.0D);
-
-						Vec3d vel = new Vec3d(0.34D, 0.78D, 0.34D)
-								.rotateX((float) rotateX)
-								.rotateY((float) rotateY)
-								.rotateZ((float) rotateZ)
-								.normalize()
-								.multiply(0.2D);
-						Vec3d pos = vel.normalize()
-								.multiply(0.8D)
-								.add(this.getPos());
-
-						this.world.addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-						this.world.addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-						this.world.addParticle(new ZZZParticle.Mediator(2), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-					}
-				}
-			});
+			state.setAndContinue(builder);
 
 			return PlayState.CONTINUE;
+		}).setParticleKeyframeHandler(event -> {
+			switch (event.getKeyframeData().getEffect()) {
+				case "kirakira" -> {
+					double tick = event.getAnimationTick();
+					double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
+					Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+							.rotateY((float) rotate)
+							.add(this.getX(), this.getY() + 0.7D, this.getZ());
+					Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+							.rotateY((float) rotate)
+							.add(this.getX(), this.getY() + 0.7D, this.getZ());
+
+					this.getWorld().addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
+					this.getWorld().addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+				} case "shock" -> {
+					Vec3d pos = new Vec3d(0.0D, 0.0D, 1.6D)
+							.rotateY((float) Math.toRadians(-this.getYaw()))
+							.add(this.getPos())
+							.add(0.0D, 1.25D, 0.0D);
+
+					this.getWorld().addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+					this.getWorld().addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+				} case "zzz" -> {
+					double rotateX = Math.toRadians(this.random.nextGaussian() * 5.0D);
+					double rotateY = Math.toRadians(Objects.requireNonNull(this.getSleepingDirection()).asRotation() + this.random.nextGaussian() * 5.0D);
+					double rotateZ = Math.toRadians(this.random.nextGaussian() * 5.0D);
+
+					Vec3d vel = new Vec3d(0.34D, 0.78D, 0.34D)
+							.rotateX((float) rotateX)
+							.rotateY((float) rotateY)
+							.rotateZ((float) rotateZ)
+							.normalize()
+							.multiply(0.2D);
+					Vec3d pos = vel.normalize()
+							.multiply(0.8D)
+							.add(this.getPos());
+
+					this.getWorld().addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+					this.getWorld().addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+					this.getWorld().addParticle(new ZZZParticle.Mediator(2), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+				}
+			}
 		}));
 
-		data.addAnimationController(new AnimationController<>(this, "sub", 1.5F, event -> {
-			AnimationController<LittleMaidEntity> controller = event.getController();
-			AnimationBuilder builder = new AnimationBuilder();
+		controllers.add(new AnimationController<>(this, "sub", 1, event -> {
+			RawAnimation builder = RawAnimation.begin();
 
 			if (this.isGliding()) {
-				builder.addAnimation("glide_root", ILoopType.EDefaultLoopTypes.LOOP);
+				builder.thenLoop("glide_root");
 			} else {
 				return PlayState.STOP;
 			}
 
-			controller.setAnimation(builder);
+			event.setAndContinue(builder);
 
 			return PlayState.CONTINUE;
 		}));
+	}
+
+	@Override
+	public AnimatableInstanceCache getAnimatableInstanceCache() {
+		return this.animationFactory;
 	}
 
 	@SuppressWarnings("SwitchStatementWithTooFewBranches")

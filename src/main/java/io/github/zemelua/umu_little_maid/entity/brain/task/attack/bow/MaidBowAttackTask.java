@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.Map;
 import java.util.Optional;
 
-public class MaidBowAttackTask extends Task<LittleMaidEntity> {
+public class MaidBowAttackTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT
 	);
@@ -133,6 +133,6 @@ public class MaidBowAttackTask extends Task<LittleMaidEntity> {
 	}
 
 	private static boolean hasArrows(LittleMaidEntity maid) {
-		return !maid.getArrowType(maid.getMainHandStack()).isEmpty();
+		return !maid.getProjectileType(maid.getMainHandStack()).isEmpty();
 	}
 }

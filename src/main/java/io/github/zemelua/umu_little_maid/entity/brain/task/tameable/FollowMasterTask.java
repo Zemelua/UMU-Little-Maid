@@ -3,7 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.tameable;
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.ai.brain.*;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
 
-public class FollowMasterTask<E extends PathAwareEntity & ITameable> extends Task<E> {
+public class FollowMasterTask<E extends PathAwareEntity & ITameable> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
 	private final float startDistance;

@@ -5,7 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class UpdateSleepPosTask extends Task<LittleMaidEntity> {
+public class UpdateSleepPosTask extends MultiTickTask<LittleMaidEntity> {
 	public UpdateSleepPosTask() {
 		super(ImmutableMap.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT, ModMemories.SLEEP_POS, MemoryModuleState.VALUE_ABSENT), 1);
 	}

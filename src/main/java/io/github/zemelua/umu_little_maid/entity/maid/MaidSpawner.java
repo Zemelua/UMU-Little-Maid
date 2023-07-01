@@ -57,6 +57,6 @@ public class MaidSpawner implements Spawner {
 	}
 
 	private boolean spawn(ServerWorld world, BlockPos pos) {
-		return ModEntities.LITTLE_MAID.spawn(world, null, null, null, pos, SpawnReason.EVENT, false, false) != null;
+		return ModEntities.LITTLE_MAID.spawn(world, pos, SpawnReason.EVENT) != null;
 	}
 }

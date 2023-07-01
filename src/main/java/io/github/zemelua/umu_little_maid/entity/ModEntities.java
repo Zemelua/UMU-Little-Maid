@@ -16,7 +16,8 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
 import org.apache.logging.log4j.Marker;
@@ -45,7 +46,7 @@ public final class ModEntities {
 
 	@SuppressWarnings({"ConstantValue", "DataFlowIssue"})
 	public static void initialize() {
-		Registry.register(Registry.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), LITTLE_MAID);
+		Registry.register(Registries.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), LITTLE_MAID);
 
 		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);

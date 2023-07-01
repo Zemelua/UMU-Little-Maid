@@ -11,7 +11,7 @@ import net.minecraft.block.*;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -26,7 +26,7 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Map;
 import java.util.Optional;
 
-public class MaidFarmTask extends Task<LittleMaidEntity> {
+public class MaidFarmTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT,
 			ModMemories.FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT

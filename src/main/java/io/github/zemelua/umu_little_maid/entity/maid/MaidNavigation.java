@@ -21,7 +21,7 @@ public class MaidNavigation extends MobNavigation {
 			for (int i = 0; i < this.currentPath.getLength(); i++) {
 				PathNode node = this.currentPath.getNode(i);
 				if (this.world.hasRain(new BlockPos(node.x, node.y, node.z))
-						|| this.world.hasRain(new BlockPos(node.x, node.y + this.entity.getBoundingBox().getMax(Direction.Axis.Y), node.z))) {
+						|| this.world.hasRain(BlockPos.ofFloored(node.x, node.y + this.entity.getBoundingBox().getMax(Direction.Axis.Y), node.z))) {
 					this.currentPath.setLength(i);
 
 					return;

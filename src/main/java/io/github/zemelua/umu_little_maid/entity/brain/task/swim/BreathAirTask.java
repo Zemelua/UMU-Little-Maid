@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +17,7 @@ import net.minecraft.world.WorldView;
 
 import java.util.Map;
 
-public class BreathAirTask<E extends MobEntity> extends Task<E> {
+public class BreathAirTask<E extends MobEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
 	public BreathAirTask() {

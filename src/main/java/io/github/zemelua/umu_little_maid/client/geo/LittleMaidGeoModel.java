@@ -3,25 +3,14 @@ package io.github.zemelua.umu_little_maid.client.geo;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.data.EntityModelData;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 @SuppressWarnings("unused")
-public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
-	static final String KEY_HEAD = "head";
+public class LittleMaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
+	public static final String KEY_HEAD = "head";
 	static final String KEY_LEFT_ARM = "left_arm";
 	static final String KEY_RIGHT_ARM = "right_arm";
-	static final String KEY_ARMOR_HEAD = "armorHead";
-	static final String KEY_ARMOR_LEFT_LEG = "armorLeftLeg";
-	static final String KEY_ARMOR_RIGHT_LEG = "armorRightLeg";
-	static final String KEY_ITEM_LEFT_HAND = "itemLeftHand";
-	static final String KEY_ITEM_RIGHT_HAND = "itemRightHand";
-	static final String KEY_DRIPLEAF_RIGHT_HAND = "dripleaf_right_hand";
 
 	private static final Identifier RESOURCE_MODEL = UMULittleMaid.identifier("geo/little_maid.geo.json");
 	private static final Identifier RESOURCE_TEXTURE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
@@ -54,23 +43,27 @@ public class LittleMaidGeoModel extends AnimatedGeoModel<LittleMaidEntity> {
 	private static final Identifier RESOURCE_ANIMATION = UMULittleMaid.identifier("animations/little_maid.animation.json");
 	private static final Identifier RESOURCE_ANIMATION_TRANSFORM = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void setCustomAnimations(LittleMaidEntity maid, int instanceId, AnimationEvent animationEvent) {
-		super.setCustomAnimations(maid, instanceId, animationEvent);
-
-		IBone head = this.getBone(KEY_HEAD);
-
-		EntityModelData modelData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
-
-		AnimationData manager = maid.getFactory().getOrCreateAnimationData(instanceId);
-		int unpause = !MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused ? 1 : 0;
-
-		if (head != null && head.getRotationX() == 0.0F && head.getRotationY() == 0.0F && head.getRotationZ() == 0.0F) {
-			head.setRotationX(head.getRotationX() + (float) Math.toRadians(modelData.headPitch) * unpause);
-			head.setRotationY(head.getRotationY() + (float) Math.toRadians(modelData.netHeadYaw) * unpause);
-		}
+	public LittleMaidGeoModel() {
+		super(UMULittleMaid.identifier("little_maid"), true);
 	}
+
+//	@Override
+//	@SuppressWarnings("unchecked")
+//	public void setCustomAnimations(LittleMaidEntity maid, int instanceId, AnimationEvent animationEvent) {
+//		super.setCustomAnimations(maid, instanceId, animationEvent);
+//
+//		IBone head = this.getBone(KEY_HEAD);
+//
+//		EntityModelData modelData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
+//
+//		AnimationData manager = maid.getFactory().getOrCreateAnimationData(instanceId);
+//		int unpause = !MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused ? 1 : 0;
+//
+//		if (head != null && head.getRotationX() == 0.0F && head.getRotationY() == 0.0F && head.getRotationZ() == 0.0F) {
+//			head.setRotationX(head.getRotationX() + (float) Math.toRadians(modelData.headPitch) * unpause);
+//			head.setRotationY(head.getRotationY() + (float) Math.toRadians(modelData.netHeadYaw) * unpause);
+//		}
+//	}
 
 	@Override
 	public Identifier getModelResource(LittleMaidEntity maid) {

@@ -4,9 +4,9 @@ import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.mixin.SpawnEggItemAccessor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -19,7 +19,7 @@ public final class ModItems {
 	public static void initialize() {
 		if (ModItems.initialized) throw new IllegalStateException("Inventories are already initialized!");
 
-		Registry.register(Registry.ITEM, UMULittleMaid.identifier("little_maid_spawn_egg"), ModItems.LITTLE_MAID_SPAWN_EGG);
+		Registry.register(Registries.ITEM, UMULittleMaid.identifier("little_maid_spawn_egg"), ModItems.LITTLE_MAID_SPAWN_EGG);
 		SpawnEggItemAccessor.getSPAWN_EGGS().remove(ModEntities.LITTLE_MAID);
 
 		ModItems.initialized = true;
@@ -29,6 +29,6 @@ public final class ModItems {
 	private ModItems() throws IllegalAccessException {throw new IllegalAccessException();}
 
 	static {
-		LITTLE_MAID_SPAWN_EGG = new SpawnEggItem(ModEntities.LITTLE_MAID, 0, 0, new Item.Settings().group(ItemGroup.MISC));
+		LITTLE_MAID_SPAWN_EGG = new SpawnEggItem(ModEntities.LITTLE_MAID, 0, 0, new Item.Settings());
 	}
 }

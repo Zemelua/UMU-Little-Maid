@@ -4,7 +4,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.item.Item;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 
 import java.util.function.Consumer;
 

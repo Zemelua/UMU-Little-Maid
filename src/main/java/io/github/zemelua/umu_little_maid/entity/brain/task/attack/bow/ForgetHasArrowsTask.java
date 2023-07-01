@@ -6,12 +6,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 
-public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
+public class ForgetHasArrowsTask<E extends LivingEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_PRESENT
 	);
@@ -24,7 +24,7 @@ public class ForgetHasArrowsTask<E extends LivingEntity> extends Task<E> {
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 
-		if (living.getArrowType(living.getMainHandStack()).isEmpty()) {
+		if (living.getProjectileType(living.getMainHandStack()).isEmpty()) {
 			brain.forget(ModMemories.HAS_ARROWS);
 		}
 	}

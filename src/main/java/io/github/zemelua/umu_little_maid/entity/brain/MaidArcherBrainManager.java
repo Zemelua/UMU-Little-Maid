@@ -15,16 +15,12 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.wander.AvoidRainStrollTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidArcherBrainManager {
 	public static void initBrain(Brain<LittleMaidEntity> brain) {
@@ -48,18 +44,18 @@ public final class MaidArcherBrainManager {
 	public static void addCoreTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.CORE, ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
-				Pair.of(0, new OpenDoorsTask()),
-				Pair.of(0, new WakeUpTask()),
+				Pair.of(0, OpenDoorsTask.create()),
+				Pair.of(0, WakeUpTask.create()),
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
-				Pair.of(98, new UpdateAttackTargetTask<>(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(98, UpdateAttackTargetTask.create(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(98, new RememberHasArrowsTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetAttackTargetTask<>()),
+				Pair.of(99, ForgetAttackTargetTask.create()),
 				Pair.of(99, new ForgetHasArrowsTask<>()),
 				Pair.of(99, new UpdateSleepPosTask())
 		));
@@ -70,10 +66,10 @@ public final class MaidArcherBrainManager {
 				Pair.of(0, new FollowMasterTask<>(10.0F)),
 				Pair.of(0, new TeleportToMasterTask<>(15.0F)),
 				Pair.of(0, new ShelterFromRainTask<>()),
-				Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				// Pair.of(1, new AdmireItemTimeLimitTask(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
-						Pair.of(new AvoidRainStrollTask(0.8F), 2),
-						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
+						// Pair.of(new AvoidRainStrollTask(0.8F), 2),
+						// Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				)))
 		));

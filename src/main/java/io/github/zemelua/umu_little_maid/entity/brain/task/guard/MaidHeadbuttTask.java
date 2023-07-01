@@ -6,7 +6,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.util.ModWorldUtils;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class MaidHeadbuttTask extends Task<LittleMaidEntity> {
+public class MaidHeadbuttTask extends MultiTickTask<LittleMaidEntity> {
 	private static final ImmutableMap<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of();
 
 	public MaidHeadbuttTask() {

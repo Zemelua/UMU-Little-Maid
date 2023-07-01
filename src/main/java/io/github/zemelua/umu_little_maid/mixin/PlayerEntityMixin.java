@@ -29,7 +29,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 	@Inject(method = "attack", at = @At(value = "RETURN"))
 	public void attack(Entity target, CallbackInfo callback) {
-		if (!this.world.isClient() && target instanceof LivingEntity targetLiving && ModUtils.isMonster(targetLiving) && targetLiving.isDead()) {
+		if (!this.getWorld().isClient() && target instanceof LivingEntity targetLiving && ModUtils.isMonster(targetLiving) && targetLiving.isDead()) {
 			Box box = this.getBoundingBox().expand(10, 3, 10);
 			Predicate<LittleMaidEntity> filter = maid -> {
 				if (maid.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KILLS)) {
@@ -39,7 +39,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 				return false;
 			};
 
-			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
+			List<LittleMaidEntity> maids = this.getWorld().getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
 				maid.increaseCommitment(3, false);
 			}
@@ -48,7 +48,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 	@Inject(method = "wakeUp(ZZ)V", at = @At(value = "RETURN"))
 	public void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo callback) {
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			Box box = this.getBoundingBox().expand(10, 3, 10);
 			Predicate<LittleMaidEntity> filter = maid -> {
 				if (maid.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_WAKE_UPS)) {
@@ -58,7 +58,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 				return false;
 			};
 
-			List<LittleMaidEntity> maids = this.world.getEntitiesByClass(LittleMaidEntity.class, box, filter);
+			List<LittleMaidEntity> maids = this.getWorld().getEntitiesByClass(LittleMaidEntity.class, box, filter);
 			for (LittleMaidEntity maid : maids) {
 				maid.increaseCommitment(20, false);
 			}

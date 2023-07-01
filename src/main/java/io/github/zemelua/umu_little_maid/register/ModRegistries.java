@@ -5,7 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 

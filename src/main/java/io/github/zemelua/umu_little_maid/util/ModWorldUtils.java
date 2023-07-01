@@ -37,7 +37,7 @@ public final class ModWorldUtils {
 			return blockDist <= fluidDist ? blockHit : fluidHit;
 		}, mContext -> {
 			Vec3d raycastVec = mContext.getStart().subtract(mContext.getEnd());
-			return BlockHitResult.createMissed(mContext.getEnd(), Direction.getFacing(raycastVec.getX(), raycastVec.getY(), raycastVec.getZ()), new BlockPos(mContext.getEnd()));
+			return BlockHitResult.createMissed(mContext.getEnd(), Direction.getFacing(raycastVec.getX(), raycastVec.getY(), raycastVec.getZ()), BlockPos.ofFloored(mContext.getEnd()));
 		});
 	}
 

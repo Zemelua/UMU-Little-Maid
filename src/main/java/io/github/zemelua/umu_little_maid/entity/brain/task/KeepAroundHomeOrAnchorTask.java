@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Map;
 import java.util.Optional;
 
-public class KeepAroundHomeOrAnchorTask extends Task<LittleMaidEntity> {
+public class KeepAroundHomeOrAnchorTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT,
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT
@@ -45,7 +45,7 @@ public class KeepAroundHomeOrAnchorTask extends Task<LittleMaidEntity> {
 			Optional<Vec3d> walkTo = Optional.empty();
 			final int tryCount = 1000;
 			int i;
-			for (i = 0; i < tryCount && (walkTo.isEmpty() || this.exceedsMaxRange(maid, GlobalPos.create(world.getRegistryKey(), new BlockPos(walkTo.get())))); i++) {
+			for (i = 0; i < tryCount && (walkTo.isEmpty() || this.exceedsMaxRange(maid, GlobalPos.create(world.getRegistryKey(), BlockPos.ofFloored(walkTo.get())))); i++) {
 				walkTo = Optional.ofNullable(NoPenaltyTargeting.findTo(maid, 15, 7, Vec3d.ofBottomCenter(pos.get().getPos()), 1.5707963705062866));
 			}
 

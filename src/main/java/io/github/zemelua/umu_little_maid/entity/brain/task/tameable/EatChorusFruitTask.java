@@ -5,7 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -21,7 +21,7 @@ import static io.github.zemelua.umu_little_maid.entity.ModEntities.*;
 import static net.minecraft.entity.ai.brain.MemoryModuleType.*;
 
 @SuppressWarnings("unused")
-public class EatChorusFruitTask extends Task<LittleMaidEntity> {
+public class EatChorusFruitTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 	);
 
@@ -79,7 +79,7 @@ public class EatChorusFruitTask extends Task<LittleMaidEntity> {
 				boolean teleported = maid.teleport(this.teleportTo.getX(), this.teleportTo.getY(), this.teleportTo.getZ(), true);
 				if (teleported) {
 					world.emitGameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Emitter.of(maid));
-					world.playSound(null, new BlockPos(oldPos), SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+					world.playSound(null, BlockPos.ofFloored(oldPos), SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					world.playSound(null, maid.getBlockPos(), SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 				}
 			});

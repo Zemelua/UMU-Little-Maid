@@ -4,9 +4,9 @@ import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.register.ModRegistries;
 import io.github.zemelua.umu_little_maid.util.ICanTagObject;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

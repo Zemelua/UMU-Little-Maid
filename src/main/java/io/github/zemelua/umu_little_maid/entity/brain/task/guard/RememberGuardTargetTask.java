@@ -6,12 +6,12 @@ import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 
-public class RememberGuardTargetTask extends Task<LittleMaidEntity> {
+public class RememberGuardTargetTask extends MultiTickTask<LittleMaidEntity> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.GUARDABLE_LIVING, MemoryModuleState.VALUE_PRESENT,
 			ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_ABSENT

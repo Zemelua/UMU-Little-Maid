@@ -1,10 +1,9 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.zemelua.umu_little_maid.mixin.TaskAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Items;
@@ -13,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.Map;
 
-public abstract class AbstractTridentTask<E extends MobEntity> extends Task<E> {
+public abstract class AbstractTridentTask<E extends MobEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT,
 			MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT
@@ -54,7 +53,7 @@ public abstract class AbstractTridentTask<E extends MobEntity> extends Task<E> {
 
 		return brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
 				.filter(target -> mob.getVisibilityCache().canSee(target))
-				.isPresent() && ((TaskAccessor<E>) this).callHasRequiredMemoryState(mob);
+				.isPresent() && this.hasRequiredMemoryState(mob);
 	}
 
 	@Override

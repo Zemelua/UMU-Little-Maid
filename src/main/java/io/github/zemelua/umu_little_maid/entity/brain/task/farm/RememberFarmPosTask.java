@@ -7,12 +7,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Map;
 
-public class RememberFarmPosTask<E extends LivingEntity> extends Task<E> {
+public class RememberFarmPosTask<E extends LivingEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			ModMemories.FARMABLE_POSES, MemoryModuleState.VALUE_PRESENT,
 			ModMemories.FARM_POS, MemoryModuleState.VALUE_ABSENT

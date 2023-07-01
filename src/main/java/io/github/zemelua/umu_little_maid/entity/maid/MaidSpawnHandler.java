@@ -2,8 +2,8 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 

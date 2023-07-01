@@ -6,7 +6,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Map;
 import java.util.Optional;
 
-public class WalkToFarmPosTask<E extends PathAwareEntity> extends Task<E> {
+public class WalkToFarmPosTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
 			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT,

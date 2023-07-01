@@ -2,21 +2,17 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
+import net.minecraft.entity.ai.brain.task.SingleTickTask;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 
-public class TridentApproachTargetTask extends RangedApproachTask {
-	public TridentApproachTargetTask(float speed) {
-		super(speed);
+public class TridentApproachTargetTask {
+	public static Task<MobEntity> create(float speed) {
+		return TaskTriggerer.runIf(TridentApproachTargetTask::shouldApproach, (SingleTickTask<? super MobEntity>) RangedApproachTask.create(entity -> speed));
 	}
 
-	@Override
-	protected boolean shouldRun(ServerWorld world, MobEntity mob) {
-		return super.shouldRun(world, mob) && TridentApproachTargetTask.shouldApproach(mob, mob.getMainHandStack());
-	}
-
-	public static boolean shouldApproach(LivingEntity living, ItemStack tridentStack) {
-		return !ThrowTridentTask.shouldThrow(tridentStack) && !RiptideTridentTask.shouldRiptide(living, tridentStack);
+	public static boolean shouldApproach(LivingEntity living) {
+		return !ThrowTridentTask.shouldThrow(living.getMainHandStack()) && !RiptideTridentTask.shouldRiptide(living, living.getMainHandStack());
 	}
 }

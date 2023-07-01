@@ -1,7 +1,7 @@
 package io.github.zemelua.umu_little_maid.mixin;
 
-import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.tinker.Tinkers;
+import io.github.zemelua.umu_little_maid.util.HeadpatManager;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -14,7 +14,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,8 +37,8 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 			int ticks = HeadpatManager.getHeadpattingComponent(player).getHeadpattingTicks();
 			double sin = Math.sin(Math.toRadians((ticks + tickDelta) * 18.0D + 180.0D));
 
-			matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
-			matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion((float) Math.toRadians(-10 + sin * 20)));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) Math.toRadians(-10 + sin * 20)));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) Math.toRadians(-10 + sin * 20)));
 		}
 	}
 

@@ -10,9 +10,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class Overlay {

@@ -2,7 +2,9 @@ package io.github.zemelua.umu_little_maid;
 
 import io.github.zemelua.umu_little_maid.c_component.Components;
 import io.github.zemelua.umu_little_maid.c_component.instruction.IInstructionComponent;
+import io.github.zemelua.umu_little_maid.item.ModItems;
 import io.github.zemelua.umu_little_maid.util.InstructionUtils;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -14,6 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public final class Callbacks {
+	@SuppressWarnings("UnstableApiUsage")
+	public static void onRegisterSpawnEggItemGroup(FabricItemGroupEntries groupEntries) {
+		groupEntries.add(ModItems.LITTLE_MAID_SPAWN_EGG);
+	}
+
 	public static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		if (instructionComponent.isInstructing()) {
