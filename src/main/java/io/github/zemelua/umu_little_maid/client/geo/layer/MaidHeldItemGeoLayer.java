@@ -16,12 +16,12 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 
-public class LittleMaidHeldItemGeoLayer extends BlockAndItemGeoLayer<LittleMaidEntity> {
+public class MaidHeldItemGeoLayer extends BlockAndItemGeoLayer<LittleMaidEntity> {
 	private static final String KEY_ITEM_LEFT_HAND = "itemLeftHand";
 	private static final String KEY_ITEM_RIGHT_HAND = "itemRightHand";
 	private static final String KEY_DRIPLEAF_RIGHT_HAND = "dripleaf_right_hand";
 
-	public LittleMaidHeldItemGeoLayer(GeoRenderer<LittleMaidEntity> renderer) {
+	public MaidHeldItemGeoLayer(GeoRenderer<LittleMaidEntity> renderer) {
 		super(renderer);
 	}
 

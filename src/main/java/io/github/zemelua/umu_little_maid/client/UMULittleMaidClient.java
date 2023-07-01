@@ -1,8 +1,8 @@
 package io.github.zemelua.umu_little_maid.client;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoModel;
-import io.github.zemelua.umu_little_maid.client.geo.LittleMaidGeoRenderer;
+import io.github.zemelua.umu_little_maid.client.geo.model.MaidGeoModel;
+import io.github.zemelua.umu_little_maid.client.geo.renderer.MaidGeoRenderer;
 import io.github.zemelua.umu_little_maid.client.network.ClientNetworkHandler;
 import io.github.zemelua.umu_little_maid.client.particle.ShockParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.ShockwaveParticleFactory;
@@ -60,7 +60,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 
 		ClientNetworkHandler.initializeClient();
 
-		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, LittleMaidGeoRenderer::new);
+		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, MaidGeoRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
 		// EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
 
@@ -147,7 +147,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 //						new Keyframe(0.7F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC)))
 //				.build();
 		ANIMATION_MAID_HEADPATTED = Animation.Builder.create(1.0F).looping()
-				.addBoneAnimation(LittleMaidGeoModel.KEY_HEAD, new Transformation(Targets.ROTATE,
+				.addBoneAnimation(MaidGeoModel.KEY_HEAD, new Transformation(Targets.ROTATE,
 						new Keyframe(0.0F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),
 						new Keyframe(0.25F, createRotationalVector(0.0F, 5.0F, 0.0F), Interpolations.CUBIC),
 						new Keyframe(0.5F, createRotationalVector(0.0F, 0.0F, 0.0F), Interpolations.CUBIC),

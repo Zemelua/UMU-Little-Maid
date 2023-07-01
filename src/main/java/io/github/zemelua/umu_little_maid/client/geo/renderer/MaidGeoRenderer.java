@@ -1,7 +1,8 @@
-package io.github.zemelua.umu_little_maid.client.geo;
+package io.github.zemelua.umu_little_maid.client.geo.renderer;
 
-import io.github.zemelua.umu_little_maid.client.geo.layer.LittleMaidArmorGeoLayer;
-import io.github.zemelua.umu_little_maid.client.geo.layer.LittleMaidHeldItemGeoLayer;
+import io.github.zemelua.umu_little_maid.client.geo.layer.MaidArmorGeoLayer;
+import io.github.zemelua.umu_little_maid.client.geo.layer.MaidHeldItemGeoLayer;
+import io.github.zemelua.umu_little_maid.client.geo.model.MaidGeoModel;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -13,12 +14,12 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.molang.MolangParser;
 import software.bernie.geckolib.renderer.DynamicGeoEntityRenderer;
 
-public class LittleMaidGeoRenderer extends DynamicGeoEntityRenderer<LittleMaidEntity> {
-	public LittleMaidGeoRenderer(EntityRendererFactory.Context renderManager) {
-		super(renderManager, new LittleMaidGeoModel());
+public class MaidGeoRenderer extends DynamicGeoEntityRenderer<LittleMaidEntity> {
+	public MaidGeoRenderer(EntityRendererFactory.Context renderManager) {
+		super(renderManager, new MaidGeoModel());
 
-		this.addRenderLayer(new LittleMaidArmorGeoLayer(this));
-		this.addRenderLayer(new LittleMaidHeldItemGeoLayer(this));
+		this.addRenderLayer(new MaidArmorGeoLayer(this));
+		this.addRenderLayer(new MaidHeldItemGeoLayer(this));
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class LittleMaidGeoRenderer extends DynamicGeoEntityRenderer<LittleMaidEn
 //				.filter(bone -> this.isArmorBone((GeoBone) bone))
 //				.forEach(bone -> ((GeoBone) bone).setHidden(true));
 
-		CoreGeoBone head = this.model.getBone(LittleMaidGeoModel.KEY_HEAD).get();
+		CoreGeoBone head = this.model.getBone(MaidGeoModel.KEY_HEAD).get();
 		MolangParser.INSTANCE.setValue("query.maid.head_pitch", head::getRotX);
 		MolangParser.INSTANCE.setValue("query.maid.head_yaw", head::getRotY);
 

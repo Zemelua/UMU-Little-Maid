@@ -1,16 +1,34 @@
-package io.github.zemelua.umu_little_maid.client.geo;
+package io.github.zemelua.umu_little_maid.client.geo.model;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 @SuppressWarnings("unused")
-public class LittleMaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
-	public static final String KEY_HEAD = "head";
-	static final String KEY_LEFT_ARM = "left_arm";
-	static final String KEY_RIGHT_ARM = "right_arm";
+public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
+	public static final String KEY_HEAD = EntityModelPartNames.HEAD;
+	public static final String KEY_HAT = EntityModelPartNames.HAT;
+	public static final String KEY_BODY = EntityModelPartNames.BODY;
+	public static final String KEY_JACKET = EntityModelPartNames.JACKET;
+	public static final String KEY_SKIRT = "skirt";
+	public static final String KEY_APRON = "apron";
+	public static final String KEY_LEFT_ARM = EntityModelPartNames.LEFT_ARM;
+	public static final String KEY_LEFT_SLEEVE = "left_sleeve";
+	public static final String KEY_RIGHT_ARM = EntityModelPartNames.RIGHT_ARM;
+	public static final String KEY_RIGHT_SLEEVE = "right_sleeve";
+	public static final String KEY_LEFT_LEG = EntityModelPartNames.LEFT_LEG;
+	public static final String KEY_LEFT_PANTS = "left_pants";
+	public static final String KEY_RIGHT_LEG = EntityModelPartNames.RIGHT_LEG;
+	public static final String KEY_RIGHT_PANTS = "right_pants";
+	public static final String KEY_BONE_USING_DRIPLEAF = "using_dripleaf_bone";
+	public static final String KEY_BONE_CHANGING_COSTUME = "changing_costume_bone";
+
+	public static final String KEY_ARMOR_HEAD = "armorHead";
+	public static final String KEY_ARMOR_LEFT_LEG = "armorLeftLeg";
+	public static final String KEY_ARMOR_RIGHT_LEG = "armorRightLeg";
 
 	private static final Identifier RESOURCE_MODEL = UMULittleMaid.identifier("geo/little_maid.geo.json");
 	private static final Identifier RESOURCE_TEXTURE = UMULittleMaid.identifier("textures/entity/little_maid/little_maid.png");
@@ -43,7 +61,7 @@ public class LittleMaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity
 	private static final Identifier RESOURCE_ANIMATION = UMULittleMaid.identifier("animations/little_maid.animation.json");
 	private static final Identifier RESOURCE_ANIMATION_TRANSFORM = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
 
-	public LittleMaidGeoModel() {
+	public MaidGeoModel() {
 		super(UMULittleMaid.identifier("little_maid"), true);
 	}
 
