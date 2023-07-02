@@ -40,6 +40,8 @@ import static net.minecraft.world.RaycastContext.FluidHandling.*;
 import static net.minecraft.world.RaycastContext.ShapeType.*;
 
 public final class InstructionRenderer {
+	// TODO: アイコンをどの距離からでも同じ大きさに見えるように描画する
+
 	public static final Identifier CROSSHAIR = UMULittleMaid.identifier("textures/gui/hud/instruction_crosshair.png");
 	public static final Identifier HEADDRESS = UMULittleMaid.identifier("textures/instruction/site/headdress.png");
 	public static final Identifier ICON_HOME = UMULittleMaid.identifier("textures/gui/home_icon.png");
@@ -96,8 +98,9 @@ public final class InstructionRenderer {
 			return false;
 		}
 
-		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
-		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
+		int renderDistance = MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
+
+		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), renderDistance);
 	}
 
 	private static boolean shouldRenderAnchorOverlay(MinecraftClient client, World world, PlayerEntity player, GlobalPos pos) {
@@ -108,8 +111,8 @@ public final class InstructionRenderer {
 			return false;
 		}
 
-		// TODO: 描画距離の設定に応じてレンダリングするかどうか決める
-		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), 70);
+		int renderDistance = MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
+		return world.getRegistryKey().equals(pos.getDimension()) && pos.getPos().isWithinDistance(player.getPos(), renderDistance);
 	}
 
 	private static void renderOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera,
@@ -148,7 +151,7 @@ public final class InstructionRenderer {
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
 		if (maid.isEmpty()) return;
 
-		double length = 100;
+		double length = MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
 		Vec3d cameraPos = camera.getPos();
 		Vec3d cameraRot = ModMathUtils.rotationToVector(camera.getPitch(), camera.getYaw());
 		Vec3d endPos = cameraPos.add(cameraRot.multiply(length));
