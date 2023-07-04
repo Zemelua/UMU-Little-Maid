@@ -3,9 +3,16 @@ package io.github.zemelua.umu_little_maid.client.geo.model;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.util.Identifier;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
+import software.bernie.geckolib.model.data.EntityModelData;
+
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
@@ -62,26 +69,24 @@ public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
 	private static final Identifier RESOURCE_ANIMATION_TRANSFORM = UMULittleMaid.identifier("animations/little_maid_transform.animation.json");
 
 	public MaidGeoModel() {
-		super(UMULittleMaid.identifier("little_maid"), true);
+		super(UMULittleMaid.identifier("little_maid"), false);
 	}
 
-//	@Override
-//	@SuppressWarnings("unchecked")
-//	public void setCustomAnimations(LittleMaidEntity maid, int instanceId, AnimationEvent animationEvent) {
-//		super.setCustomAnimations(maid, instanceId, animationEvent);
-//
-//		IBone head = this.getBone(KEY_HEAD);
-//
-//		EntityModelData modelData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
-//
-//		AnimationData manager = maid.getFactory().getOrCreateAnimationData(instanceId);
-//		int unpause = !MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused ? 1 : 0;
-//
-//		if (head != null && head.getRotationX() == 0.0F && head.getRotationY() == 0.0F && head.getRotationZ() == 0.0F) {
-//			head.setRotationX(head.getRotationX() + (float) Math.toRadians(modelData.headPitch) * unpause);
-//			head.setRotationY(head.getRotationY() + (float) Math.toRadians(modelData.netHeadYaw) * unpause);
-//		}
-//	}
+	@Override
+	public void setCustomAnimations(LittleMaidEntity maid, long instanceId, AnimationState<LittleMaidEntity> animationState) {
+		Optional<GeoBone> head = this.getBone(KEY_HEAD);
+
+		EntityModelData modelData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+
+		int unpause = !MinecraftClient.getInstance().isPaused() || maid.shouldPlayAnimsWhileGamePaused() ? 1 : 0;
+
+		head.ifPresent(h -> {
+			if (h.getRotX() == 0.0F && h.getRotY() == 0.0F && h.getRotZ() == 0.0F) {
+				h.setRotX(h.getRotX() + (float) Math.toRadians(modelData.headPitch()) * unpause);
+				h.setRotY(h.getRotY() + (float) Math.toRadians(modelData.netHeadYaw()) * unpause);
+			}
+		});
+	}
 
 	@Override
 	public Identifier getModelResource(LittleMaidEntity maid) {
