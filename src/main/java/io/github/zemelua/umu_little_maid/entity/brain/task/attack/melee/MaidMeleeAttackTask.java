@@ -29,13 +29,13 @@ public class MaidMeleeAttackTask extends MultiTickTask<LittleMaidEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LittleMaidEntity maid) {
-		LivingEntity target = maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow();
+		LivingEntity target = maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow();
 		return LookTargetUtil.isVisibleInMemory(maid, target) && maid.isInAttackRange(target);
 	}
 
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
-		LivingEntity target = maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow();
+		LivingEntity target = maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow();
 		maid.startAttack(target, MaidAttackType.SWING_SWORD_DOWNWARD_RIGHT);
 		this.attackProgress++;
 	}
@@ -44,16 +44,16 @@ public class MaidMeleeAttackTask extends MultiTickTask<LittleMaidEntity> {
 	protected boolean shouldKeepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		if (maid.getAttackType() != MaidAttackType.NO_ATTACKING) return true;
 
-		Optional<LivingEntity> target = maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
-		if (target.isEmpty()) return false;
+		Optional<LivingEntity> target = maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET);
+		return target.filter(livingEntity -> LookTargetUtil.isVisibleInMemory(maid, livingEntity) && maid.isInAttackRange(livingEntity))
+				.isPresent();
 
-		return LookTargetUtil.isVisibleInMemory(maid, target.get()) && maid.isInAttackRange(target.get());
 	}
 
 	@Override
 	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
 		if (maid.getAttackType() == MaidAttackType.NO_ATTACKING) {
-			Optional<LivingEntity> target = maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+			Optional<LivingEntity> target = maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET);
 
 			target.ifPresent(t -> {
 				switch (this.attackProgress % 2) {

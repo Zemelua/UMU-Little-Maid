@@ -20,6 +20,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -30,6 +32,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Unit;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -170,6 +173,12 @@ public final class ModUtils {
 		return crosshairEntity(entity)
 				.filter(e -> e instanceof LittleMaidEntity)
 				.map(e -> (LittleMaidEntity) e);
+	}
+
+	public static final class Brains {
+		public static void remember(Brain<?> brain, MemoryModuleType<Unit> type) {
+			brain.remember(type, Unit.INSTANCE);
+		}
 	}
 
 	public static final class Conversions {

@@ -1111,6 +1111,17 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return ItemStack.EMPTY;
 	}
 
+	public boolean hasArrow() {
+		ItemStack ranged = this.getMainHandStack();
+		boolean hasArrowInInventory = !this.getProjectileType(ranged).isEmpty();
+
+		if (!ranged.isOf(Items.CROSSBOW)) {
+			return hasArrowInInventory;
+		} else {
+			return hasArrowInInventory || CrossbowItem.isCharged(ranged);
+		}
+	}
+
 	public ItemStack getHasCrop() {
 		if (this.getOffHandStack().isIn(ModTags.ITEM_MAID_CROPS)) {
 			return this.getOffHandStack();

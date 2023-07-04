@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.ForgetHasArrowsTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.MaidBowAttackTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.RememberHasArrowsTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.UpdateHasArrowTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
@@ -52,11 +51,10 @@ public final class MaidArcherBrainManager {
 				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, UpdateAttackTargetTask.create(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(98, new RememberHasArrowsTask<>()),
+				Pair.of(98, new UpdateHasArrowTask<>()),
 				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, ForgetAttackTargetTask.create()),
-				Pair.of(99, new ForgetHasArrowsTask<>()),
 				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}

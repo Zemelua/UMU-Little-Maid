@@ -28,7 +28,7 @@ public class PounceAtTargetTask<E extends LivingEntity> extends MultiTickTask<E>
 		if (living.hasPassengers()) return false;
 		if (!living.isOnGround()) return false;
 
-		Optional<LivingEntity> target = brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+		Optional<LivingEntity> target = brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET);
 		if (target.isEmpty()) return false;
 
 		double distance = living.distanceTo(target.get());
@@ -41,7 +41,7 @@ public class PounceAtTargetTask<E extends LivingEntity> extends MultiTickTask<E>
 	protected void run(ServerWorld world, E living, long time) {
 		Brain<?> brain = living.getBrain();
 		Vec3d velocity = living.getVelocity();
-		Optional<LivingEntity> target = brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+		Optional<LivingEntity> target = brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET);
 		if (target.isEmpty()) return;
 
 		Vec3d jumpVec = new Vec3d(target.get().getX() - living.getX(), 0.0, target.get().getZ() - living.getZ());

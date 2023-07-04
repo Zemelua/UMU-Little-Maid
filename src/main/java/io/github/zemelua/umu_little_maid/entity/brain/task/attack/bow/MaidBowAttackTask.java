@@ -63,7 +63,7 @@ public class MaidBowAttackTask extends MultiTickTask<LittleMaidEntity> {
 
 	@Override
 	protected void keepRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		Optional<LivingEntity> target = maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+		Optional<LivingEntity> target = maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET);
 		if (target.isEmpty()) return;
 
 		double distance = maid.distanceTo(target.get());
@@ -129,7 +129,7 @@ public class MaidBowAttackTask extends MultiTickTask<LittleMaidEntity> {
 	}
 
 	private static boolean hasTarget(LittleMaidEntity maid) {
-		return maid.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isPresent();
+		return maid.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isPresent();
 	}
 
 	private static boolean hasArrows(LittleMaidEntity maid) {
