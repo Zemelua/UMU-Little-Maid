@@ -16,9 +16,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * {@link net.minecraft.entity.ai.brain.task.SleepTask} の、{@link ModMemories#SLEEP_POS} 版です。
@@ -62,10 +64,13 @@ public class MaidSleepTask extends MultiTickTask<LittleMaidEntity> {
 		if (time > this.startTime) {
 			Brain<?> brain = entity.getBrain();
 			// TODO pathTodoorの引数なに
-			Set<GlobalPos> set = brain.getOptionalRegisteredMemory(MemoryModuleType.DOORS_TO_CLOSE).get();
+			Set<GlobalPos> set = brain.getOptionalRegisteredMemory(MemoryModuleType.DOORS_TO_CLOSE)
+					.stream()
+					.flatMap(Collection::stream)
+					.collect(Collectors.toSet());
 			Optional<List<LivingEntity>> optional = brain.hasMemoryModule(MemoryModuleType.MOBS) ? brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS) : Optional.empty();
 			OpenDoorsTask.pathToDoor(world, entity, null, null, set, optional);
-			entity.sleep(entity.getBrain().getOptionalMemory(ModMemories.SLEEP_POS).get());
+			entity.sleep(entity.getBrain().getOptionalRegisteredMemory(ModMemories.SLEEP_POS).get());
 		}
 	}
 

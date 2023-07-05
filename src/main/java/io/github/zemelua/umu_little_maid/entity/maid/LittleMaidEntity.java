@@ -96,7 +96,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -1766,52 +1765,44 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-		controllers.add(new AnimationController<>(this, "main", 1, state -> {
+		AnimationController<LittleMaidEntity> main = new AnimationController<>(this, "main", 1, state -> {
 			RawAnimation builder = RawAnimation.begin();
 
-			AtomicBoolean itemAnimated = new AtomicBoolean(false);
-			if (this.getItemUseTimeLeft() > 0) {
-				Optional<IMaidItemAnimationSetter> animationSetter = getItemAnimation(this);
-				animationSetter.ifPresent(setter -> {
-					setter.setItemAnimation(this, builder);
-					itemAnimated.set(true);
-				});
-			}
-
-			if (!itemAnimated.get()) {
-				if (this.isGliding()) {
-					builder.thenPlayXTimes("wait", 1);
-					builder.thenLoop("glide");
-				} else if (this.isTransforming()) {
-					builder.thenPlay("transform");
-				} else if (this.isHeadpatted()) {
-					builder.thenLoop("headpatted");
-				} else if (this.isEating()) {
-					builder.thenLoop("eat");
-				} else if (this.isSleeping()) {
-					builder.thenLoop("sleeping");
-				} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
-					switch (this.getAttackType()) {
-						case SWING_SWORD_DOWNWARD_RIGHT -> builder.thenPlay("swing_sword_downward_right");
-						case SWING_SWORD_DOWNWARD_LEFT -> builder.thenPlay("swing_sword_downward_left");
-						case HEADBUTT -> builder.thenPlay("headbutt");
+			if (this.isGliding()) {
+				return state.setAndContinue(GLIDE);
+			} else if (this.isTransforming()) {
+				return state.setAndContinue(TRANSFORM);
+			} else if (this.isHeadpatted()) {
+				return state.setAndContinue(HEADPATTED);
+			} else if (this.isEating()) {
+				return state.setAndContinue(EAT);
+			} else if (this.isSleeping()) {
+				return state.setAndContinue(SLEEP);
+			} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
+				switch (this.getAttackType()) {
+					case SWING_SWORD_DOWNWARD_RIGHT -> {
+						return state.setAndContinue(SWING_SWORD_DOWNWARD_RIGHT);
+					} case SWING_SWORD_DOWNWARD_LEFT -> {
+						return state.setAndContinue(SWING_SWORD_DOWNWARD_LEFT);
+					} case HEADBUTT -> {
+						return state.setAndContinue(HEADBUTT);
 					}
-				} else if (this.getItemUseTimeLeft() > 0) {
-					switch (this.getActiveItem().getUseAction()) {
-						case BOW -> MaidItemAnimationSetter.BOW.setItemAnimation(this, builder);
-						case SPEAR -> MaidItemAnimationSetter.SPEAR.setItemAnimation(this, builder);
-					}
-				} else if (this.isSitting()) {
-					builder.thenLoop("sit");
-				} else if (state.isMoving()) {
-					if (this.getTarget() != null && this.getJob().equals(MaidJobs.FENCER)) {
-						builder.thenLoop("chase_sword");
-					} else {
-						builder.thenLoop("walk");
-					}
-				} else {
-					builder.thenLoop("stand");
 				}
+			} else if (this.getItemUseTimeLeft() > 0) {
+				switch (this.getActiveItem().getUseAction()) {
+					case BOW -> MaidItemAnimationSetter.BOW.setItemAnimation(this, builder);
+					case SPEAR -> MaidItemAnimationSetter.SPEAR.setItemAnimation(this, builder);
+				}
+			} else if (this.isSitting()) {
+				builder.thenLoop("sit");
+			} else if (state.isMoving()) {
+				if (this.getTarget() != null && this.getJob().equals(MaidJobs.FENCER)) {
+					return state.setAndContinue(CHASE_SWORD);
+				} else {
+					builder.thenLoop("walk");
+				}
+			} else {
+				builder.thenLoop("stand");
 			}
 
 			state.setAndContinue(builder);
@@ -1819,83 +1810,69 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			return PlayState.CONTINUE;
 		}).setParticleKeyframeHandler(event -> {
 			switch (event.getKeyframeData().getEffect()) {
-				case "kirakira" -> {
-					double tick = event.getAnimationTick();
-					double rotate = Math.toRadians(this.getYaw() + (tick - 1) * 360.0D / 10);
-					Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
-							.rotateY((float) rotate)
-							.add(this.getX(), this.getY() + 0.7D, this.getZ());
-					Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
-							.rotateY((float) rotate)
-							.add(this.getX(), this.getY() + 0.7D, this.getZ());
-
-					this.getWorld().addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
-					this.getWorld().addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
-				} case "shock" -> {
-					Vec3d pos = new Vec3d(0.0D, 0.0D, 1.6D)
-							.rotateY((float) Math.toRadians(-this.getYaw()))
-							.add(this.getPos())
-							.add(0.0D, 1.25D, 0.0D);
-
-					this.getWorld().addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
-					this.getWorld().addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
-				} case "zzz" -> {
-					double rotateX = Math.toRadians(this.random.nextGaussian() * 5.0D);
-					double rotateY = Math.toRadians(Objects.requireNonNull(this.getSleepingDirection()).asRotation() + this.random.nextGaussian() * 5.0D);
-					double rotateZ = Math.toRadians(this.random.nextGaussian() * 5.0D);
-
-					Vec3d vel = new Vec3d(0.34D, 0.78D, 0.34D)
-							.rotateX((float) rotateX)
-							.rotateY((float) rotateY)
-							.rotateZ((float) rotateZ)
-							.normalize()
-							.multiply(0.2D);
-					Vec3d pos = vel.normalize()
-							.multiply(0.8D)
-							.add(this.getPos());
-
-					this.getWorld().addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-					this.getWorld().addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-					this.getWorld().addParticle(new ZZZParticle.Mediator(2), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
-				}
+				case "kirakira" -> this.generateKirakiraEffect(event.getAnimationTick());
+				case "shock" -> this.generateShockEffect();
+				case "zzz" -> this.generateZZZEffect();
 			}
-		}));
+		});
 
-		controllers.add(new AnimationController<>(this, "sub", 1, event -> {
-			RawAnimation builder = RawAnimation.begin();
-
+		AnimationController<LittleMaidEntity> sub = new AnimationController<>(this, "sub", 1, state -> {
 			if (this.isGliding()) {
-				builder.thenLoop("glide_root");
+				return state.setAndContinue(GLIDE_ROOT);
 			} else {
 				return PlayState.STOP;
 			}
+		});
 
-			event.setAndContinue(builder);
+		controllers.add(main, sub);
+	}
 
-			return PlayState.CONTINUE;
-		}));
+	private void generateKirakiraEffect(double animationTick) {
+		double rotate = Math.toRadians(this.getYaw() + (animationTick - 1) * 360.0D / 10);
+		Vec3d left = new Vec3d(0.0D, 0.0D, -0.5D)
+				.rotateY((float) rotate)
+				.add(this.getX(), this.getY() + 0.7D, this.getZ());
+		Vec3d right = new Vec3d(0.0D, 0.0D, 0.5D)
+				.rotateY((float) rotate)
+				.add(this.getX(), this.getY() + 0.7D, this.getZ());
+
+		this.getWorld().addParticle(ModParticles.TWINKLE, left.getX(), left.getY(), left.getZ(), 0.0D, 0.0D, 0.0D);
+		this.getWorld().addParticle(ModParticles.TWINKLE, right.getX(), right.getY(), right.getZ(), 0.0D, 0.0D, 0.0D);
+	}
+
+	private void generateShockEffect() {
+		Vec3d pos = new Vec3d(0.0D, 0.0D, 1.6D)
+				.rotateY((float) Math.toRadians(-this.getYaw()))
+				.add(this.getPos())
+				.add(0.0D, 1.25D, 0.0D);
+
+		this.getWorld().addParticle(ModParticles.SHOCK, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+		this.getWorld().addParticle(ModParticles.SHOCKWAVE, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+	}
+
+	private void generateZZZEffect() {
+		double rotateX = Math.toRadians(this.random.nextGaussian() * 5.0D);
+		double rotateY = Math.toRadians(Objects.requireNonNull(this.getSleepingDirection()).asRotation() + this.random.nextGaussian() * 5.0D);
+		double rotateZ = Math.toRadians(this.random.nextGaussian() * 5.0D);
+
+		Vec3d vel = new Vec3d(0.34D, 0.78D, 0.34D)
+				.rotateX((float) rotateX)
+				.rotateY((float) rotateY)
+				.rotateZ((float) rotateZ)
+				.normalize()
+				.multiply(0.2D);
+		Vec3d pos = vel.normalize()
+				.multiply(0.8D)
+				.add(this.getPos());
+
+		this.getWorld().addParticle(new ZZZParticle.Mediator(0), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+		this.getWorld().addParticle(new ZZZParticle.Mediator(1), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
+		this.getWorld().addParticle(new ZZZParticle.Mediator(2), pos.getX(), pos.getY(), pos.getZ(), vel.getX(), vel.getY(), vel.getZ());
 	}
 
 	@Override
 	public AnimatableInstanceCache getAnimatableInstanceCache() {
 		return this.animationFactory;
-	}
-
-	@SuppressWarnings("SwitchStatementWithTooFewBranches")
-	private static Optional<IMaidItemAnimationSetter> getItemAnimation(LittleMaidEntity maid) {
-		ItemStack activeStack = maid.getActiveItem();
-		if (activeStack.isEmpty()) return Optional.empty();
-
-		if (maid.getItemUseTimeLeft() > 0) {
-			UseAction useAction = activeStack.getUseAction();
-			return switch (useAction) {
-				// TODO: 他のアイテムもやる
-				case BOW ->Optional.of(MaidItemAnimationSetter.BOW);
-				default -> Optional.empty();
-			};
-		}
-
-		return Optional.empty();
 	}
 
 	static {
