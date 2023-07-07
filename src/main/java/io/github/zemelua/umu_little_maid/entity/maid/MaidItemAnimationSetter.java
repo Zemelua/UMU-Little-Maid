@@ -5,10 +5,10 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import java.util.function.Consumer;
 
 public enum MaidItemAnimationSetter implements IMaidItemAnimationSetter {
-	BOW(builder -> builder.thenLoop("hold_bow_right"),
-			builder -> builder.thenLoop("hold_bow_left")),
-	SPEAR(builder -> builder.thenLoop("hold_spear_right"),
-			builder -> builder.thenLoop("hold_spear_left"));
+	BOW(builder -> builder.thenLoop("hold_bow_left"),
+			builder -> builder.thenLoop("hold_bow_right")),
+	SPEAR(builder -> builder.thenLoop("hold_spear_left"),
+			builder -> builder.thenLoop("hold_spear_right"));
 
 	private final Consumer<RawAnimation> setterWhenLeftIsActive;
 	private final Consumer<RawAnimation> setterWhenRightIsActive;
