@@ -359,6 +359,16 @@
 					"rotation": {
 						"vector": [-185, 0, -5]
 					}
+				},
+				"left_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * 50", 0, 0]
+					}
 				}
 			}
 		},
@@ -373,6 +383,16 @@
 				"right_arm": {
 					"rotation": {
 						"vector": [-10, 0, 15]
+					}
+				},
+				"left_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * 50", 0, 0]
 					}
 				}
 			}
