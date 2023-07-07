@@ -1412,8 +1412,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 	@Override
 	public Collection<GlobalPos> getDeliveryBoxes() {
-		UMULittleMaid.LOGGER.info(this.dataTracker.get(DELIVERY_BOXES).size());
-
 		return this.dataTracker.get(DELIVERY_BOXES);
 	}
 
@@ -1423,8 +1421,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		boxes.add(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
 		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
-
-		UMULittleMaid.LOGGER.info("agsergfeasrg");
 	}
 
 	@Override
@@ -1736,6 +1732,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
 			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
+			this.getJob().initBrain(this.getBrain());
 		}
 
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
