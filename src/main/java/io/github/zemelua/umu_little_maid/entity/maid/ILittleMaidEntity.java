@@ -19,6 +19,7 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	RawAnimation SLEEP = RawAnimation.begin().thenLoop("sleeping");
 	RawAnimation SWING_SWORD_DOWNWARD_RIGHT = RawAnimation.begin().thenPlay("swing_sword_downward_right");
 	RawAnimation SWING_SWORD_DOWNWARD_LEFT = RawAnimation.begin().thenPlay("swing_sword_downward_left");
+	RawAnimation SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.spear.right");
 	RawAnimation HEADBUTT = RawAnimation.begin().thenPlay("headbutt");
 	RawAnimation CHASE_SWORD = RawAnimation.begin().thenLoop("chase_sword");
 	RawAnimation GLIDE_ROOT = RawAnimation.begin().thenLoop("glide_root");

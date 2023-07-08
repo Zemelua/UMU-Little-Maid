@@ -512,10 +512,16 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				} else if (attackingTicks >= 10) {
 					this.finishAttack();
 				}
-			} case HEADBUTT -> {
+			} case SPEAR -> {
 				if (this.attackingTicks == 24) {
 					this.headbutt();
 				} else if (attackingTicks >= 40) {
+					this.finishAttack();
+				}
+			} case HEADBUTT -> {
+				if (this.attackingTicks == 9) {
+					this.tryAttack(this.attackingTarget);
+				} else if (attackingTicks >= 18) {
 					this.finishAttack();
 				}
 			}
@@ -1781,6 +1787,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 						return state.setAndContinue(SWING_SWORD_DOWNWARD_RIGHT);
 					} case SWING_SWORD_DOWNWARD_LEFT -> {
 						return state.setAndContinue(SWING_SWORD_DOWNWARD_LEFT);
+					} case SPEAR -> {
+						return state.setAndContinue(SPEAR_RIGHT);
 					} case HEADBUTT -> {
 						return state.setAndContinue(HEADBUTT);
 					}

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.BasicMaidMeleeAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
@@ -19,6 +20,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMaster
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -118,7 +120,7 @@ public final class MaidPoseidonBrainManager {
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, MeleeAttackTask.create(20)),
+				Pair.of(0, new BasicMaidMeleeAttackTask(MaidAttackType.SPEAR)),
 				Pair.of(1, new ThrowTridentTask<>(10.0D, 0.8D, 20)),
 				Pair.of(1, new RiptideTridentTask<>(10.0D, 0.8D, 10)),
 				Pair.of(2, TridentApproachTargetTask.create(1.0F))
