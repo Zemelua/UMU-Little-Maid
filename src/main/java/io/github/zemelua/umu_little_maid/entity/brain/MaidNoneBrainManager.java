@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
@@ -43,12 +42,11 @@ public final class MaidNoneBrainManager {
 				Pair.of(0, OpenDoorsTask.create()),
 				Pair.of(0, WakeUpTask.create()),
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
-				// Pair.of(1, new PanicTask()), // パニック
+				Pair.of(1, new FleeTask(1.2F)), // パニック。攻撃されたときのはHURT_BYで判定されています
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
-				Pair.of(98, new RememberShouldEatTask()),
+				Pair.of(99, new UpdateShouldEatTask<>()),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
-				Pair.of(99, new ForgetShouldEatTask()),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, new UpdateSleepPosTask())
 		));

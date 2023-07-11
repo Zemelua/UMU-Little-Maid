@@ -5,6 +5,7 @@ import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.item.ItemStack;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.RawAnimation;
 
@@ -38,6 +39,12 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 
 	default boolean isTransforming() {
 		return this.getPose().equals(ModEntities.POSE_CHANGING_COSTUME);
+	}
+
+	ItemStack searchSugar();
+
+	default boolean hasSugar() {
+		return !this.searchSugar().isEmpty();
 	}
 
 	/**

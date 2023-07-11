@@ -1523,6 +1523,11 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				.orElse(false);
 	}
 
+	@Override
+	public ItemStack searchSugar() {
+		return ModUtils.searchInInventory(this.getInventory(), item -> item.isIn(ModTags.ITEM_MAID_HEAL_FOODS));
+	}
+
 	public boolean isVariableCostume() {
 		return this.dataTracker.get(LittleMaidEntity.IS_VARIABLE_COSTUME);
 	}
