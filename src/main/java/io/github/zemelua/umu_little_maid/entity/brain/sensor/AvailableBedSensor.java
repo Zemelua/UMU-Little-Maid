@@ -18,24 +18,20 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AvailableBedSensor extends Sensor<MobEntity> {
-	private final Map<BlockPos, Long> pos2ExpiryTime = new HashMap<>();
-	private int tries;
-	private long expiryTime;
-
 	@Override
 	protected void sense(ServerWorld world, MobEntity mob) {
-		this.tries = 0;
-		this.expiryTime = world.getTime() + world.getRandom().nextInt(20);
 		PointOfInterestStorage poiStorage = world.getPointOfInterestStorage();
-		Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> pois = poiStorage.getTypesAndPositions(poi -> poi.matchesKey(PointOfInterestTypes.HOME), pos -> {
-			if (this.pos2ExpiryTime.containsKey(pos)) return false;
-			if (++this.tries >= 5) return false;
 
-			Collection<BlockPos> homes = mob.getBrain().getOptionalMemory(MemoryModuleType.MOBS)
+		Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> pois = poiStorage.getTypesAndPositions(poi -> poi.matchesKey(PointOfInterestTypes.HOME), pos -> {
+
+			Collection<BlockPos> homes = mob.getBrain().getOptionalRegisteredMemory(MemoryModuleType.MOBS)
 					.orElse(new ArrayList<>()).stream()
 					.filter(living -> living instanceof LittleMaidEntity)
 					.map(living -> (LittleMaidEntity) living)
@@ -45,19 +41,16 @@ public class AvailableBedSensor extends Sensor<MobEntity> {
 					.map(GlobalPos::getPos)
 					.toList();
 
-			if (homes.contains(pos)) return false;
+			return !homes.contains(pos);
+		}, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY).collect(Collectors.toSet());
 
-			this.pos2ExpiryTime.put(pos, this.expiryTime + 40L);
-			return true;
-		}, mob.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).collect(Collectors.toSet());
+
 		Path path = FindPointOfInterestTask.findPathToPoi(mob, pois);
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			if (ModWorldUtils.isAnyPoi(poiStorage, blockPos)) {
 				mob.getBrain().remember(ModMemories.AVAILABLE_BED, blockPos, 100);
 			}
-		} else if (this.tries < 5) {
-			this.pos2ExpiryTime.entrySet().removeIf(entry -> entry.getValue() < this.expiryTime);
 		}
 	}
 

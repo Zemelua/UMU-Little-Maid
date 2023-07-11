@@ -491,9 +491,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	protected void mobTick() {
 		this.updateJob();
-
 		this.getJob().tickBrain(this.getBrain());
 		this.getBrain().tick((ServerWorld) this.getWorld(), this);
+
+		this.updateSites();
 
 		this.updatePose();
 
@@ -631,6 +632,26 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		// TODO: 村人のコードを参考にしてるんだけど、なんでコピーしとかなきゃなのかを確認する
 		this.brain = brain.copy();
 		this.getJob().initBrain(this.getBrain());
+	}
+
+	private void updateSites() {
+		World world = this.getWorld();
+
+		Optional<GlobalPos> home = this.getHome();
+		if (home.isPresent() && home.get().getDimension().equals(world.getRegistryKey())) {
+			if (!this.isSettableAsHome(world, home.get().getPos())) {
+				this.removeHome();
+			}
+		}
+
+		Collection<GlobalPos> deliveryBoxes = this.getDeliveryBoxes();
+		for (GlobalPos deliveryBox : deliveryBoxes) {
+			if (deliveryBox.getDimension().equals(world.getRegistryKey())) {
+				if (!this.isSettableAsDeliveryBox(world, deliveryBox.getPos())) {
+					this.removeDeliveryBox(deliveryBox);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1088,6 +1109,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.getWorld().getTime());
 		this.brain.forget(ModMemories.SLEEP_POS);
+		this.brain.forget(MemoryModuleType.WALK_TARGET);
 	}
 
 	@Override

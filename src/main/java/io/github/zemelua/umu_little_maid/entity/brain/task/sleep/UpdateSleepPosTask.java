@@ -1,12 +1,12 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
-import com.google.common.collect.ImmutableMap;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.api.EveryTickTask;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
@@ -14,40 +14,36 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class UpdateSleepPosTask extends MultiTickTask<LittleMaidEntity> {
-	public UpdateSleepPosTask() {
-		super(ImmutableMap.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT, ModMemories.SLEEP_POS, MemoryModuleState.VALUE_ABSENT), 1);
-	}
-
+public class UpdateSleepPosTask extends EveryTickTask<LittleMaidEntity> {
 	@Override
-	protected boolean shouldRun(ServerWorld world, LittleMaidEntity entity) {
-		return super.shouldRun(world, entity);
-	}
-
-	@Override
-	protected boolean isTimeLimitExceeded(long time) {
-		return false;
-	}
-
-	@Override
-	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
+	public void tick(ServerWorld world, LittleMaidEntity maid, long time) {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
+
 		Optional<GlobalPos> home = maid.getHome();
-		Optional<BlockPos> availableBed = brain.getOptionalMemory(ModMemories.AVAILABLE_BED);
+		Optional<BlockPos> availableBed = brain.getOptionalRegisteredMemory(ModMemories.AVAILABLE_BED);
+		Optional<BlockPos> sleepPos = brain.getOptionalRegisteredMemory(ModMemories.SLEEP_POS);
 
-		if (home.isPresent() && home.get().getDimension().equals(world.getRegistryKey())) {
-			@Nullable Path path = maid.getNavigation().findPathTo(home.get().getPos(), 0);
+		if (sleepPos.isEmpty()) {
+			if (home.isPresent() && home.get().getDimension().equals(world.getRegistryKey())) {
+				@Nullable Path path = maid.getNavigation().findPathTo(home.get().getPos(), 0);
 
-			if (path != null && path.reachesTarget()) {
-				maid.getBrain().remember(ModMemories.SLEEP_POS, home.get().getPos(), 100L);
+				if (path != null && path.reachesTarget()) {
+					brain.remember(ModMemories.SLEEP_POS, home.get().getPos());
+				}
+			} else if (availableBed.isPresent()) {
+				@Nullable Path path = maid.getNavigation().findPathTo(availableBed.get(), 0);
+
+				if (path != null && path.reachesTarget()) {
+					brain.remember(ModMemories.SLEEP_POS, availableBed.get());
+				}
 			}
-		}
+		} else if (!maid.isSleeping()) {
+			@Nullable Path path = maid.getNavigation().findPathTo(sleepPos.get(), 0);
 
-		if (availableBed.isPresent()) {
-			@Nullable Path path = maid.getNavigation().findPathTo(availableBed.get(), 0);
+			if (path == null || !path.reachesTarget() || !maid.getWorld().getBlockState(sleepPos.get()).isIn(BlockTags.BEDS)) {
+				UMULittleMaid.LOGGER.info(sleepPos.get());
 
-			if (path != null && path.reachesTarget()) {
-				maid.getBrain().remember(ModMemories.SLEEP_POS, availableBed.get(), 100L);
+				brain.forget(ModMemories.SLEEP_POS);
 			}
 		}
 	}

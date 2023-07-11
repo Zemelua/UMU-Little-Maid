@@ -15,6 +15,11 @@ public class WalkToSleepPosTask<E extends PathAwareEntity> extends MultiTickTask
 	}
 
 	@Override
+	protected boolean shouldRun(ServerWorld world, E entity) {
+		return !entity.isSleeping();
+	}
+
+	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		Brain<?> brain = entity.getBrain();
 
