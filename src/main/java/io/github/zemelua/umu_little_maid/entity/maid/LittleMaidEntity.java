@@ -1110,6 +1110,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.getWorld().getTime());
 		this.brain.forget(ModMemories.SLEEP_POS);
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
+		this.brain.forget(MemoryModuleType.LOOK_TARGET);
 	}
 
 	@Override

@@ -175,6 +175,12 @@ public final class ModUtils {
 				.map(e -> (LittleMaidEntity) e);
 	}
 
+	public static final class Worlds {
+		public static long getTimeOfDay(World world) {
+			return world.getTimeOfDay() % 24000L;
+		}
+	}
+
 	public static final class Brains {
 		public static void remember(Brain<?> brain, MemoryModuleType<Unit> type) {
 			brain.remember(type, Unit.INSTANCE);
