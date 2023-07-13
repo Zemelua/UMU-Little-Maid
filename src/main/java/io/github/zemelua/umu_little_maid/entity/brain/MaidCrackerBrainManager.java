@@ -5,27 +5,33 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.MaidMeleeAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidCrackerBrainManager {
 	public static void initBrain(Brain<LittleMaidEntity> brain) {
-		MaidCrackerBrainManager.addCoreTasks(brain);
-		MaidCrackerBrainManager.addIdleTasks(brain);
-		MaidCrackerBrainManager.addSitTasks(brain);
-		MaidCrackerBrainManager.addEatTasks(brain);
-		MaidCrackerBrainManager.addFightTasks(brain);
+		addCoreTasks(brain);
+		addIdleTasks(brain);
+		addSitTasks(brain);
+		addEatTasks(brain);
+		addFightTasks(brain);
+		addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
@@ -44,24 +50,28 @@ public final class MaidCrackerBrainManager {
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, UpdateAttackTargetTask.create(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, ForgetAttackTargetTask.create()),
+				Pair.of(99, new UpdateAttackerShouldEatTask<>()),
 				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
 				Pair.of(0, new FollowMasterTask<>(10.0F)),
 				Pair.of(0, new TeleportToMasterTask<>(15.0F)),
 				Pair.of(0, new ShelterFromRainTask<>()),
-				// Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
-				Pair.of(2, new RandomTask<>(ImmutableList.of(
-						// Pair.of(new AvoidRainStrollTask(0.8F), 2),
-						// Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
+				Pair.of(2, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
+				Pair.of(3, new RandomTask<>(ImmutableList.of(
+						Pair.of(StrollTask.create(0.8F), 2),
+						Pair.of(GoTowardsLookTargetTask.create(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
+				))),
+				Pair.of(3, new RandomTask<>(ImmutableList.of(
+						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 1),
+						Pair.of(new WaitTask(30, 60), 4)
 				)))
 		));
 	}
@@ -84,7 +94,7 @@ public final class MaidCrackerBrainManager {
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, MeleeAttackTask.create(30)),
+				Pair.of(0, new MaidMeleeAttackTask()),
 				Pair.of(1, RangedApproachTask.create(1.0F))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT)
@@ -93,7 +103,15 @@ public final class MaidCrackerBrainManager {
 		));
 	}
 
-	private MaidCrackerBrainManager() throws IllegalAccessException {
-		throw new IllegalAccessException();
+	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(Activity.REST, ImmutableList.of(
+				Pair.of(0, new MaidSleepTask()),
+				Pair.of(1, new WalkToSleepPosTask<>())
+		), ImmutableSet.of(
+				Pair.of(ModMemories.SHOULD_SLEEP, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.SLEEP_POS, MemoryModuleState.VALUE_PRESENT)
+		));
 	}
+
+	private MaidCrackerBrainManager() {}
 }
