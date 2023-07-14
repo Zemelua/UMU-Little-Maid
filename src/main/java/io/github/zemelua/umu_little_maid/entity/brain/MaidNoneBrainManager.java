@@ -48,7 +48,7 @@ public final class MaidNoneBrainManager {
 				Pair.of(2, new LookAroundTask(45, 90)),
 				Pair.of(3, new WanderAroundTask()),
 				Pair.of(99, new UpdateShouldEatTask<>()),
-				Pair.of(98, new UpdateShouldSleepTask<>()),
+				Pair.of(99, new UpdateShouldSleepTask<>()),
 				Pair.of(99, new UpdateSleepPosTask())
 		));
 	}
