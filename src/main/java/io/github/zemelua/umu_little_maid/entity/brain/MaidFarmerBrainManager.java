@@ -3,6 +3,9 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
@@ -20,12 +23,16 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMaster
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidFarmerBrainManager {
@@ -122,5 +129,56 @@ public final class MaidFarmerBrainManager {
 
 	private MaidFarmerBrainManager() throws IllegalAccessException {
 		throw new IllegalAccessException();
+	}
+
+	public static boolean isPlantable(BlockPos pos, ServerWorld world) {
+		BlockState blockState = world.getBlockState(pos);
+		BlockState downState = world.getBlockState(pos.down());
+
+		return downState.getBlock() instanceof FarmlandBlock && blockState.isAir();
+	}
+
+	public static boolean isHarvestable(BlockPos pos, ServerWorld world) {
+		BlockState blockState = world.getBlockState(pos);
+		Block block = blockState.getBlock();
+
+		if (blockState.isIn(ModTags.BLOCK_MAID_HARVESTS)) {
+			if (block instanceof CropBlock crop) {
+				return crop.isMature(blockState);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isGourd(BlockPos pos, ServerWorld world) {
+		BlockState blockState = world.getBlockState(pos);
+		Block block = blockState.getBlock();
+
+		if (blockState.isIn(ModTags.BLOCK_MAID_GOURDS)) {
+			if (block instanceof GourdBlock gourd) {
+				for (int i = 0; i < 4; i++) {
+					Direction direction = Direction.fromHorizontal(i);
+					BlockState sideState = world.getBlockState(pos.offset(direction));
+					if (sideState.isOf(gourd.getAttachedStem())) {
+						try {
+							if (sideState.get(AttachedStemBlock.FACING).equals(direction.getOpposite())) {
+								return true;
+							}
+						} catch (IllegalArgumentException exception) {
+							UMULittleMaid.LOGGER.info(ModEntities.MARKER, "不明な原因でBlockからFACINGを得られなかったよ！");
+						}
+					}
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }

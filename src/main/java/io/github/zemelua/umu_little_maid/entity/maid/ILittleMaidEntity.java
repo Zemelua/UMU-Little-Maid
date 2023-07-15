@@ -2,8 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.maid.action.EMaidAction;
-import io.github.zemelua.umu_little_maid.entity.maid.action.IMaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ItemStack;
@@ -29,16 +28,18 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	RawAnimation PLANT = RawAnimation.begin().thenPlay("farm.plant");
 	RawAnimation HEAL = RawAnimation.begin().thenLoop("heal");
 
-	void startAction(IMaidAction action);
+	Optional<MaidAction> getAction();
 
-	Optional<IMaidAction> getAction();
-
-	Optional<EMaidAction> getActionE();
-
-	default boolean canAction(EMaidAction action) {
-		Optional<EMaidAction> currentAction = this.getActionE();
+	default boolean canAction(MaidAction action) {
+		Optional<MaidAction> currentAction = this.getAction();
 
 		return currentAction.isEmpty() || currentAction.get().equals(action);
+	}
+
+	default boolean canAction() {
+		Optional<MaidAction> currentAction = this.getAction();
+
+		return currentAction.isEmpty();
 	}
 
 	default boolean isEating() {
@@ -46,20 +47,20 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	}
 
 	default boolean isHarvesting() {
-		return this.getActionE()
-				.map(action -> action == EMaidAction.HARVESTING)
+		return this.getAction()
+				.map(action -> action == MaidAction.HARVESTING)
 				.orElse(false);
 	}
 
 	default boolean isPlanting() {
-		return this.getActionE()
-				.map(action -> action == EMaidAction.PLANTING)
+		return this.getAction()
+				.map(action -> action == MaidAction.PLANTING)
 				.orElse(false);
 	}
 
 	default boolean isHealing() {
-		return this.getActionE()
-				.map(action -> action == EMaidAction.HEALING)
+		return this.getAction()
+				.map(action -> action == MaidAction.HEALING)
 				.orElse(false);
 	}
 

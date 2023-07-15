@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.maid.action;
 
-public enum EMaidAction {
+public enum MaidAction {
 	EATING,
 	TRANSFORMING,
 	GLIDING,

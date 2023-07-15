@@ -1,9 +1,10 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.farm;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.zemelua.umu_little_maid.entity.brain.MaidFarmerBrainManager;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.action.EMaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.mixin.AccessorMultiTickTask;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -34,13 +35,13 @@ public class MaidPlantTask extends MultiTickTask<LittleMaidEntity> {
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 
 		return brain.getOptionalRegisteredMemory(ModMemories.FARM_POS)
-				.map(p -> p.isWithinDistance(maid.getPos(), 1.0D) && MaidFarmTaskOld.isPlantable(p, (ServerWorld) maid.getWorld()))
+				.map(p -> p.isWithinDistance(maid.getPos(), 1.0D) && MaidFarmerBrainManager.isPlantable(p, (ServerWorld) maid.getWorld()))
 				.orElse(false);
 	}
 
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.setActionE(EMaidAction.PLANTING);
+		maid.setAction(MaidAction.PLANTING);
 
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		Optional<BlockPos> pos = brain.getOptionalRegisteredMemory(ModMemories.FARM_POS);
@@ -78,7 +79,7 @@ public class MaidPlantTask extends MultiTickTask<LittleMaidEntity> {
 
 	@Override
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.removeActionE();
+		maid.removeAction();
 
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		brain.forget(ModMemories.FARM_POS);

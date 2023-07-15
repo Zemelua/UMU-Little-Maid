@@ -13,7 +13,7 @@ public class UpdateShouldEatTask<E extends LivingEntity & ILittleMaidEntity> ext
 	public void tick(ServerWorld world, E maid, long time) {
 		Brain<?> brain = maid.getBrain();
 
-		if (!maid.hasSugar() || maid.getActionE().isPresent()) {
+		if (!maid.hasSugar() || maid.getAction().isPresent()) {
 			brain.forget(ModMemories.SHOULD_EAT);
 			return;
 		}

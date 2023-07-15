@@ -15,8 +15,7 @@ import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
-import io.github.zemelua.umu_little_maid.entity.maid.action.IMaidAction;
-import io.github.zemelua.umu_little_maid.entity.maid.action.EMaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
@@ -81,7 +80,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
@@ -115,8 +117,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	private static final TrackedData<IMaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
 	private static final TrackedData<IMaidFeeling> FEELING;
-	private static final TrackedData<Optional<EMaidAction>> ACTION;
-	private static final TrackedData<Optional<IMaidAction.Type>> ACTION_TYPE;
+	private static final TrackedData<Optional<MaidAction>> ACTION;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Integer> COMMITMENT;
 	private static final TrackedData<Optional<GlobalPos>> HOME;
@@ -137,8 +138,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Nullable private Consumer<ItemStack> onFinishEating;
 
 	private int changingCostumeTicks;
-
-	@Nullable private IMaidAction action;
 
 	/**
 	 * {@link LittleMaidEntity#damageShield(float)} で {@code true} になり、その後 {@link LittleMaidEntity#damage(DamageSource, float)}
@@ -227,7 +226,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.startTracking(MODE, MaidMode.FOLLOW);
 		this.dataTracker.startTracking(JOB, MaidJobs.NONE);
 		this.dataTracker.startTracking(ACTION, Optional.empty());
-		this.dataTracker.startTracking(ACTION_TYPE, Optional.empty());
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
@@ -317,13 +315,13 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	public void tickMovement() {
 		super.tickMovement();
 
-		if (this.getActionE().isEmpty()) {
+		if (this.getAction().isEmpty()) {
 			if (!this.isOnGround() && this.hasDripleaf() && ModUtils.getHeightFromGround(this.getWorld(), this) >= 3) {
-				this.setActionE(EMaidAction.GLIDING);
+				this.setAction(MaidAction.GLIDING);
 			}
 		} else if (this.isGliding()) {
 			if (this.isOnGround() || !this.hasDripleaf()) {
-				this.removeActionE();
+				this.removeAction();
 			}
 		}
 
@@ -505,23 +503,10 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		// UMULittleMaid.LOGGER.info(this.action);
 
-		if (this.getActionE().isPresent() && (this.getActionE().get() == EMaidAction.HARVESTING
-				|| this.getActionE().get() == EMaidAction.PLANTING
+		if (this.getAction().isPresent() && (this.getAction().get() == MaidAction.HARVESTING
+				|| this.getAction().get() == MaidAction.PLANTING
 				|| this.isHealing())) {
 			this.navigation.stop();
-		}
-
-		if (this.action != null) {
-			boolean finish = this.action.tick();
-			if (finish) this.action = null;
-
-			this.navigation.stop();
-		}
-
-		if (this.action == null) {
-			this.removeActionType();
-		} else {
-			this.setActionType(this.action.getType());
 		}
 
 		//攻撃関係
@@ -574,7 +559,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.eatingTicks = 0;
 			this.getOffHandStack().decrement(1);
 			this.setPose(EntityPose.STANDING);
-			this.removeActionE();
+			this.removeAction();
 		} else if (this.eatingTicks > 0 && this.getPose() == EntityPose.STANDING) {
 			this.onFinishEating = null;
 			this.eatingTicks = 0;
@@ -609,7 +594,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.lastClearCommitmentDayTime = dayTime;
 		}
 
-		this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
+		this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
 				.ifPresentOrElse(this::setAttackTarget, this::removeAttackTarget);
 
 		if (this.attackedCooldown > 0) {
@@ -814,7 +799,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
 		this.setPose(POSE_EATING);
-		this.setActionE(EMaidAction.EATING);
+		this.setAction(MaidAction.EATING);
 	}
 
 	/**
@@ -1510,43 +1495,18 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	public void startAction(IMaidAction action) {
-		this.action = action;
-		this.setActionType(action.getType());
-	}
-
-	@Override
-	public Optional<IMaidAction> getAction() {
-		return Optional.ofNullable(this.action);
-	}
-
 	@SuppressWarnings("unused")
-	public Optional<IMaidAction.Type> getActionType() {
-		return this.dataTracker.get(ACTION_TYPE);
-	}
-
-	@SuppressWarnings("unused")
-	public void setActionType(IMaidAction.Type value) {
-		this.dataTracker.set(ACTION_TYPE, Optional.of(value));
-	}
-
-	public void removeActionType() {
-		this.dataTracker.set(ACTION_TYPE, Optional.empty());
-	}
-
-	@Override
-	@SuppressWarnings("unused")
-	public Optional<EMaidAction> getActionE() {
+	public Optional<MaidAction> getAction() {
 		return this.dataTracker.get(ACTION);
 	}
 
 	@SuppressWarnings("unused")
-	public void setActionE(EMaidAction value) {
+	public void setAction(MaidAction value) {
 		this.dataTracker.set(ACTION, Optional.of(value));
 	}
 
 	@SuppressWarnings("unused")
-	public void removeActionE() {
+	public void removeAction() {
 		this.dataTracker.set(ACTION, Optional.empty());
 	}
 
@@ -1564,15 +1524,15 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	public boolean isGliding() {
-		return this.getActionE()
-				.map(action -> action.equals(EMaidAction.GLIDING))
+		return this.getAction()
+				.map(action -> action.equals(MaidAction.GLIDING))
 				.orElse(false);
 	}
 
 	@Override
 	public boolean isEating() {
-		return this.getActionE()
-				.map(action -> action.equals(EMaidAction.EATING))
+		return this.getAction()
+				.map(action -> action.equals(MaidAction.EATING))
 				.orElse(false);
 	}
 
@@ -1853,8 +1813,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 			if (this.isGliding()) {
 				return state.setAndContinue(GLIDE);
-			} else if (this.getActionType().isPresent()) {
-				return state.setAndContinue(this.getActionType().get().getAnimation());
 			} else if (this.isTransforming()) {
 				return state.setAndContinue(TRANSFORM);
 			} else if (this.isHeadpatted()) {
@@ -2024,7 +1982,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_JOB);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		ACTION = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION);
-		ACTION_TYPE = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION_TYPE);
 		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);

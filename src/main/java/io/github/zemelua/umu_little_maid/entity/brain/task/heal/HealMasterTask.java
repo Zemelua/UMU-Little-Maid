@@ -2,7 +2,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.action.EMaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.mixin.AccessorMultiTickTask;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.ai.brain.Brain;
@@ -32,7 +32,7 @@ public class HealMasterTask extends MultiTickTask<LittleMaidEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.setActionE(EMaidAction.HEALING);
+		maid.setAction(MaidAction.HEALING);
 
 		Brain<?> brain = maid.getBrain();
 		brain.forget(MemoryModuleType.WALK_TARGET);
@@ -89,7 +89,7 @@ public class HealMasterTask extends MultiTickTask<LittleMaidEntity> {
 
 	@Override
 	protected void finishRunning(ServerWorld world, LittleMaidEntity maid, long time) {
-		maid.removeActionE();
+		maid.removeAction();
 
 		Brain<LittleMaidEntity> brain = maid.getBrain();
 		brain.forget(MemoryModuleType.LOOK_TARGET);
