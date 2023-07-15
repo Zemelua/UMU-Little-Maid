@@ -7,7 +7,8 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAncho
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateShouldEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidHarvestTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidPlantTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.UpdateFarmPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.WalkToFarmPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
@@ -98,7 +99,9 @@ public final class MaidFarmerBrainManager {
 
 	private static void addFarmTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.ACTIVITY_FARM, ImmutableList.of(
-				Pair.of(0, new MaidFarmTask()),
+				// Pair.of(0, new MaidFarmTaskOld2()),
+				Pair.of(0, new MaidHarvestTask()),
+				Pair.of(0, new MaidPlantTask()),
 				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
 		), ImmutableSet.of(
 				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT),

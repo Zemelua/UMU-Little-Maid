@@ -44,6 +44,18 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 		return this.getPose().equals(ModEntities.POSE_EATING);
 	}
 
+	default boolean isHarvesting() {
+		return this.getActionE()
+				.map(action -> action == EMaidAction.HARVESTING)
+				.orElse(false);
+	}
+
+	default boolean isPlanting() {
+		return this.getActionE()
+				.map(action -> action == EMaidAction.PLANTING)
+				.orElse(false);
+	}
+
 	default boolean isTransforming() {
 		return this.getPose().equals(ModEntities.POSE_CHANGING_COSTUME);
 	}
