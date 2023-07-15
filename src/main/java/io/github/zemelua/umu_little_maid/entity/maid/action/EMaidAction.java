@@ -6,5 +6,6 @@ public enum EMaidAction {
 	GLIDING,
 	HEADPATTED,
 	HARVESTING,
-	PLANTING
+	PLANTING,
+	HEALING
 }

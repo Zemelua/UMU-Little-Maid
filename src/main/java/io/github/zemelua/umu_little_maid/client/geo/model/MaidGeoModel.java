@@ -106,7 +106,7 @@ public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
 			else if (maid.getJob().equals(MaidJobs.FARMER)) return RESOURCE_TEXTURE_FARMER_KYUN;
 			else if (maid.getJob().equals(MaidJobs.HUNTER)) return RESOURCE_TEXTURE_HUNTER_KYUN;
 			else return RESOURCE_TEXTURE_KYUN;
-		} else if (maid.isSleeping()) {
+		} else if (maid.isSleeping() || maid.isHealing()) {
 			if (!maid.isVariableCostume()) return RESOURCE_TEXTURE_SLEEPING;
 			else if (maid.getJob().equals(MaidJobs.FENCER)) return RESOURCE_TEXTURE_FENCER_SLEEPING;
 			else if (maid.getJob().equals(MaidJobs.ARCHER)) return RESOURCE_TEXTURE_ARCHER_SLEEPING;

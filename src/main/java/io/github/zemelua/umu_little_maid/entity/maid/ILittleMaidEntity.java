@@ -27,6 +27,7 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	RawAnimation GLIDE_ROOT = RawAnimation.begin().thenLoop("glide_root");
 	RawAnimation HARVEST = RawAnimation.begin().thenPlay("farm.harvest");
 	RawAnimation PLANT = RawAnimation.begin().thenPlay("farm.plant");
+	RawAnimation HEAL = RawAnimation.begin().thenLoop("heal");
 
 	void startAction(IMaidAction action);
 
@@ -53,6 +54,12 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	default boolean isPlanting() {
 		return this.getActionE()
 				.map(action -> action == EMaidAction.PLANTING)
+				.orElse(false);
+	}
+
+	default boolean isHealing() {
+		return this.getActionE()
+				.map(action -> action == EMaidAction.HEALING)
 				.orElse(false);
 	}
 

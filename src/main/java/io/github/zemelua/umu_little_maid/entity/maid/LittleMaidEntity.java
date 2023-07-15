@@ -506,7 +506,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		// UMULittleMaid.LOGGER.info(this.action);
 
 		if (this.getActionE().isPresent() && (this.getActionE().get() == EMaidAction.HARVESTING
-				|| this.getActionE().get() == EMaidAction.PLANTING)) {
+				|| this.getActionE().get() == EMaidAction.PLANTING
+				|| this.isHealing())) {
 			this.navigation.stop();
 		}
 
@@ -1866,6 +1867,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				return state.setAndContinue(HARVEST);
 			} else if (this.isPlanting()) {
 				return state.setAndContinue(PLANT);
+			} else if (this.isHealing()) {
+				return state.setAndContinue(HEAL);
 			} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
 				switch (this.getAttackType()) {
 					case SWING_SWORD_DOWNWARD_RIGHT -> {
