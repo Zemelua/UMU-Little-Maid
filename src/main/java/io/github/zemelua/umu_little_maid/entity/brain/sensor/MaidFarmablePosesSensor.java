@@ -3,7 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
-import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidFarmTaskOld;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -47,9 +47,9 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	}
 
 	public static boolean canAnyFarm(ServerWorld world, LittleMaidEntity maid, BlockPos pos) {
-		return MaidFarmTask.isPlantable(pos, world) && !maid.getHasCrop().isEmpty()
-				|| MaidFarmTask.isHarvestable(pos, world)
-				|| MaidFarmTask.isGourd(pos, world) && maid.canBreakGourd();
+		return MaidFarmTaskOld.isPlantable(pos, world) && !maid.getHasCrop().isEmpty()
+				|| MaidFarmTaskOld.isHarvestable(pos, world)
+				|| MaidFarmTaskOld.isGourd(pos, world) && maid.canBreakGourd();
 	}
 
 	public static boolean canReach(LittleMaidEntity maid, BlockPos pos) {

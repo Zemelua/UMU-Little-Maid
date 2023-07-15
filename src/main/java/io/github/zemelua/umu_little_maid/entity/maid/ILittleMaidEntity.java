@@ -2,7 +2,8 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
-import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.EMaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.action.IMaidAction;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ItemStack;
@@ -24,11 +25,17 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	RawAnimation HEADBUTT = RawAnimation.begin().thenPlay("headbutt");
 	RawAnimation CHASE_SWORD = RawAnimation.begin().thenLoop("chase_sword");
 	RawAnimation GLIDE_ROOT = RawAnimation.begin().thenLoop("glide_root");
+	RawAnimation HARVEST = RawAnimation.begin().thenPlay("farm.harvest");
+	RawAnimation PLANT = RawAnimation.begin().thenPlay("farm.plant");
 
-	Optional<MaidAction> getAction();
+	void startAction(IMaidAction action);
 
-	default boolean canAction(MaidAction action) {
-		Optional<MaidAction> currentAction = this.getAction();
+	Optional<IMaidAction> getAction();
+
+	Optional<EMaidAction> getActionE();
+
+	default boolean canAction(EMaidAction action) {
+		Optional<EMaidAction> currentAction = this.getActionE();
 
 		return currentAction.isEmpty() || currentAction.get().equals(action);
 	}
@@ -46,6 +53,8 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 	default boolean hasSugar() {
 		return !this.searchSugar().isEmpty();
 	}
+
+	ItemStack getHasCrop();
 
 	/**
 	 * @see LittleMaidEntity#getPoses()

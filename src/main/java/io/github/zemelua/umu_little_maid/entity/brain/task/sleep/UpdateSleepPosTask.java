@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.sleep;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.EveryTickTask;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
@@ -41,8 +40,6 @@ public class UpdateSleepPosTask extends EveryTickTask<LittleMaidEntity> {
 			@Nullable Path path = maid.getNavigation().findPathTo(sleepPos.get(), 0);
 
 			if (path == null || !path.reachesTarget() || !maid.getWorld().getBlockState(sleepPos.get()).isIn(BlockTags.BEDS)) {
-				UMULittleMaid.LOGGER.info(sleepPos.get());
-
 				brain.forget(ModMemories.SLEEP_POS);
 			}
 		}
