@@ -11,16 +11,11 @@ import net.minecraft.world.World;
 import java.util.Optional;
 
 public interface IInstructionComponent extends ComponentV3, ServerTickingComponent {
-	 void startInstruction(LittleMaidEntity target);
-
+	void startInstruction(LittleMaidEntity target);
 	ActionResult tryInstruction(World world, BlockHitResult target);
-
 	ActionResult tryInstruction(World world, EntityHitResult target);
-
 	void finishInstruction();
-
 	void cancelInstruction();
-
 	Optional<LittleMaidEntity> getTarget();
 
 	default boolean isInstructing() {
