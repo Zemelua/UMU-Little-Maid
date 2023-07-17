@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.heal;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.mixin.AccessorMultiTickTask;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 public class HealMasterTask extends MultiTickTask<LittleMaidEntity> {
 	public HealMasterTask() {
-		super(ImmutableMap.of(), 60);
+		super(ImmutableMap.of(), 180);
 	}
 
 	@Override
@@ -51,6 +52,8 @@ public class HealMasterTask extends MultiTickTask<LittleMaidEntity> {
 		Optional<PlayerEntity> master = maid.getMaster();
 		if (master.isEmpty()) return;
 
+		UMULittleMaid.LOGGER.info(60L - (((AccessorMultiTickTask) this).getEndTime() - time));
+
 		if ((60L - (((AccessorMultiTickTask) this).getEndTime() - time)) % 30L == 0L) {
 			if (ModUtils.hasHarmfulEffect(master.get()) && maid.getHealth() >= 3.0D) {
 				List<StatusEffectInstance> effects = master.get().getStatusEffects().stream()
@@ -64,7 +67,7 @@ public class HealMasterTask extends MultiTickTask<LittleMaidEntity> {
 		}
 
 		if ((60L - (((AccessorMultiTickTask) this).getEndTime() - time)) % 20L == 0L) {
-			master.get().heal(6.0F);
+			master.get().heal(5.0F);
 			maid.damage(maid.getDamageSources().magic(), 3.0F);
 
 			for (int i = 0; i < 5; i++) {
