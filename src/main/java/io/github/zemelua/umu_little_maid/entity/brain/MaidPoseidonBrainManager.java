@@ -43,10 +43,10 @@ public final class MaidPoseidonBrainManager {
 
 	public static void tickBrain(Brain<LittleMaidEntity> brain) {
 		brain.resetPossibleActivities(ImmutableList.of(
-				ModActivities.ACTIVITY_SIT,
-				ModActivities.ACTIVITY_BREATH,
-				ModActivities.ACTIVITY_EAT,
-				ModActivities.ACTIVITY_GO_GET_TRIDENT,
+				ModActivities.SIT,
+				ModActivities.BREATH,
+				ModActivities.EAT,
+				ModActivities.GO_GET_TRIDENT,
 				Activity.FIGHT,
 				Activity.IDLE
 		));
@@ -83,7 +83,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModActivities.ACTIVITY_SIT, ImmutableList.of(
+		brain.setTaskList(ModActivities.SIT, ImmutableList.of(
 				Pair.of(0, new SitTask()),
 				Pair.of(1, new StayAboveWaterTask(0.8F))
 		), ImmutableSet.of(
@@ -92,7 +92,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addBreathTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModActivities.ACTIVITY_BREATH, ImmutableList.of(
+		brain.setTaskList(ModActivities.BREATH, ImmutableList.of(
 				Pair.of(0, new BreathAirTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_BREATH, MemoryModuleState.VALUE_PRESENT)
@@ -100,7 +100,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addEatTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModActivities.ACTIVITY_EAT, ImmutableList.of(
+		brain.setTaskList(ModActivities.EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
@@ -108,7 +108,7 @@ public final class MaidPoseidonBrainManager {
 	}
 
 	public static void addGoGetTridentTasks(Brain<LittleMaidEntity> brain) {
-		brain.setTaskList(ModActivities.ACTIVITY_GO_GET_TRIDENT, ImmutableList.of(
+		brain.setTaskList(ModActivities.GO_GET_TRIDENT, ImmutableList.of(
 				Pair.of(0, new GoGetTridentTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.THROWN_TRIDENT, MemoryModuleState.VALUE_PRESENT),
