@@ -9,9 +9,8 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAncho
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.UpdateHasArrowTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow.SucceedCrossbowAttackTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.ForgetShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.eat.RememberShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
@@ -50,14 +49,13 @@ public final class MaidHunterBrainManager {
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(98, new RememberShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
 				Pair.of(98, UpdateAttackTargetTask.create(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(98, new UpdateHasArrowTask<>()),
-				Pair.of(99, new ForgetShouldEatTask(living -> living.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET))),
 				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, ForgetAttackTargetTask.create()),
-				Pair.of(99, new UpdateSleepPosTask())
+				Pair.of(99, new UpdateSleepPosTask()),
+				Pair.of(99, new UpdateAttackerShouldEatTask<>())
 		));
 	}
 

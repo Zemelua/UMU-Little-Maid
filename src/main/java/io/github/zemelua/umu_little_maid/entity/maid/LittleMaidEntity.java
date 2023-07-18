@@ -501,10 +501,9 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		this.updatePose();
 
-		// UMULittleMaid.LOGGER.info(this.action);
-
-		if (this.getAction().isPresent() && (this.getAction().get() == MaidAction.HARVESTING
-				|| this.getAction().get() == MaidAction.PLANTING
+		if (this.getAction().isPresent() && (this.isEating()
+				|| this.isHarvesting()
+				|| this.isPlanting()
 				|| this.isHealing())) {
 			this.navigation.stop();
 		}
@@ -543,7 +542,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 			this.attackingTicks++;
 		}
 
-		if (this.getPose() == POSE_EATING) {
+		if (this.isEating()) {
 			this.eatingTicks++;
 			if (this.eatingTicks % 5 == 0) {
 				this.spawnEatingParticles();
@@ -1161,23 +1160,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		}
 	}
 
-	@Override
-	public ItemStack getHasCrop() {
-		if (this.getOffHandStack().isIn(ModTags.ITEM_MAID_CROPS)) {
-			return this.getOffHandStack();
-		}
-
-		for (int i = 0; i < this.inventory.size(); i++) {
-			ItemStack itemStack = this.inventory.getStack(i);
-
-			if (itemStack.isIn(ModTags.ITEM_MAID_CROPS)) {
-				return itemStack;
-			}
-		}
-
-		return ItemStack.EMPTY;
-	}
-
 	public ItemStack getHasChorusFruit() {
 		if (this.getOffHandStack().isIn(ModTags.ITEM_MAID_CROPS)) {
 			return this.getOffHandStack();
@@ -1495,17 +1477,15 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public Optional<MaidAction> getAction() {
 		return this.dataTracker.get(ACTION);
 	}
 
-	@SuppressWarnings("unused")
+	@Override
 	public void setAction(MaidAction value) {
 		this.dataTracker.set(ACTION, Optional.of(value));
 	}
 
-	@SuppressWarnings("unused")
 	public void removeAction() {
 		this.dataTracker.set(ACTION, Optional.empty());
 	}
@@ -1534,11 +1514,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		return this.getAction()
 				.map(action -> action.equals(MaidAction.EATING))
 				.orElse(false);
-	}
-
-	@Override
-	public ItemStack searchSugar() {
-		return ModUtils.searchInInventory(this.getInventory(), item -> item.isIn(ModTags.ITEM_MAID_HEAL_FOODS));
 	}
 
 	public boolean isVariableCostume() {

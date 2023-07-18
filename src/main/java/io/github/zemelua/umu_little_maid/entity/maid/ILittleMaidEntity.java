@@ -1,18 +1,23 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
+import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.ITameable;
+import io.github.zemelua.umu_little_maid.util.ModUtils;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.InventoryOwner;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.RawAnimation;
 
 import java.util.Optional;
 
 // LittleMaidEntity クラスがめっっちゃ長くなってきたので、こっちに書けるものはこっちに書いときます。
-public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable permits LittleMaidEntity {
+public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable, InventoryOwner permits LittleMaidEntity {
 	RawAnimation GLIDE = RawAnimation.begin().thenWait(5).thenLoop("glide");
 	RawAnimation TRANSFORM = RawAnimation.begin().thenPlay("transform");
 	RawAnimation HEADPATTED = RawAnimation.begin().thenLoop("headpatted");
@@ -30,20 +35,16 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 
 	Optional<MaidAction> getAction();
 
-	default boolean canAction(MaidAction action) {
-		Optional<MaidAction> currentAction = this.getAction();
-
-		return currentAction.isEmpty() || currentAction.get().equals(action);
-	}
+	void setAction(MaidAction value);
 
 	default boolean canAction() {
-		Optional<MaidAction> currentAction = this.getAction();
-
-		return currentAction.isEmpty();
+		return this.getAction().isEmpty();
 	}
 
 	default boolean isEating() {
-		return this.getPose().equals(ModEntities.POSE_EATING);
+		return this.getAction()
+				.map(action -> action == MaidAction.EATING)
+				.orElse(false);
 	}
 
 	default boolean isHarvesting() {
@@ -68,16 +69,34 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 		return this.getPose().equals(ModEntities.POSE_CHANGING_COSTUME);
 	}
 
-	ItemStack searchSugar();
+	default ItemStack searchItem(TagKey<Item> tag) {
+		if (this.getOffHandStack().isIn(tag)) {
+			return this.getOffHandStack();
+		}
 
-	default boolean hasSugar() {
-		return !this.searchSugar().isEmpty();
+		return ModUtils.searchInInventory(this.getInventory(), tag);
 	}
 
-	ItemStack getHasCrop();
+	default ItemStack getHasSugar() {
+		return searchItem(ModTags.ITEM_MAID_HEAL_FOODS);
+	}
+
+	default boolean hasSugar() {
+		return !this.getHasSugar().isEmpty();
+	}
+
+	default ItemStack getHasCrop() {
+		return searchItem(ModTags.ITEM_MAID_CROPS);
+	}
+
+	default boolean hasCrop() {
+		return !this.getHasCrop().isEmpty();
+	}
 
 	/**
 	 * @see LittleMaidEntity#getPoses()
 	 */
 	EntityPose getPose();
+
+	ItemStack getOffHandStack();
 }

@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.util;
 
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractFireBlock;
@@ -25,19 +24,18 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
@@ -71,6 +69,10 @@ public final class ModUtils {
 	public static boolean isThirdPersonView() {
 		Perspective perspective = MinecraftClient.getInstance().options.getPerspective();
 		return perspective == Perspective.THIRD_PERSON_BACK || perspective.isFrontView();
+	}
+
+	public static ItemStack searchInInventory(Inventory inventory, TagKey<Item> tag) {
+		return searchInInventory(inventory, stack -> stack.isIn(tag));
 	}
 
 	public static ItemStack searchInInventory(Inventory inventory, Predicate<ItemStack> predicate) {
@@ -147,38 +149,9 @@ public final class ModUtils {
 		return isSameObject(world, pos, globalPos.getPos());
 	}
 
-	public static float lerpAngle(float angle0, float angle1, float magnitude) {
-		float f = (magnitude - angle1) % ((float) Math.PI * 2);
-
-		if (f < (float) -Math.PI) {
-			f += (float) Math.PI * 2;
-		}
-
-		if (f >= (float) Math.PI) {
-			f -= (float) Math.PI * 2;
-		}
-
-		return angle1 + angle0 * f;
-	}
-
 	public static boolean hasHarmfulEffect(LivingEntity living) {
 		return living.getStatusEffects().stream()
 				.anyMatch(effect -> effect.getEffectType().getCategory() == StatusEffectCategory.HARMFUL);
-	}
-
-	public static Optional<Entity> crosshairEntity(PlayerEntity entity) {
-		HitResult hitResult = entity.raycast(4.0D, 0.0F, false);
-		if (hitResult instanceof EntityHitResult) {
-			return Optional.ofNullable(((EntityHitResult) hitResult).getEntity());
-		}
-
-		return Optional.empty();
-	}
-
-	public static Optional<LittleMaidEntity> crosshairMaid(PlayerEntity entity) {
-		return crosshairEntity(entity)
-				.filter(e -> e instanceof LittleMaidEntity)
-				.map(e -> (LittleMaidEntity) e);
 	}
 
 	public static final class Worlds {
