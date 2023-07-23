@@ -38,6 +38,7 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_DRIPLEAFS;
 	public static final TagKey<Item> ITEM_MAID_CHANGE_COSTUMES;
 	public static final TagKey<Item> ITEM_MAID_CROPS;
+	public static final TagKey<Item> ITEM_MAID_HARVESTS;
 	public static final TagKey<Item> ITEM_MAID_PRODUCTS;
 	public static final TagKey<Item> ITEM_MAID_CHORUS_FRUITS;
 
@@ -105,6 +106,7 @@ public final class ModTags {
 		ITEM_MAID_DRIPLEAFS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_dripleafs"));
 		ITEM_MAID_CHANGE_COSTUMES = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_change_costumes"));
 		ITEM_MAID_CROPS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_crops"));
+		ITEM_MAID_HARVESTS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_harvests"));
 		ITEM_MAID_PRODUCTS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_products"));
 		ITEM_MAID_CHORUS_FRUITS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_chorus_fruits"));
 

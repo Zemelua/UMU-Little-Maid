@@ -14,6 +14,9 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidHarvestTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.MaidPlantTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.UpdateFarmPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.WalkToFarmPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidDeliverTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidWalkToBoxTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.UpdateDeliveryBoxTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
@@ -36,12 +39,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidFarmerBrainManager {
-	public static void initBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
 		addSitTasks(brain);
 		addEatTasks(brain);
 		addFarmTasks(brain);
+		addDeliverTasks(brain);
 		addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -49,8 +53,18 @@ public final class MaidFarmerBrainManager {
 		brain.resetPossibleActivities();
 	}
 
-	public static void tickBrain(Brain<LittleMaidEntity> brain) {
-		brain.resetPossibleActivities(ImmutableList.of(ModActivities.SIT, ModActivities.EAT, Activity.REST, ModActivities.FARM, Activity.IDLE));
+	public static void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
+		ImmutableList.Builder<Activity> activities = ImmutableList.builder();
+		activities.add(ModActivities.SIT);
+		activities.add(ModActivities.EAT);
+		activities.add(Activity.REST);
+		activities.add(ModActivities.FARM);
+		if (maid.hasHarvests()) {
+			activities.add(ModActivities.DELIVER);
+		}
+		activities.add(Activity.IDLE);
+
+		brain.resetPossibleActivities(activities.build());
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -64,7 +78,8 @@ public final class MaidFarmerBrainManager {
 				Pair.of(99, new UpdateShouldEatTask<>()),
 				Pair.of(99, new UpdateShouldSleepTask<>()),
 				Pair.of(99, new UpdateSleepPosTask()),
-				Pair.of(99, new UpdateFarmPosTask<>())
+				Pair.of(99, new UpdateFarmPosTask<>()),
+				Pair.of(99, new UpdateDeliveryBoxTask<>())
 		));
 	}
 
@@ -106,15 +121,24 @@ public final class MaidFarmerBrainManager {
 
 	private static void addFarmTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.FARM, ImmutableList.of(
-				// Pair.of(0, new MaidFarmTaskOld2()),
 				Pair.of(0, new MaidHarvestTask()),
 				Pair.of(0, new MaidPlantTask()),
-				Pair.of(1, new WalkToFarmPosTask<>(0.8F))
+				Pair.of(1, new WalkToFarmPosTask<>(1.0F))
 		), ImmutableSet.of(
 				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT),
-				// Pair.of(ModEntities.MEMORY_FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
-		), ImmutableSet.of(ModMemories.FARM_POS, ModMemories.FARM_COOLDOWN));
+		));
+	}
+
+	private static void addDeliverTasks(Brain<LittleMaidEntity> brain) {
+		brain.setTaskList(ModActivities.DELIVER, ImmutableList.of(
+				Pair.of(0, new MaidDeliverTask<>()),
+				Pair.of(1, new MaidWalkToBoxTask<>())
+		), ImmutableSet.of(
+				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_ABSENT),
+				Pair.of(ModMemories.DELIVERY_BOX, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+		));
 	}
 
 	public static void addSleepTasks(Brain<LittleMaidEntity> brain) {
@@ -127,9 +151,7 @@ public final class MaidFarmerBrainManager {
 		));
 	}
 
-	private MaidFarmerBrainManager() throws IllegalAccessException {
-		throw new IllegalAccessException();
-	}
+	private MaidFarmerBrainManager() {}
 
 	public static boolean isPlantable(BlockPos pos, ServerWorld world) {
 		BlockState blockState = world.getBlockState(pos);

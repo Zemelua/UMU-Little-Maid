@@ -23,7 +23,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
 
 public final class MaidHunterBrainManager {
-	public static void initBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
 		addSitTasks(brain);
@@ -37,7 +37,7 @@ public final class MaidHunterBrainManager {
 		brain.resetPossibleActivities();
 	}
 
-	public static void tickBrain(Brain<LittleMaidEntity> brain) {
+	public static void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		brain.resetPossibleActivities(ImmutableList.of(ModActivities.SIT, ModActivities.EAT, Activity.REST, Activity.FIGHT, Activity.IDLE));
 	}
 

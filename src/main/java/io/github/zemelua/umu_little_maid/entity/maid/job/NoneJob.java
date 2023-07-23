@@ -20,12 +20,12 @@ public class NoneJob implements IMaidJob {
 	}
 
 	@Override
-	public void initBrain(Brain<LittleMaidEntity> brain) {
+	public void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		this.brainInitializer.accept(brain);
 	}
 
 	@Override
-	public void tickBrain(Brain<LittleMaidEntity> brain) {
+	public void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		this.brainTicker.accept(brain);
 	}
 

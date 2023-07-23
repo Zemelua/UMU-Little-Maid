@@ -1,9 +1,6 @@
 {
 	"values": [
 		"#umu_little_maid:maid_crops",
-		"minecraft:wheat",
-		"minecraft:beetroot",
-		"minecraft:pumpkin",
-		"minecraft:melon_slice"
+		"#umu_little_maid:maid_harvests"
 	]
 }

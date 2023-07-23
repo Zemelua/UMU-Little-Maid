@@ -180,6 +180,19 @@ public final class ModUtils {
 		}
 	}
 
+	public static final class Inventories {
+		public static boolean canInsert(Inventory to, ItemStack stack) {
+			for (int i = 0; i < to.size(); i++) {
+				ItemStack stackInInv = to.getStack(i);
+				if (stackInInv.getCount() >= stackInInv.getMaxCount()) continue;
+				if (stackInInv.isEmpty()) return true;
+				if (ItemStack.canCombine(stack, stackInInv)) return true;
+			}
+
+			return false;
+		}
+	}
+
 	public static final class Conversions {
 		public static final Codec<List<GlobalPos>> GLOBAL_POS_COLLECTION_CODEC = GlobalPos.CODEC.listOf();
 

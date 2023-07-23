@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.brain.Brain;
 
 public interface IMaidJob {
 	boolean canAssume(LittleMaidEntity maid);
-	void initBrain(Brain<LittleMaidEntity> brain);
-	void tickBrain(Brain<LittleMaidEntity> brain);
+	void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid);
+	void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid);
 	int getPriority();
 }

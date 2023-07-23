@@ -28,7 +28,7 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidHealerBrainManager {
-	public static void initBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		MaidHealerBrainManager.addCoreTasks(brain);
 		MaidHealerBrainManager.addIdleTasks(brain);
 		MaidHealerBrainManager.addSitTasks(brain);
@@ -41,7 +41,7 @@ public final class MaidHealerBrainManager {
 		brain.resetPossibleActivities();
 	}
 
-	public static void tickBrain(Brain<LittleMaidEntity> brain) {
+	public static void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		brain.resetPossibleActivities(ImmutableList.of(ModActivities.SIT, ModActivities.EAT, Activity.REST, ModActivities.HEAL, Activity.IDLE));
 	}
 

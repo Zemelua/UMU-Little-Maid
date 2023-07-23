@@ -257,7 +257,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	protected Brain<LittleMaidEntity> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<LittleMaidEntity> brain = this.createBrainProfile().deserialize(dynamic);
-		this.getJob().initBrain(brain);
+		this.getJob().initBrain(brain, this);
 
 		return brain;
 	}
@@ -494,7 +494,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 	@Override
 	protected void mobTick() {
 		this.updateJob();
-		this.getJob().tickBrain(this.getBrain());
+		this.getJob().tickBrain(this.getBrain(), this);
 		this.getBrain().tick((ServerWorld) this.getWorld(), this);
 
 		this.updateSites();
@@ -641,7 +641,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		// TODO: 村人のコードを参考にしてるんだけど、なんでコピーしとかなきゃなのかを確認する
 		this.brain = brain.copy();
-		this.getJob().initBrain(this.getBrain());
+		this.getJob().initBrain(this.getBrain(), this);
 	}
 
 	private void updateSites() {
@@ -1443,7 +1443,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.add(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
-		this.brain.remember(ModMemories.DELIVERY_BOXES, List.copyOf(boxes));
 	}
 
 	@Override
@@ -1451,7 +1450,6 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
 		boxes.remove(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
-		this.brain.forget(ModMemories.DELIVERY_BOXES);
 	}
 
 	@Override
@@ -1486,6 +1484,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 		this.dataTracker.set(ACTION, Optional.of(value));
 	}
 
+	@Override
 	public void removeAction() {
 		this.dataTracker.set(ACTION, Optional.empty());
 	}
@@ -1753,7 +1752,7 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 
 		if (nbt.contains(LittleMaidEntity.KEY_JOB)) {
 			this.setJob(ModRegistries.MAID_JOB.get(Identifier.tryParse(nbt.getString(LittleMaidEntity.KEY_JOB))));
-			this.getJob().initBrain(this.getBrain());
+			this.getJob().initBrain(this.getBrain(), this);
 		}
 
 		if (nbt.contains(LittleMaidEntity.KEY_PERSONALITY)) {
@@ -1802,6 +1801,8 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				return state.setAndContinue(PLANT);
 			} else if (this.isHealing()) {
 				return state.setAndContinue(HEAL);
+			} else if (this.isDelivering()) {
+				return state.setAndContinue(ANIMATION_DELIVER);
 			} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
 				switch (this.getAttackType()) {
 					case SWING_SWORD_DOWNWARD_RIGHT -> {
@@ -1930,13 +1931,13 @@ public non-sealed class LittleMaidEntity extends PathAwareEntity implements ILit
 				ModMemories.SHOULD_HEAL,
 				ModMemories.FARMABLE_POSES,
 				ModMemories.FARM_POS,
-				ModMemories.FARM_COOLDOWN,
 				ModMemories.THROWN_TRIDENT,
 				ModMemories.THROWN_TRIDENT_COOLDOWN,
 				ModMemories.SHOULD_BREATH,
 				ModMemories.IS_HUNTING,
 				ModMemories.ANCHOR,
-				ModMemories.DELIVERY_BOXES,
+				ModMemories.DELIVERY_BOX,
+				ModMemories.UNDELIVERABLE_BOXES,
 				ModMemories.CANT_REACH_HOME,
 				ModMemories.AVAILABLE_BED,
 				ModMemories.SLEEP_POS

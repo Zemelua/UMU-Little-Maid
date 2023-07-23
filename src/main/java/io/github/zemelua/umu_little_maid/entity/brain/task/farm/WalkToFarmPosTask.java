@@ -17,8 +17,7 @@ import java.util.Optional;
 public class WalkToFarmPosTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	private static final Map<MemoryModuleType<?>, MemoryModuleState> REQUIRED_MEMORIES = ImmutableMap.of(
 			MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
-			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT,
-			ModMemories.FARM_COOLDOWN, MemoryModuleState.VALUE_ABSENT
+			ModMemories.FARM_POS, MemoryModuleState.VALUE_PRESENT
 	);
 
 	private final float speed;

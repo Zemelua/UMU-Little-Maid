@@ -7,5 +7,6 @@ public enum MaidAction {
 	HEADPATTED,
 	HARVESTING,
 	PLANTING,
-	HEALING
+	HEALING,
+	DELIVERING
 }

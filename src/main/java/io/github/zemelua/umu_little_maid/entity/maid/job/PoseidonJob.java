@@ -6,10 +6,10 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class PoseidonJob extends BasicMaidJob {
-	public PoseidonJob(TagKey<Item> items, Consumer<Brain<LittleMaidEntity>> brainInitializer, Consumer<Brain<LittleMaidEntity>> brainTicker) {
+	public PoseidonJob(TagKey<Item> items, BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainInitializer, BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainTicker) {
 		super(items, brainInitializer, brainTicker);
 	}
 

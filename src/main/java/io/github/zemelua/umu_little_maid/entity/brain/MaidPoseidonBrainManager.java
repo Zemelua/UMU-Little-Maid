@@ -27,7 +27,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
 
 public final class MaidPoseidonBrainManager {
-	public static void initBrain(Brain<LittleMaidEntity> brain) {
+	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		MaidPoseidonBrainManager.addCoreTasks(brain);
 		MaidPoseidonBrainManager.addIdleTasks(brain);
 		MaidPoseidonBrainManager.addSitTasks(brain);
@@ -41,7 +41,7 @@ public final class MaidPoseidonBrainManager {
 		brain.resetPossibleActivities();
 	}
 
-	public static void tickBrain(Brain<LittleMaidEntity> brain) {
+	public static void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
 		brain.resetPossibleActivities(ImmutableList.of(
 				ModActivities.SIT,
 				ModActivities.BREATH,

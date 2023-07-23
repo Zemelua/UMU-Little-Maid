@@ -5,16 +5,16 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class BasicMaidJob implements IMaidJob {
 	private final TagKey<Item> items;
-	private final Consumer<Brain<LittleMaidEntity>> brainInitializer;
-	private final Consumer<Brain<LittleMaidEntity>> brainTicker;
+	private final BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainInitializer;
+	private final BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainTicker;
 
 	public BasicMaidJob(TagKey<Item> items,
-	                    Consumer<Brain<LittleMaidEntity>> brainInitializer,
-	                    Consumer<Brain<LittleMaidEntity>> brainTicker) {
+	                    BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainInitializer,
+	                    BiConsumer<Brain<LittleMaidEntity>, LittleMaidEntity> brainTicker) {
 		this.items = items;
 		this.brainInitializer = brainInitializer;
 		this.brainTicker = brainTicker;
@@ -26,13 +26,13 @@ public class BasicMaidJob implements IMaidJob {
 	}
 
 	@Override
-	public void initBrain(Brain<LittleMaidEntity> brain) {
-		this.brainInitializer.accept(brain);
+	public void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
+		this.brainInitializer.accept(brain, maid);
 	}
 
 	@Override
-	public void tickBrain(Brain<LittleMaidEntity> brain) {
-		this.brainTicker.accept(brain);
+	public void tickBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
+		this.brainTicker.accept(brain, maid);
 	}
 
 	@Override
