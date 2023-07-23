@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 // LittleMaidEntity クラスがめっっちゃ長くなってきたので、こっちに書けるものはこっちに書いときます。
-public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable, InventoryOwner, IInstructable permits LittleMaidEntity {
+public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable, InventoryOwner, IInstructable {
 	RawAnimation GLIDE = RawAnimation.begin().thenWait(5).thenLoop("glide");
 	RawAnimation TRANSFORM = RawAnimation.begin().thenPlay("transform");
 	RawAnimation HEADPATTED = RawAnimation.begin().thenLoop("headpatted");
@@ -154,9 +154,6 @@ public sealed interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHea
 
 	Brain<?> getBrain();
 	World getWorld();
-	/**
-	 * @see LittleMaidEntity#getPoses()
-	 */
 	EntityPose getPose();
 	EntityNavigation getNavigation();
 	ItemStack getOffHandStack();

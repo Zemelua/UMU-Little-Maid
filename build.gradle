@@ -20,7 +20,7 @@ repositories {
 
     maven {
         name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        url = 'https://maven.ladysnake.org/releases'
     }
 
     maven {
@@ -43,6 +43,7 @@ dependencies {
     // modLocalRuntime 'com.github.Zemelua:UMU-Debugger:2ac40b6806'
 
     modImplementation include("com.github.Chocohead:fabric-asm:v2.3")
+    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.1")
     modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.1")
     modImplementation 'software.bernie.geckolib:geckolib-fabric-1.20:4.2'
 }
