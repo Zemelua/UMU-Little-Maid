@@ -108,8 +108,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private static final Set<MemoryModuleType<?>> MEMORY_MODULES;
 	private static final Set<SensorType<? extends Sensor<? super LittleMaidEntity>>> SENSORS;
 
-	public static final int MAX_COMMITMENT = 300;
-	public static final int DAY_CEIL_COMMITMENT = 30;
 	public static final float LEFT_HAND_CHANCE = 0.15F;
 
 	private static final TrackedData<Optional<UUID>> MASTER;
@@ -119,7 +117,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private static final TrackedData<IMaidFeeling> FEELING;
 	private static final TrackedData<Optional<MaidAction>> ACTION;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
-	private static final TrackedData<Integer> COMMITMENT;
 	private static final TrackedData<Optional<GlobalPos>> HOME;
 	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
 	private static final TrackedData<Collection<GlobalPos>> DELIVERY_BOXES;
@@ -157,9 +154,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	 * 連続で攻撃を受けた回数。
 	 */
 	private int continuityAttackedCount;
-
-	private long lastClearCommitmentDayTime;
-	private int increasedCommitment;
 
 	private final AnimatableInstanceCache animationFactory = GeckoLibUtil.createInstanceCache(this);
 
@@ -229,7 +223,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
 		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
-		this.dataTracker.startTracking(COMMITMENT, 0);
 		this.dataTracker.startTracking(HOME, Optional.empty());
 		this.dataTracker.startTracking(ANCHOR, Optional.empty());
 		this.dataTracker.startTracking(DELIVERY_BOXES, new HashSet<>());
@@ -582,17 +575,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			this.changingCostumeTicks = 0;
 		}
 
-		long dayTime = this.getWorld().getTimeOfDay();
-		long currentDay = dayTime / 24000L;
-		long lastDay = this.lastClearCommitmentDayTime / 24000L;
-		if (currentDay > lastDay) {
-			this.givenFoods.clear();
-			this.increaseCommitment(9, true);
-			this.increasedCommitment = 0;
-
-			this.lastClearCommitmentDayTime = dayTime;
-		}
-
 		this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
 				.ifPresentOrElse(this::setAttackTarget, this::removeAttackTarget);
 
@@ -680,12 +662,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 					if (!this.getWorld().isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
 						this.eatFood(food, foodArg -> this.heal(6.5F));
-
-						Item foodType = food.getItem();
-						if (!this.givenFoods.contains(foodType)) {
-							this.increaseCommitment(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 6 : 11, true);
-							this.givenFoods.add(foodType);
-						}
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
@@ -701,12 +677,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 								}
 							}
 						});
-
-						Item foodType = food.getItem();
-						if (!this.givenFoods.contains(foodType)) {
-							this.increaseCommitment(this.getPersonality().isIn(ModTags.PERSONALITY_FLUTTER_WHEN_KINDS) ? 50 : 70, true);
-							this.givenFoods.add(foodType);
-						}
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
@@ -820,19 +790,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		if (target instanceof LivingEntity living) {
 			damage += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), living.getGroup());
 			knockback += EnchantmentHelper.getKnockback(this);
-
-			if (living instanceof MobEntity mob) {
-				@Nullable LivingEntity targetTarget = mob.getTarget();
-				@Nullable Entity owner = this.getOwner();
-
-				if ((targetTarget != null && owner != null)
-						&& targetTarget.equals(owner)
-						&& this.getPersonality().isIn(ModTags.PERSONALITY_DEVOTE_WHEN_ATTACK_OWNERS_ENEMIES)) {
-					damage *= 1.0D + this.getCommitment() / 500.0D;
-				}
-			}
 		}
-
 
 		if (fireLevel > 0) {
 			target.setOnFireFor(fireLevel * 4);
@@ -1176,10 +1134,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		return ItemStack.EMPTY;
 	}
 
-	public boolean canBreakGourd() {
-		return this.getCommitment() >= 75;
-	}
-
 	public boolean hasDripleaf() {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.getStack(i).isIn(ModTags.ITEM_MAID_DRIPLEAFS)) {
@@ -1259,12 +1213,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 				((ServerWorld) this.getWorld()).spawnParticles(ParticleTypes.PORTAL, xPos, yPos, zPos, 0, xDelta, yDelta, zDelta, 1.0D);
 			}
-		}
-	}
-
-	private void spawnSingleParticle(@SuppressWarnings("SameParameterValue") ParticleEffect particle) {
-		if (!this.getWorld().isClient()) {
-			((ServerWorld) this.getWorld()).spawnParticles(particle, this.getX(), this.getY() + 1.2D, this.getZ(), 0, 1.0D, 0.0D, 0.0D, 1.0D);
 		}
 	}
 
@@ -1523,14 +1471,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.set(LittleMaidEntity.IS_VARIABLE_COSTUME, value);
 	}
 
-	public int getCommitment() {
-		return this.dataTracker.get(LittleMaidEntity.COMMITMENT);
-	}
-
-	private void setCommitment(int value) {
-		this.dataTracker.set(LittleMaidEntity.COMMITMENT, value);
-	}
-
 	public Optional<LivingEntity> getAttackTarget() {
 		return this.dataTracker.get(ATTACK_TARGET)
 				.map(id -> (LivingEntity) this.getWorld().getEntityById(id));
@@ -1550,21 +1490,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	public void setAttackType(MaidAttackType value) {
 		this.dataTracker.set(ATTACK_TYPE, value);
-	}
-
-	public void increaseCommitment(int value, boolean force) {
-		if (force) {
-			if (this.increasedCommitment + value > DAY_CEIL_COMMITMENT) {
-				value = value - (this.increasedCommitment + value - DAY_CEIL_COMMITMENT);
-			}
-
-			this.increasedCommitment += value;
-		}
-
-		if (value > 0) {
-			this.setCommitment(Math.min(this.getCommitment() + value, LittleMaidEntity.MAX_COMMITMENT));
-			this.spawnSingleParticle(ParticleTypes.HEART);
-		}
 	}
 
 	public int getContinuityAttackedCount() {
@@ -1662,7 +1587,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private static final String KEY_JOB = "Job";
 	private static final String KEY_PERSONALITY = "Personality";
 	private static final String KEY_IS_VARIABLE_COSTUME = "IsVariableCostume";
-	private static final String KEY_COMMITMENT = "Commitment";
 	private static final String KEY_HOME = "Home";
 	private static final String KEY_ANCHOR = "Anchor";
 	private static final String KEY_DELIVERY_BOXES = "DeliveryBoxes";
@@ -1708,7 +1632,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		}
 
 		nbt.putBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME, this.isVariableCostume());
-		nbt.putInt(KEY_COMMITMENT, this.getCommitment());
 
 		this.getHome().map(ModUtils.Conversions::globalPosToNBT)
 				.ifPresent(n -> nbt.put(KEY_HOME, n));
@@ -1760,7 +1683,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		}
 
 		this.setVariableCostume(nbt.getBoolean(LittleMaidEntity.KEY_IS_VARIABLE_COSTUME));
-		this.setCommitment(nbt.getInt(KEY_COMMITMENT));
 
 		if (nbt.contains(KEY_HOME)) {
 			this.setHome(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_HOME)));
@@ -1960,7 +1882,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		ACTION = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION);
 		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-		COMMITMENT = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		DELIVERY_BOXES = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.COLLECTION_GLOBAL_POS);

@@ -4,14 +4,14 @@
 	"package": "io.github.zemelua.umu_little_maid.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"AccessorMultiTickTask", "ConduitBlockEntityMixin", "CraftingResultSlotMixin", "CrossbowAttackTaskAccessor",
+		"AccessorMultiTickTask", "ConduitBlockEntityMixin", "CrossbowAttackTaskAccessor",
 		"GoatHornItemMixin", "LivingEntityAccessor", "MinecraftServerMixin", "MobEntityAccessor", "MoveControlAccessor",
-		"PersistentProjectileEntityAccessor", "PersistentProjectileEntityMixin", "PlayerEntityMixin",
+		"PersistentProjectileEntityAccessor", "PersistentProjectileEntityMixin",
 		"SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TridentEntityAccessor", "TridentEntityMixin"
 	],
 	"client": [
 		"CrackParticleMixin", "InGameHudMixin", "MinecraftClientMixin",
-		"MixinBipedEntityModel", "MixinPlayerEntityRenderer", "MixinTexturedRenderLayers", "PlayerInventoryMixin"
+		"MixinBipedEntityModel", "MixinPlayerEntityRenderer", "PlayerInventoryMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

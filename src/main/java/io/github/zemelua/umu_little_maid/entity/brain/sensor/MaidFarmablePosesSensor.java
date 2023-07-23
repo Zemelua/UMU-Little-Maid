@@ -49,7 +49,7 @@ public class MaidFarmablePosesSensor extends Sensor<LittleMaidEntity> {
 	public static boolean canAnyFarm(ServerWorld world, LittleMaidEntity maid, BlockPos pos) {
 		return MaidFarmerBrainManager.isPlantable(pos, world) && maid.hasCrop()
 				|| MaidFarmerBrainManager.isHarvestable(pos, world)
-				|| MaidFarmerBrainManager.isGourd(pos, world) && maid.canBreakGourd();
+				|| MaidFarmerBrainManager.isGourd(pos, world);
 	}
 
 	public static boolean canReach(LittleMaidEntity maid, BlockPos pos) {
