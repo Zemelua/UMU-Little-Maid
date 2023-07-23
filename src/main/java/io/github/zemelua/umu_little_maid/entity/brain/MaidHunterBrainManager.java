@@ -3,24 +3,28 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.bow.UpdateHasArrowTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.crossbow.SucceedCrossbowAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidHunterBrainManager {
 	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
@@ -49,26 +53,30 @@ public final class MaidHunterBrainManager {
 				Pair.of(0, new KeepAroundHomeOrAnchorTask()),
 				Pair.of(1, new LookAroundTask(45, 90)),
 				Pair.of(2, new WanderAroundTask()),
-				Pair.of(98, new RememberShouldSleepTask<>(12000L)),
+				Pair.of(99, new UpdateShouldSleepTask<>()),
+				Pair.of(99, new UpdateSleepPosTask()),
 				Pair.of(98, UpdateAttackTargetTask.create(living -> living.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(98, new UpdateHasArrowTask<>()),
-				Pair.of(99, new ForgetShouldSleepTask<>(12000L)),
 				Pair.of(99, ForgetAttackTargetTask.create()),
-				Pair.of(99, new UpdateSleepPosTask()),
 				Pair.of(99, new UpdateAttackerShouldEatTask<>())
 		));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
 				Pair.of(0, new FollowMasterTask<>(10.0F)),
 				Pair.of(0, new TeleportToMasterTask<>(15.0F)),
-				Pair.of(0, new ShelterFromRainTask<>()),
-				// Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
-				Pair.of(2, new RandomTask<>(ImmutableList.of(
-//						Pair.of(new AvoidRainStrollTask(0.8F), 2),
-//						Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
+				Pair.of(1, new ShelterFromRainTask<>()),
+				Pair.of(2, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
+				Pair.of(3, new RandomTask<>(ImmutableList.of(
+						Pair.of(StrollTask.create(0.8F), 2),
+						Pair.of(GoTowardsLookTargetTask.create(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
+				))),
+				Pair.of(3, new RandomTask<>(ImmutableList.of(
+						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 1),
+						Pair.of(new WaitTask(30, 60), 4)
 				)))
 		));
 	}
@@ -112,8 +120,5 @@ public final class MaidHunterBrainManager {
 		));
 	}
 
-	@Deprecated
-	private MaidHunterBrainManager() {
-		UMULittleMaid.LOGGER.warn(ModEntities.MARKER, "MaidHunterBrainManager はインスタンス化しても意味ないよ！");
-	}
+	private MaidHunterBrainManager() {}
 }

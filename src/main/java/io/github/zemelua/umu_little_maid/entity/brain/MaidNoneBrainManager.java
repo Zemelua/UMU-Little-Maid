@@ -8,7 +8,10 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.*;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMasterTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
@@ -17,7 +20,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
@@ -84,8 +86,7 @@ public final class MaidNoneBrainManager {
 		brain.setTaskList(ModActivities.EAT, ImmutableList.of(
 				Pair.of(0, new MaidEatTask())
 		), ImmutableSet.of(
-				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT),
-				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+				Pair.of(ModMemories.SHOULD_EAT, MemoryModuleState.VALUE_PRESENT)
 		), ImmutableSet.of(ModMemories.SHOULD_EAT));
 	}
 
