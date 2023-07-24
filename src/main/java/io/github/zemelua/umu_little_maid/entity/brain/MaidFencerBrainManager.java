@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.MaidMeleeAttackTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.SwordAttackTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
@@ -94,7 +94,8 @@ public final class MaidFencerBrainManager {
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, new MaidMeleeAttackTask()),
+				// Pair.of(0, new MaidMeleeAttackTask()),
+				Pair.of(0, new SwordAttackTask()),
 				Pair.of(1, RangedApproachTask.create(1.0F))
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT)

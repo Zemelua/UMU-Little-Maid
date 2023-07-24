@@ -1725,6 +1725,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				return state.setAndContinue(HEAL);
 			} else if (this.isDelivering()) {
 				return state.setAndContinue(ANIMATION_DELIVER);
+			} else if (this.isSwordAttacking()) {
+				return state.setAndContinue(ANIMATION_SWORD_ATTACK);
 			} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
 				switch (this.getAttackType()) {
 					case SWING_SWORD_DOWNWARD_RIGHT -> {

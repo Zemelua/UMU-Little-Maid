@@ -49,6 +49,9 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	RawAnimation PLANT = RawAnimation.begin().thenPlay("farm.plant");
 	RawAnimation HEAL = RawAnimation.begin().thenLoop("heal");
 	RawAnimation ANIMATION_DELIVER = RawAnimation.begin().thenLoop("deliver");
+	RawAnimation ANIMATION_SWORD_ATTACK = RawAnimation.begin().thenPlay("swing_sword_downward_right")
+			.thenPlay("swing_sword_downward_left")
+			.thenPlay("swing_sword_downward_right");
 
 	Optional<MaidAction> getAction();
 	void setAction(MaidAction value);
@@ -85,6 +88,12 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	default boolean isDelivering() {
 		return this.getAction()
 				.map(action -> action == MaidAction.DELIVERING)
+				.orElse(false);
+	}
+
+	default boolean isSwordAttacking() {
+		return this.getAction()
+				.map(action -> action == MaidAction.SWORD_ATTACKING)
 				.orElse(false);
 	}
 
