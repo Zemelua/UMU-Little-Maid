@@ -13,7 +13,7 @@ public class UpdateShouldSleepTask<E extends LivingEntity> extends EveryTickTask
 		Brain<?> brain = living.getBrain();
 
 		if (ModUtils.Worlds.getTimeOfDay(world) >= 12000L) {
-			ModUtils.Brains.remember(brain, ModMemories.SHOULD_SLEEP);
+			ModUtils.Livings.remember(brain, ModMemories.SHOULD_SLEEP);
 		} else {
 			brain.forget(ModMemories.SHOULD_SLEEP);
 		}

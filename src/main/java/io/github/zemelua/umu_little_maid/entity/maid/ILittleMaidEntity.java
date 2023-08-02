@@ -42,6 +42,10 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	RawAnimation SWING_SWORD_DOWNWARD_RIGHT = RawAnimation.begin().thenPlay("swing_sword_downward_right");
 	RawAnimation SWING_SWORD_DOWNWARD_LEFT = RawAnimation.begin().thenPlay("swing_sword_downward_left");
 	RawAnimation SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.spear.right");
+	RawAnimation HOLD_SPEAR_LEFT = RawAnimation.begin().thenPlay("attack.hold.spear.left");
+	RawAnimation HOLD_SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.hold.spear.right");
+	RawAnimation HOLD_BOW_LEFT = RawAnimation.begin().thenPlay("attack.hold.bow.left");
+	RawAnimation HOLD_BOW_RIGHT = RawAnimation.begin().thenPlay("attack.hold.bow.right");
 	RawAnimation HEADBUTT = RawAnimation.begin().thenPlay("headbutt");
 	RawAnimation CHASE_SWORD = RawAnimation.begin().thenLoop("chase_sword");
 	RawAnimation GLIDE_ROOT = RawAnimation.begin().thenLoop("glide_root");

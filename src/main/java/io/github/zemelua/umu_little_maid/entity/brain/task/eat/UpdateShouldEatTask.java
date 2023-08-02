@@ -19,7 +19,7 @@ public class UpdateShouldEatTask<E extends LivingEntity & ILittleMaidEntity> ext
 		}
 
 		if (this.shouldEat(maid)) {
-			ModUtils.Brains.remember(brain, ModMemories.SHOULD_EAT);
+			ModUtils.Livings.remember(brain, ModMemories.SHOULD_EAT);
 		} else {
 			brain.forget(ModMemories.SHOULD_EAT);
 		}

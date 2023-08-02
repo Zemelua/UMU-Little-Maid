@@ -13,7 +13,7 @@ public class UpdateHasArrowTask<E extends LittleMaidEntity> extends EveryTickTas
 		Brain<?> brain = entity.getBrain();
 
 		if (entity.hasArrow()) {
-			ModUtils.Brains.remember(brain, ModMemories.HAS_ARROWS);
+			ModUtils.Livings.remember(brain, ModMemories.HAS_ARROWS);
 		} else {
 			brain.forget(ModMemories.HAS_ARROWS);
 		}

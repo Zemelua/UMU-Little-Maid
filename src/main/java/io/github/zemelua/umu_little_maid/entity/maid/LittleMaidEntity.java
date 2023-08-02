@@ -1741,8 +1741,12 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				}
 			} else if (this.getItemUseTimeLeft() > 0) {
 				switch (this.getActiveItem().getUseAction()) {
-					case BOW -> MaidItemAnimationSetter.BOW.setItemAnimation(this, builder);
-					case SPEAR -> MaidItemAnimationSetter.SPEAR.setItemAnimation(this, builder);
+					case BOW -> {
+						return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, HOLD_BOW_LEFT, HOLD_BOW_RIGHT));
+					}
+					case SPEAR -> {
+						return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, HOLD_SPEAR_LEFT, HOLD_SPEAR_RIGHT));
+					}
 				}
 			} else if (this.isSitting()) {
 				builder.thenLoop("sit");

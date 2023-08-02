@@ -34,7 +34,9 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -174,9 +176,25 @@ public final class ModUtils {
 		}
 	}
 
-	public static final class Brains {
+	public static final class Livings {
 		public static void remember(Brain<?> brain, MemoryModuleType<Unit> type) {
 			brain.remember(type, Unit.INSTANCE);
+		}
+
+		public static <T> T getUsingWithHand(LivingEntity living, T left, T right) {
+			if (living.getMainArm().equals(Arm.LEFT)) {
+				if (living.getActiveHand().equals(Hand.MAIN_HAND)) {
+					return left;
+				} else {
+					return right;
+				}
+			} else {
+				if (living.getActiveHand().equals(Hand.MAIN_HAND)) {
+					return right;
+				} else {
+					return left;
+				}
+			}
 		}
 	}
 

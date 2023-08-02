@@ -13,7 +13,7 @@ public class UpdateShouldHealTask extends EveryTickTask<LittleMaidEntity> {
 		Brain<?> brain = maid.getBrain();
 
 		if (HealOwnerTask.shouldHeal(maid)) {
-			ModUtils.Brains.remember(brain, ModMemories.SHOULD_HEAL);
+			ModUtils.Livings.remember(brain, ModMemories.SHOULD_HEAL);
 		} else {
 			brain.forget(ModMemories.SHOULD_HEAL);
 		}
