@@ -145,7 +145,10 @@ public final class InstructionRenderer {
 		}
 	}
 
-	public static void renderSiteTooltip(DrawContext context, MinecraftClient client, TextRenderer textRenderer, World world, Camera camera, int screenW, int screenH) {
+	public static boolean drewSiteTooltipLast = false;
+	public static int renderSiteTooltipTicks = 0;
+
+	public static void renderSiteTooltip(DrawContext context, TextRenderer textRenderer, World world, Camera camera, int screenW, int screenH, float tickDelta) {
 		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
 		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
@@ -168,18 +171,28 @@ public final class InstructionRenderer {
 			Text title = InstructionUtils.homeMessage(maid.get()).styled(s -> s.withBold(true));
 			Text content = InstructionUtils.HOME_TOOLTIP;
 
-			ModGUIUtils.drawULMTooltip(context, client, textRenderer, x, y, ICON_HOME, title, content, width);
+			renderSiteTooltipInternal(context, textRenderer, x, y, ICON_HOME, title, content, width, tickDelta);
 		} else if (maid.get().isDeliveryBox(world, hitPos)) {
 			Text title = InstructionUtils.deliveryBoxMessage(maid.get()).styled(s -> s.withBold(true));
 			Text content = InstructionUtils.DELIVERY_BOX_TOOLTIP;
 
-			ModGUIUtils.drawULMTooltip(context, client, textRenderer, x, y, ICON_DELIVERY_BOX, title, content, width);
+			renderSiteTooltipInternal(context, textRenderer, x, y, ICON_DELIVERY_BOX, title, content, width, tickDelta);
 		} else if (maid.get().isAnchor(world, hitPos)) {
 			Text title = InstructionUtils.anchorMessage(maid.get()).styled(s -> s.withBold(true));
 			Text content = InstructionUtils.ANCHOR_TOOLTIP;
 
-			ModGUIUtils.drawULMTooltip(context, client, textRenderer, x, y, ICON_ANCHOR, title, content, width);
+			renderSiteTooltipInternal(context, textRenderer, x, y, ICON_ANCHOR, title, content, width, tickDelta);
+		} else {
+			drewSiteTooltipLast = false;
 		}
+	}
+
+	private static void renderSiteTooltipInternal(DrawContext context, TextRenderer textRenderer, int x, int y, Identifier icon, Text title, Text content, int width, float tickDelta) {
+		drewSiteTooltipLast = true;
+
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, (renderSiteTooltipTicks + tickDelta) / 2.5F));
+		UMLTooltipRenderer.draw(context, textRenderer, x + Math.max(0, (int) (50 - (renderSiteTooltipTicks + tickDelta) * 20)), y, icon, title, content, width);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private static void renderDoubleOverlay(Overlay overlay, VertexConsumerProvider verticesProvider, MatrixStack matrices,

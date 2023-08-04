@@ -16,3 +16,8 @@ accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;
 accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 accessible method net/minecraft/client/particle/GlowParticle <init> (Lnet/minecraft/client/world/ClientWorld;DDDDDDLnet/minecraft/client/particle/SpriteProvider;)V
 
+accessible method net/minecraft/client/gui/tooltip/TooltipBackgroundRenderer renderHorizontalLine (Lnet/minecraft/client/gui/DrawContext;IIIII)V
+accessible method net/minecraft/client/gui/tooltip/TooltipBackgroundRenderer renderRectangle (Lnet/minecraft/client/gui/DrawContext;IIIIII)V
+accessible method net/minecraft/client/gui/tooltip/TooltipBackgroundRenderer renderVerticalLine (Lnet/minecraft/client/gui/DrawContext;IIIII)V
+accessible method net/minecraft/client/gui/tooltip/TooltipBackgroundRenderer renderBorder (Lnet/minecraft/client/gui/DrawContext;IIIIIII)V
+

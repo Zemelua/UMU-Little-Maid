@@ -29,6 +29,12 @@ public final class ClientCallbacks {
 	static void onStartTick(MinecraftClient client) {
 		Optional<IHeadpattingComponent> component = HeadpatManager.getHeadpattingComponent(client);
 		component.ifPresent(c -> HeadpatManager.clientTick(client, c));
+
+		if (InstructionRenderer.drewSiteTooltipLast) {
+			InstructionRenderer.renderSiteTooltipTicks++;
+		} else {
+			InstructionRenderer.renderSiteTooltipTicks = 0;
+		}
 	}
 
 //	static void onRegisterSpritesWithBlockAtlas(@SuppressWarnings("unused") SpriteAtlasTexture atlas, ClientSpriteRegistryCallback.Registry registry) {
@@ -95,7 +101,7 @@ public final class ClientCallbacks {
 		InstructionRenderer.renderSitesOverlay(client, context);
 	}
 
-	static void onRenderHUD(DrawContext context, @SuppressWarnings("unused") float tickDelta) {
+	static void onRenderHUD(DrawContext context, float tickDelta) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		TextRenderer textRenderer = client.textRenderer;
 		Window window = client.getWindow();
@@ -109,7 +115,7 @@ public final class ClientCallbacks {
 		if (component.isPresent() && component.get().isInstructing()) {
 			//TODO レンダリング系の関数を全部context使うようにする
 			InstructionRenderer.renderGuideMessage(context, textRenderer, screenW, screenH, world, target, component.get());
-			InstructionRenderer.renderSiteTooltip(context, client, textRenderer, world, camera, screenW, screenH);
+			InstructionRenderer.renderSiteTooltip(context, textRenderer, world, camera, screenW, screenH, tickDelta);
 		}
 	}
 }
