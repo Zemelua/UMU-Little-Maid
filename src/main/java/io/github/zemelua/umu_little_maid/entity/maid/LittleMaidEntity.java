@@ -1317,7 +1317,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 		if (value == MaidMode.FREE) {
 			// TODO: おうちから離れてるときのみアンカーを設定するように
-			this.setAnchor(GlobalPos.create(this.getWorld().getRegistryKey(), this.getBlockPos()));
+			this.setAnchor(GlobalPos.create(this.getWorld().getRegistryKey(), this.getSteppingPos()));
 		} else {
 			this.removeAnchor();
 		}
