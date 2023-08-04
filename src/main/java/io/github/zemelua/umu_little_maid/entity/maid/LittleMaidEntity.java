@@ -1388,14 +1388,14 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	@Override
 	public void addDeliveryBox(GlobalPos value) {
-		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		Collection<GlobalPos> boxes = new HashSet<>(this.dataTracker.get(DELIVERY_BOXES));
 		boxes.add(value);
-		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
+		this.dataTracker.set(DELIVERY_BOXES, boxes);
 	}
 
 	@Override
 	public void removeDeliveryBox(GlobalPos value) {
-		Collection<GlobalPos> boxes = this.dataTracker.get(DELIVERY_BOXES);
+		Collection<GlobalPos> boxes = new HashSet<>(this.dataTracker.get(DELIVERY_BOXES));
 		boxes.remove(value);
 		this.dataTracker.set(DELIVERY_BOXES, boxes, true);
 	}
@@ -1691,9 +1691,9 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			this.setAnchor(ModUtils.Conversions.nbtToGlobalPos(nbt.get(KEY_ANCHOR)));
 		}
 		NbtList boxesNBT = nbt.getList(KEY_DELIVERY_BOXES, NbtElement.COMPOUND_TYPE);
-		for (NbtElement boxNBT : boxesNBT) {
-			this.addDeliveryBox(ModUtils.Conversions.nbtToGlobalPos(boxNBT));
-		}
+		boxesNBT.stream()
+				.map(ModUtils.Conversions::nbtToGlobalPos)
+				.forEach(this::addDeliveryBox);
 	}
 	//</editor-fold>
 

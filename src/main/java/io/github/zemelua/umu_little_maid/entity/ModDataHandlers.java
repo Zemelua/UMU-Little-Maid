@@ -13,7 +13,6 @@ import net.minecraft.util.math.GlobalPos;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 public final class ModDataHandlers {
 	public static final TrackedDataHandler<Optional<Integer>> OPTIONAL_INT;
@@ -34,20 +33,10 @@ public final class ModDataHandlers {
 
 	static {
 		OPTIONAL_INT = TrackedDataHandler.ofOptional(PacketByteBuf::writeInt, PacketByteBuf::readInt);
-		COLLECTION_GLOBAL_POS = TrackedDataHandler.of((packet, collection) -> {
-			packet.writeInt(collection.size());
-			for (GlobalPos pos : collection) {
-				packet.writeGlobalPos(pos);
-			}
-		}, packet -> {
-			Set<GlobalPos> set = new HashSet<>();
-			int size = packet.readInt();
-			for (int i = 0; i < size; i++) {
-				set.add(packet.readGlobalPos());
-			}
-
-			return set;
-		});
+		COLLECTION_GLOBAL_POS = TrackedDataHandler.of(
+				(packet, collection) -> packet.writeCollection(collection, PacketByteBuf::writeGlobalPos),
+				packet -> packet.readCollection(HashSet::new, PacketByteBuf::readGlobalPos)
+		);
 		MAID_JOB = TrackedDataHandler.of(ModRegistries.MAID_JOB);
 		OPTIONAL_MAID_ACTION = TrackedDataHandler.ofOptional(PacketByteBuf::writeEnumConstant, packet -> packet.readEnumConstant(MaidAction.class));
 		MAID_FEELING = TrackedDataHandler.of(ModRegistries.MAID_FEELING);
