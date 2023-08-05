@@ -12,9 +12,9 @@ import net.minecraft.world.World;
 import java.util.Optional;
 
 public final class PacketHandlers {
-	static void handleInstructionCancel(ServerPlayerEntity player) {
+	static void handleInstructionFinish(ServerPlayerEntity player) {
 		IInstructionComponent component = InstructionUtils.getComponent(player);
-		component.cancelInstruction();
+		component.finishInstruction();
 	}
 
 	static void handleStartHeadpatting(ServerPlayerEntity player, World world, int maidID) {

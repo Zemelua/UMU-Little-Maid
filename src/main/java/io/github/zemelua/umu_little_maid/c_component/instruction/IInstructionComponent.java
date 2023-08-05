@@ -15,7 +15,6 @@ public interface IInstructionComponent extends ComponentV3, ServerTickingCompone
 	ActionResult tryInstruction(World world, BlockHitResult target);
 	ActionResult tryInstruction(World world, EntityHitResult target);
 	void finishInstruction();
-	void cancelInstruction();
 	Optional<LittleMaidEntity> getTarget();
 
 	default boolean isInstructing() {

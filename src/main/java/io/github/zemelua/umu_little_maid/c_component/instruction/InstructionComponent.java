@@ -57,7 +57,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			if (!world.isClient()) {
 				this.target.removeHome();
 				this.owner.sendMessage(InstructionUtils.removeHomeMessage(state, pos, this.target));
-				this.finishInstruction();
 			}
 
 			return ActionResult.success(world.isClient());
@@ -65,7 +64,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			if (!world.isClient()) {
 				this.target.removeDeliveryBox(sameBox.get());
 				this.owner.sendMessage(InstructionUtils.removeDeliveryBoxMessage(state, pos, this.target));
-				this.finishInstruction();
 			}
 
 			return ActionResult.success(world.isClient());
@@ -77,7 +75,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 				} else {
 					this.owner.sendMessage(InstructionUtils.setHomeMessage(state, pos, this.target));
 				}
-				this.finishInstruction();
 			}
 
 			return ActionResult.success(world.isClient());
@@ -85,7 +82,6 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			if (!world.isClient()) {
 				this.target.addDeliveryBox(GlobalPos.create(world.getRegistryKey(), pos));
 				this.owner.sendMessage(InstructionUtils.addDeliveryBoxMessage(state, pos, this.target));
-				this.finishInstruction();
 			}
 
 			return ActionResult.success(world.isClient());
@@ -118,16 +114,9 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 		this.target = null;
 
 		Components.INSTRUCTION.sync(this.owner);
-	}
-
-	@Override
-	public void cancelInstruction() {
-		this.target = null;
-
-		Components.INSTRUCTION.sync(this.owner);
 
 		if (!this.owner.getWorld().isClient()) {
-			this.owner.sendMessage(InstructionUtils.CANCEL, true);
+			this.owner.sendMessage(InstructionUtils.FINISH, true);
 		}
 	}
 
@@ -149,7 +138,7 @@ public class InstructionComponent implements IInstructionComponent, AutoSyncedCo
 			ItemStack offHandStack = this.owner.getOffHandStack();
 
 			if (!mainHandStack.isIn(ModTags.ITEM_MAID_INSTRUCTORS) && !offHandStack.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
-				this.cancelInstruction();
+				this.finishInstruction();
 			}
 		}
 	}

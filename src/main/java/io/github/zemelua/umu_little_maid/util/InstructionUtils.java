@@ -24,7 +24,7 @@ public final class InstructionUtils {
 	public static final ImmutableText PASS_ON_BLOCK_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_block"));
 	public static final ImmutableText PASS_ON_ENTITY_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_entity"));
 	public static final ImmutableText PASS_ON_ANCHOR_MESSAGE = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_pass_on_anchor"));
-	public static final ImmutableText CANCEL = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_cancel"));
+	public static final ImmutableText FINISH = new ImmutableText(Text.translatable("message.umu_little_maid.instruction_finish"));
 	public static final ImmutableText HOME_TOOLTIP = new ImmutableText(Text.translatable("tooltip.umu_little_maid.home"));
 	public static final ImmutableText ANCHOR_TOOLTIP = new ImmutableText(Text.translatable("tooltip.umu_little_maid.anchor"));
 	public static final ImmutableText DELIVERY_BOX_TOOLTIP = new ImmutableText(Text.translatable("tooltip.umu_little_maid.delivery_box"));
@@ -39,18 +39,13 @@ public final class InstructionUtils {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean isInstructing(MinecraftClient client) {
-		return getComponent(client).map(IInstructionComponent::isInstructing).orElse(false);
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static Optional<LittleMaidEntity> getMaid(MinecraftClient client) {
 		return getComponent(client).flatMap(IInstructionComponent::getTarget);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void cancelOnClient() {
-		ClientPlayNetworking.send(NetworkHandler.CHANNEL_CLIENT_INSTRUCTION_CANCEL, PacketByteBufs.create());
+	public static void finishOnClient() {
+		ClientPlayNetworking.send(NetworkHandler.CHANNEL_CLIENT_INSTRUCTION_FINISH, PacketByteBufs.create());
 	}
 
 	public static <I extends Entity & IInstructable> MutableText homeMessage(I owner) {
@@ -101,10 +96,10 @@ public final class InstructionUtils {
 		return Text.translatable("message.umu_little_maid.instruction_remove_site", ModUtils.Texts.blockWithPos(state, pos), site);
 	}
 
-	public static MutableText guideCancelMessage() {
+	public static MutableText guideFinishMessage() {
 		KeyBinding attackKey = ModUtils.KeyBinds.getAttackKey();
 
-		return Text.translatable("message.umu_little_maid.instruction_guide_cancel", attackKey.getBoundKeyLocalizedText(), ScreenTexts.CANCEL);
+		return Text.translatable("message.umu_little_maid.instruction_guide_finish", attackKey.getBoundKeyLocalizedText(), ScreenTexts.DONE);
 	}
 
 	public static MutableText guideDecideMessage() {

@@ -696,7 +696,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 					if (!this.getWorld().isClient()) {
 						IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
 						if (instructionComponent.isInstructing()) {
-							instructionComponent.cancelInstruction();
+							// メイドさんのサイト一覧を出力する？
 						} else {
 							instructionComponent.startInstruction(this);
 						}

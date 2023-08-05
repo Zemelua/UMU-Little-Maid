@@ -18,12 +18,12 @@ import java.util.Objects;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runnable> implements WindowEventHandler {
 	@Shadow @Nullable public ClientPlayerEntity player;
-	@Shadow protected int attackCooldown;
+	@Shadow public int attackCooldown;
 
 	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
 	private void doAttack(CallbackInfoReturnable<Boolean> callback) {
 		if (InstructionUtils.getComponent(Objects.requireNonNull(this.player)).isInstructing()) {
-			InstructionUtils.cancelOnClient();
+			InstructionUtils.finishOnClient();
 			this.attackCooldown = 10;
 			this.player.swingHand(Hand.MAIN_HAND);
 			callback.setReturnValue(false);

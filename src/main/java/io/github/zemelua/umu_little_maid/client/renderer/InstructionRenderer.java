@@ -239,7 +239,7 @@ public final class InstructionRenderer {
 		float centerY = screenH / 2.0F;
 		int y = Math.round(centerY - (textRenderer.fontHeight / 2.0F));
 
-		Text onLeftClick = InstructionUtils.guideCancelMessage();
+		Text onLeftClick = InstructionUtils.guideFinishMessage();
 		int leftW = textRenderer.getWidth(onLeftClick);
 		int leftX = Math.round(centerX - padding - leftW);
 		ModUtils.GUIs.drawTextWithBackground(context, textRenderer, onLeftClick, leftX, y, 0xFFFFFF);
