@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import net.fabricmc.api.EnvType;
@@ -16,6 +17,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.render.*;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -34,10 +36,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Unit;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
@@ -46,6 +45,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -234,6 +234,22 @@ public final class ModUtils {
 
 			context.fill(x - 2, y - 2, x + textW + 2, y + textH + 2, backgroundColor);
 			context.drawTextWithShadow(textRenderer, text, x, y, color);
+		}
+
+		public static void drawTexture(DrawContext context, Identifier texture, float x, float y, float w, float h) {
+			float x1 = x + w;
+			float y1 = y + h;
+
+			RenderSystem.setShaderTexture(0, texture);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+			Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
+			BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+			bufferBuilder.vertex(matrix,  x,  y, 0.0F).texture(0.0F, 0.0F).next();
+			bufferBuilder.vertex(matrix,  x, y1, 0.0F).texture(0.0F, 1.0F).next();
+			bufferBuilder.vertex(matrix, x1, y1, 0.0F).texture(1.0F, 1.0F).next();
+			bufferBuilder.vertex(matrix, x1,  y, 0.0F).texture(1.0F, 0.0F).next();
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		}
 	}
 

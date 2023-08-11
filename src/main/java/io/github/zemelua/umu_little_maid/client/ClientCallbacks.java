@@ -116,6 +116,7 @@ public final class ClientCallbacks {
 			//TODO レンダリング系の関数を全部context使うようにする
 			InstructionRenderer.renderGuideMessage(context, textRenderer, screenW, screenH, world, target, component.get());
 			InstructionRenderer.renderSiteTooltip(context, textRenderer, world, camera, screenW, screenH, tickDelta);
+			InstructionRenderer.renderSitesIcon(client, context, world);
 		}
 	}
 }

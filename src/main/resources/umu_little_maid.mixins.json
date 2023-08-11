@@ -10,8 +10,8 @@
 		"SpawnEggItemAccessor", "SpawnRestrictionAccessor", "TridentEntityAccessor", "TridentEntityMixin"
 	],
 	"client": [
-		"CrackParticleMixin", "InGameHudMixin", "MinecraftClientMixin",
-		"MixinBipedEntityModel", "MixinPlayerEntityRenderer"
+		"AccessorFrustum", "CrackParticleMixin", "InGameHudMixin", "MinecraftClientMixin", "MixinBipedEntityModel",
+		"MixinPlayerEntityRenderer"
 	],
 	"injectors": {
 		"defaultRequire": 1

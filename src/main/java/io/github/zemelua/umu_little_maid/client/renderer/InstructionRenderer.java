@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -32,7 +33,10 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector2dc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,6 +51,8 @@ public final class InstructionRenderer {
 	public static final Identifier ICON_HOME = UMULittleMaid.identifier("textures/gui/home_icon.png");
 	public static final Identifier ICON_ANCHOR = UMULittleMaid.identifier("textures/gui/anchor_icon.png");
 	public static final Identifier ICON_DELIVERY_BOX = UMULittleMaid.identifier("textures/gui/delivery_box_icon.png");
+
+	private static final Map<BlockPos, Vector2dc> POS_3D_2D_MAP = new HashMap<>();
 
 	public static void renderTargetOverlay(VertexConsumerProvider verticesProvider, MatrixStack matrices, Camera camera, World world, BlockPos pos, BlockState state, LittleMaidEntity maid) {
 		if (maid.isAnchor(world, pos)) {
@@ -70,23 +76,55 @@ public final class InstructionRenderer {
 		MatrixStack matrices = context.matrixStack();
 		Camera camera = context.camera();
 		VertexConsumerProvider verticesProvider = Objects.requireNonNull(context.consumers());
+		Matrix4f modelViewMatrix = matrices.peek().getPositionMatrix();
+		Matrix4f projectionMatrix = context.projectionMatrix();
+		Window window = client.getWindow();
+
+		POS_3D_2D_MAP.clear();
 
 		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
 			BlockPos homePos = h.getPos();
 
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_HOME, homePos, world.getBlockState(homePos));
+
+			Vector2dc screenPos = ModMathUtils.project3DTo2D(
+					ModMathUtils.vecToVector(homePos.toCenterPos()),
+					camera, modelViewMatrix, projectionMatrix,
+					window.getWidth(), window.getHeight(), window.getScaleFactor()
+			);
+			if (screenPos != null) {
+				POS_3D_2D_MAP.put(homePos, screenPos);
+			}
 		});
 
 		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderAnchorOverlay(client, world, player, h)).ifPresent(h -> {
 			BlockPos anchorPos = h.getPos();
 
 			OverlayRenderer.OVERLAY_ANCHOR.render(verticesProvider, matrices, camera, anchorPos, null);
+
+			Vector2dc screenPos = ModMathUtils.project3DTo2D(
+					ModMathUtils.vecToVector(anchorPos.toCenterPos()),
+					camera, modelViewMatrix, projectionMatrix,
+					window.getWidth(), window.getHeight(), window.getScaleFactor()
+			);
+			if (screenPos != null) {
+				POS_3D_2D_MAP.put(anchorPos, screenPos);
+			}
 		});
 
 		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRenderSiteOverlay(client, world, player, b)).forEach(b -> {
 			BlockPos boxPos = b.getPos();
 
 			renderOverlay(verticesProvider, matrices, camera, OverlayRenderer.OVERLAY_DELIVERY_BOX, boxPos, world.getBlockState(boxPos));
+
+			Vector2dc screenPos = ModMathUtils.project3DTo2D(
+					ModMathUtils.vecToVector(boxPos.toCenterPos()),
+					camera, modelViewMatrix, projectionMatrix,
+					window.getWidth(), window.getHeight(), window.getScaleFactor()
+			);
+			if (screenPos != null) {
+				POS_3D_2D_MAP.put(boxPos, screenPos);
+			}
 		}));
 	}
 
@@ -143,6 +181,33 @@ public final class InstructionRenderer {
 		} else {
 			overlay.render(verticesProvider, matrices, camera, pos, null);
 		}
+	}
+
+	public static void renderSitesIcon(MinecraftClient client, DrawContext context, World world) {
+		PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
+		IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
+		Optional<LittleMaidEntity> maid = instructionComponent.getTarget();
+
+		maid.flatMap(LittleMaidEntity::getHome).filter(h -> shouldRenderSiteOverlay(client, world, player, h)).ifPresent(h -> {
+			BlockPos homePos = h.getPos();
+
+			Optional.ofNullable(POS_3D_2D_MAP.get(homePos)).ifPresent(p
+					-> ModUtils.GUIs.drawTexture(context, ICON_HOME, (float) p.x() - 8.0F, (float) p.y() - 8.0F, 16.0F, 16.0F));
+		});
+
+		maid.flatMap(LittleMaidEntity::getAnchor).filter(h -> shouldRenderAnchorOverlay(client, world, player, h)).ifPresent(h -> {
+			BlockPos anchorPos = h.getPos();
+
+			Optional.ofNullable(POS_3D_2D_MAP.get(anchorPos)).ifPresent(p
+					-> ModUtils.GUIs.drawTexture(context, ICON_ANCHOR, (float) p.x() - 8.0F, (float) p.y() - 8.0F, 16.0F, 16.0F));
+		});
+
+		maid.ifPresent(m -> m.getDeliveryBoxes().stream().filter(b -> shouldRenderSiteOverlay(client, world, player, b)).forEach(b -> {
+			BlockPos boxPos = b.getPos();
+
+			Optional.ofNullable(POS_3D_2D_MAP.get(boxPos)).ifPresent(p
+					-> ModUtils.GUIs.drawTexture(context, ICON_DELIVERY_BOX, (float) p.x() - 8.0F, (float) p.y() - 8.0F, 16.0F, 16.0F));
+		}));
 	}
 
 	public static boolean drewSiteTooltipLast = false;
