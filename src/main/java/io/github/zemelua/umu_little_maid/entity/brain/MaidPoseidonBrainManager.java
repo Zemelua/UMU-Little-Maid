@@ -20,11 +20,13 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public final class MaidPoseidonBrainManager {
 	public static void initBrain(Brain<LittleMaidEntity> brain, LittleMaidEntity maid) {
@@ -77,9 +79,24 @@ public final class MaidPoseidonBrainManager {
 						// Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
-				Pair.of(0, new FollowMasterTask<>(10.0F)),
-				Pair.of(0, new TeleportToMasterTask<>(15.0F))
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
+//				Pair.of(1, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(
+//						Pair.of(StrollTask.createDynamicRadius(0.5f), 2),
+//						Pair.of(StrollTask.create(0.15f, false), 2),
+//						Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
+//						Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)))),
+				Pair.of(2, new FollowMasterTask<>(10.0F)),
+				Pair.of(3, new TeleportToMasterTask<>(15.0F))
 		));
+
+//		ImmutableList.of(
+//				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
+//				Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)),
+//				Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(
+//						Pair.of(StrollTask.createDynamicRadius(0.5f), 2),
+//						Pair.of(StrollTask.create(0.15f, false), 2),
+//						Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
+//						Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)))));
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {

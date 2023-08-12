@@ -74,6 +74,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -167,6 +168,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 		this.landNavigation = new MobNavigation(this, world);
 		this.canSwimNavigation = new AmphibiousSwimNavigation(this, world);
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
 		((MobNavigation) this.landNavigation).setCanPathThroughDoors(true);
 		((MobNavigation) this.landNavigation).setCanEnterOpenDoors(true);
 
@@ -370,7 +372,11 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			this.navigation = this.landNavigation;
 		}
 
-		super.updateSwimming();
+		if (this.isSwimming()) {
+			this.setSwimming(this.canSwim() && this.isTouchingWater() && !this.hasVehicle());
+		} else {
+			this.setSwimming(this.canSwim() && this.isSubmergedInWater() && !this.hasVehicle() && this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.WATER));
+		}
 	}
 
 	private void pickUpArrows() {
@@ -468,6 +474,17 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	@Override
 	public boolean shouldAvoidRain() {
 		return !this.getJob().equals(MaidJobs.POSEIDON);
+	}
+
+	@Override
+	public void travel(Vec3d movementInput) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isSwimming()) {
+			this.updateVelocity(this.getMovementSpeed(), movementInput);
+			this.move(MovementType.SELF, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
+		} else {
+			super.travel(movementInput);
+		}
 	}
 
 	@Override

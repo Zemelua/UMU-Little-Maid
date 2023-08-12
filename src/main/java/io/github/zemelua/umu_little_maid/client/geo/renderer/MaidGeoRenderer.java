@@ -8,9 +8,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.molang.MolangParser;
 import software.bernie.geckolib.renderer.DynamicGeoEntityRenderer;
 
@@ -23,30 +24,33 @@ public class MaidGeoRenderer extends DynamicGeoEntityRenderer<LittleMaidEntity> 
 	}
 
 	@Override
-	public void preRender(MatrixStack poseStack, LittleMaidEntity maid, BakedGeoModel model,
+	public void preRender(MatrixStack matrices, LittleMaidEntity maid, BakedGeoModel model,
 	                      @Nullable VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer,
-	                      boolean isReRender, float partialTick, int packedLight, int packedOverlay,
+	                      boolean isReRender, float tickDelta, int packedLight, int packedOverlay,
 	                      float red, float green, float blue, float alpha) {
-//		// アーマーボーンのテクスチャの一部がアーマーのテクスチャに置き換わる謎のバグがあるため
-//		this.modelProvider.getAnimationProcessor().getModelRendererList().stream()
-//				.filter(bone -> bone instanceof GeoBone)
-//				.filter(bone -> this.isArmorBone((GeoBone) bone))
-//				.forEach(bone -> ((GeoBone) bone).setHidden(true));
+		this.model.getBone(MaidGeoModel.KEY_HEAD).ifPresent(head -> {
+			MolangParser.INSTANCE.setValue("query.maid.head_pitch", head::getRotX);
+			MolangParser.INSTANCE.setValue("query.maid.head_yaw", head::getRotY);
+		});
 
-		CoreGeoBone head = this.model.getBone(MaidGeoModel.KEY_HEAD).get();
-		MolangParser.INSTANCE.setValue("query.maid.head_pitch", head::getRotX);
-		MolangParser.INSTANCE.setValue("query.maid.head_yaw", head::getRotY);
-
-//		IBone leftArm = this.modelProvider.getBone(LittleMaidGeoModel.KEY_LEFT_ARM);
-//		IBone rightArm = this.modelProvider.getBone(LittleMaidGeoModel.KEY_RIGHT_ARM);
-//		IMaidArmsPose armsPose = getArmsPose(maid);
-//		armsPose.setArmsPose(maid, leftArm, rightArm, this.modelProvider);
-
-		super.preRender(poseStack, maid, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+		super.preRender(matrices, maid, model, bufferSource, buffer, isReRender, tickDelta, packedLight, packedOverlay, red, green, blue, alpha);
 	}
 
-//	@Override
-//	protected boolean isArmorBone(GeoBone bone) {
-//		return bone.getName().startsWith("armor");
-//	}
+	@Override
+	protected void applyRotations(LittleMaidEntity maid, MatrixStack matrices, float ageInTicks, float rotationYaw, float tickDelta) {
+		super.applyRotations(maid, matrices, ageInTicks, rotationYaw, tickDelta);
+
+		float leaningPitch = maid.getLeaningPitch(tickDelta);
+		if (leaningPitch > 0.0F) {
+			// UMULittleMaid.LOGGER.info(maid.getPitch());
+
+			float pitch = maid.isTouchingWater() ? -90.0F - maid.getPitch() : -90.0F;
+			float lerpedPitch = MathHelper.lerp(leaningPitch, 0.0f, pitch);
+
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(lerpedPitch));
+			if (maid.isInSwimmingPose()) {
+				matrices.translate(0.0F, -1.0F, 0.3F);
+			}
+		}
+	}
 }

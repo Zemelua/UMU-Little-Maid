@@ -1,5 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.control;
 
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -12,7 +13,7 @@ public class MaidControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		if (this.isMoving() && ((LittleMaidEntity) this.entity).canSwim()) {
+		if (this.isMoving() && this.entity.isSwimming()) {
 			this.entity.setSprinting(true);
 
 			this.entity.setVelocity(this.entity.getVelocity().add(0.0, 0.005, 0.0));
@@ -33,17 +34,19 @@ public class MaidControl extends MoveControl {
 
 			double length = Math.sqrt(x * x + z * z);
 			if (Math.abs(y) > 1.0E-5D || Math.abs(length) > 1.0E-5D) {
+				UMULittleMaid.LOGGER.info("y: " + y + "    length: " + length);
+
 				float pitch = (float) -Math.toDegrees(MathHelper.atan2(y, length));
 				pitch = MathHelper.clamp(MathHelper.wrapDegrees(pitch), -85.0F, 85.0F);
 				this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), pitch, 5.0F));
 			}
 
-			float speed = (float) (this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * this.speed * 100.0F);
+			float speed = (float) (this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * this.speed);
 			float forward = MathHelper.cos((float) Math.toRadians(this.entity.getPitch()));
 			float upward = -MathHelper.sin((float) Math.toRadians(this.entity.getPitch()));
-			this.entity.setMovementSpeed(speed);
+			this.entity.setMovementSpeed(speed * 0.2F);
 			this.entity.setForwardSpeed(forward * speed);
-			this.entity.setUpwardSpeed(upward * speed * 20);
+			this.entity.setUpwardSpeed(upward * speed * 5);
 		} else {
 			if (this.entity.isSprinting()) {
 				this.entity.setSprinting(false);

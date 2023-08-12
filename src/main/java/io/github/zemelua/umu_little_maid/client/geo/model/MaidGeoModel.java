@@ -6,13 +6,11 @@ import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.util.Identifier;
-import software.bernie.geckolib.cache.object.GeoBone;
+import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
-
-import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
@@ -74,16 +72,19 @@ public class MaidGeoModel extends DefaultedEntityGeoModel<LittleMaidEntity> {
 
 	@Override
 	public void setCustomAnimations(LittleMaidEntity maid, long instanceId, AnimationState<LittleMaidEntity> animationState) {
-		Optional<GeoBone> head = this.getBone(KEY_HEAD);
-
 		EntityModelData modelData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
-
 		int unpause = !MinecraftClient.getInstance().isPaused() || maid.shouldPlayAnimsWhileGamePaused() ? 1 : 0;
 
-		head.ifPresent(h -> {
-			if (h.getRotX() == 0.0F && h.getRotY() == 0.0F && h.getRotZ() == 0.0F) {
-				h.setRotX(h.getRotX() + (float) Math.toRadians(modelData.headPitch()) * unpause);
-				h.setRotY(h.getRotY() + (float) Math.toRadians(modelData.netHeadYaw()) * unpause);
+		this.getBone(KEY_HEAD).ifPresent(head -> {
+			if (head.getRotX() == 0.0F && head.getRotY() == 0.0F && head.getRotZ() == 0.0F) {
+				float leaningPitch = maid.getLeaningPitch(animationState.getPartialTick());
+				if (leaningPitch > 0.0F && maid.isInSwimmingPose()) {
+					// float pitch = MathHelper.lerp(animationState.getPartialTick(), maid.prevPitch, maid.getPitch());
+					head.setRotX(MathHelper.lerp(leaningPitch, head.getRotX(), 45));
+				} else {
+					head.setRotX(head.getRotX() + (float) Math.toRadians(modelData.headPitch()) * unpause);
+					head.setRotY(head.getRotY() + (float) Math.toRadians(modelData.netHeadYaw()) * unpause);
+				}
 			}
 		});
 	}
