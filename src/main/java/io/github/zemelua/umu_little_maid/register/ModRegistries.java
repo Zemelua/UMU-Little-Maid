@@ -2,10 +2,10 @@ package io.github.zemelua.umu_little_maid.register;
 
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.entity.maid.MaidPersonality;
-import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -14,7 +14,6 @@ public final class ModRegistries {
 
 	public static final Registry<MaidPersonality> MAID_PERSONALITY;
 	public static final Registry<IMaidJob> MAID_JOB;
-	public static final Registry<IMaidFeeling> MAID_FEELING;
 
 	public static void initialize() {
 		UMULittleMaid.LOGGER.info(ModRegistries.MARKER, "Registries are initialized!");
@@ -22,13 +21,10 @@ public final class ModRegistries {
 
 	static {
 		MAID_PERSONALITY = FabricRegistryBuilder
-				.createSimple(MaidPersonality.class, UMULittleMaid.identifier("maid_personality"))
+				.<MaidPersonality>createSimple(RegistryKey.ofRegistry(UMULittleMaid.identifier("maid_personality")))
 				.buildAndRegister();
 		MAID_JOB = FabricRegistryBuilder
-				.createSimple(IMaidJob.class, UMULittleMaid.identifier("maid_job"))
-				.buildAndRegister();
-		MAID_FEELING = FabricRegistryBuilder
-				.createSimple(IMaidFeeling.class, UMULittleMaid.identifier("maid_feeling"))
+				.<IMaidJob>createSimple(RegistryKey.ofRegistry(UMULittleMaid.identifier("maid_job")))
 				.buildAndRegister();
 	}
 

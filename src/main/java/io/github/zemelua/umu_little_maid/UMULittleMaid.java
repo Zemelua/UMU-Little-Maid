@@ -7,7 +7,6 @@ import io.github.zemelua.umu_little_maid.entity.ModPOIs;
 import io.github.zemelua.umu_little_maid.entity.brain.ModActivities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
-import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
 import io.github.zemelua.umu_little_maid.item.ModItems;
@@ -39,7 +38,6 @@ public class UMULittleMaid implements ModInitializer {
 		ModItems.initialize();
 
 		ModEntities.initialize();
-		MaidFeeling.init();
 		MaidJobs.init();
 
 		ModMemories.init();

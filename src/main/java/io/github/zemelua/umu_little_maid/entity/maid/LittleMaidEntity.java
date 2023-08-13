@@ -17,8 +17,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
-import io.github.zemelua.umu_little_maid.entity.maid.feeling.IMaidFeeling;
-import io.github.zemelua.umu_little_maid.entity.maid.feeling.MaidFeeling;
 import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -115,7 +113,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private static final TrackedData<MaidMode> MODE;
 	private static final TrackedData<IMaidJob> JOB;
 	private static final TrackedData<MaidPersonality> PERSONALITY;
-	private static final TrackedData<IMaidFeeling> FEELING;
 	private static final TrackedData<Optional<MaidAction>> ACTION;
 	private static final TrackedData<Boolean> IS_VARIABLE_COSTUME;
 	private static final TrackedData<Optional<GlobalPos>> HOME;
@@ -223,7 +220,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.startTracking(JOB, MaidJobs.NONE);
 		this.dataTracker.startTracking(ACTION, Optional.empty());
 		this.dataTracker.startTracking(PERSONALITY, PERSONALITY_BRAVERY);
-		this.dataTracker.startTracking(FEELING, MaidFeeling.NORMAL);
 		this.dataTracker.startTracking(IS_VARIABLE_COSTUME, true);
 		this.dataTracker.startTracking(HOME, Optional.empty());
 		this.dataTracker.startTracking(ANCHOR, Optional.empty());
@@ -490,12 +486,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	@Override
 	public void tick() {
 		super.tick();
-
-		if (HeadpatManager.isHeadpatted(this)) {
-			this.setFeeling(MaidFeeling.HAPPY);
-		} else {
-			this.setFeeling(MaidFeeling.NORMAL);
-		}
 	}
 
 	/**
@@ -1454,15 +1444,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.set(ACTION, Optional.empty());
 	}
 
-	@Deprecated
-	public IMaidFeeling getFeeling() {
-		return this.dataTracker.get(FEELING);
-	}
-
-	public void setFeeling(IMaidFeeling value) {
-		this.dataTracker.set(FEELING, value);
-	}
-
 	public boolean isIdle() {
 		return this.brain.hasActivity(Activity.IDLE);
 	}
@@ -1903,7 +1884,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		JOB = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_JOB);
 		PERSONALITY = DataTracker.registerData(LittleMaidEntity.class, ModEntities.PERSONALITY_HANDLER);
 		ACTION = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_MAID_ACTION);
-		FEELING = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_FEELING);
 		IS_VARIABLE_COSTUME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
