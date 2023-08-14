@@ -4,11 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.melee.BasicMaidMeleeAttackTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.GoGetTridentTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.RiptideTridentTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.ThrowTridentTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.TridentApproachTargetTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
@@ -19,7 +15,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.FollowMaster
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
-import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -70,33 +65,18 @@ public final class MaidPoseidonBrainManager {
 		));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void addIdleTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.IDLE, ImmutableList.of(
-				// Pair.of(1, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(2, new RandomTask<>(ImmutableList.of(
 						Pair.of(StrollTask.create(0.8F), 2),
 						Pair.of(StrollTask.createDynamicRadius(0.75f), 2),
-						// Pair.of(new GoTowardsLookTarget(0.8F, 3), 2),
 						Pair.of(new WaitTask(30, 60), 1)
 				))),
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
-//				Pair.of(1, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(
-//						Pair.of(StrollTask.createDynamicRadius(0.5f), 2),
-//						Pair.of(StrollTask.create(0.15f, false), 2),
-//						Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
-//						Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)))),
 				Pair.of(2, new FollowMasterTask<>(10.0F)),
 				Pair.of(3, new TeleportToMasterTask<>(15.0F))
 		));
-
-//		ImmutableList.of(
-//				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))),
-//				Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)),
-//				Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(
-//						Pair.of(StrollTask.createDynamicRadius(0.5f), 2),
-//						Pair.of(StrollTask.create(0.15f, false), 2),
-//						Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
-//						Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)))));
 	}
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
@@ -135,7 +115,7 @@ public final class MaidPoseidonBrainManager {
 
 	public static void addFightTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
-				Pair.of(0, new BasicMaidMeleeAttackTask(MaidAttackType.SPEAR)),
+				Pair.of(0, new SpearTask()),
 				Pair.of(1, new ThrowTridentTask<>(10.0D, 0.8D, 20)),
 				Pair.of(1, new RiptideTridentTask<>(10.0D, 0.8D, 10)),
 				Pair.of(2, TridentApproachTargetTask.create(1.0F))

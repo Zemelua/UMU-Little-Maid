@@ -9,7 +9,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateGuardShould
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidHeadbuttTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.guard.HeadbuttTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
@@ -92,7 +92,7 @@ public final class MaidGuardBrainManager {
 	public static void addGuardTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.GUARD, ImmutableList.of(
 				Pair.of(1, new MaidGuardTask<>(6.0D, 2.0D, 1.5F)),
-				Pair.of(0, new MaidHeadbuttTask())
+				Pair.of(0, new HeadbuttTask())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.GUARD_AGAINST, MemoryModuleState.VALUE_PRESENT)
 		), ImmutableSet.of(

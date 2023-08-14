@@ -16,7 +16,6 @@ import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
-import io.github.zemelua.umu_little_maid.entity.maid.attack.MaidAttackType;
 import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
 import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import io.github.zemelua.umu_little_maid.inventory.LittleMaidScreenHandlerFactory;
@@ -118,16 +117,11 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private static final TrackedData<Optional<GlobalPos>> HOME;
 	private static final TrackedData<Optional<GlobalPos>> ANCHOR;
 	private static final TrackedData<Collection<GlobalPos>> DELIVERY_BOXES;
-	private static final TrackedData<Optional<Integer>> ATTACK_TARGET;
-	private static final TrackedData<MaidAttackType> ATTACK_TYPE;
 
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
 	private final SimpleInventory inventory = new SimpleInventory(15);
 	private final List<Item> givenFoods = new ArrayList<>();
-
-	private int attackingTicks;
-	@Nullable private LivingEntity attackingTarget;
 
 	private int eatingTicks;
 	@Nullable private Consumer<ItemStack> onFinishEating;
@@ -224,8 +218,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.startTracking(HOME, Optional.empty());
 		this.dataTracker.startTracking(ANCHOR, Optional.empty());
 		this.dataTracker.startTracking(DELIVERY_BOXES, new HashSet<>());
-		this.dataTracker.startTracking(ATTACK_TARGET, Optional.empty());
-		this.dataTracker.startTracking(ATTACK_TYPE, MaidAttackType.NO_ATTACKING);
 	}
 
 	public static DefaultAttributeContainer.Builder createAttributes() {
@@ -504,43 +496,15 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		if (this.getAction().isPresent() && (this.isEating()
 				|| this.isHarvesting()
 				|| this.isPlanting()
-				|| this.isHealing())) {
+				|| this.isHealing()
+				|| this.isDelivering()
+				|| this.isSwordAttacking()
+				|| this.isSpearing()
+				|| this.isHeadbutting())) {
 			this.navigation.stop();
 		}
 
 		//攻撃関係
-		MaidAttackType state = this.getAttackType();
-		switch (state) {
-			case SWING_SWORD_DOWNWARD_RIGHT, SWING_SWORD_DOWNWARD_LEFT -> {
-				if (this.attackingTicks == 3) {
-					this.tryAttack(this.attackingTarget);
-				} else if (attackingTicks >= 10) {
-					this.finishAttack();
-				}
-			} case SWEEP_SWORD -> {
-				if (this.attackingTicks == 5) {
-					this.tryAttack(this.attackingTarget);
-				} else if (attackingTicks >= 10) {
-					this.finishAttack();
-				}
-			} case SPEAR -> {
-				if (this.attackingTicks == 24) {
-					this.headbutt();
-				} else if (attackingTicks >= 40) {
-					this.finishAttack();
-				}
-			} case HEADBUTT -> {
-				if (this.attackingTicks == 9) {
-					this.tryAttack(this.attackingTarget);
-				} else if (attackingTicks >= 18) {
-					this.finishAttack();
-				}
-			}
-		}
-		if (state != MaidAttackType.NO_ATTACKING) {
-			this.getNavigation().stop();
-			this.attackingTicks++;
-		}
 
 		if (this.isEating()) {
 			this.eatingTicks++;
@@ -581,9 +545,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			this.setPose(EntityPose.STANDING);
 			this.changingCostumeTicks = 0;
 		}
-
-		this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
-				.ifPresentOrElse(this::setAttackTarget, this::removeAttackTarget);
 
 		if (this.attackedCooldown > 0) {
 			this.attackedCooldown--;
@@ -761,7 +722,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	@Override
 	public void takeKnockback(double strength, double x, double z) {
-		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES) || this.getAttackType() != MaidAttackType.NO_ATTACKING) {
+		if (this.getPersonality().isIn(ModTags.PERSONALITY_PERSISTENCES)) {
 			return;
 		}
 
@@ -842,26 +803,15 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		return damagePassed;
 	}
 
-	private void headbutt() {
-		boolean damagePassed = Objects.requireNonNull(this.attackingTarget).damage(this.attackingTarget.getDamageSources().mobAttack(this), 5.0F);
+	@Override
+	public void headbutt(LivingEntity target) {
+		boolean damagePassed = target.damage(target.getDamageSources().mobAttack(this), 5.0F);
 
 		if (damagePassed) {
 			double xDir = Math.sin(this.getYaw() * Math.PI / 180.0D);
 			double zDir = -Math.cos(this.getYaw() * Math.PI / 180.0D);
-			this.attackingTarget.takeKnockback(1.6F, xDir, zDir);
+			target.takeKnockback(1.6F, xDir, zDir);
 		}
-	}
-
-	public void startAttack(LivingEntity target, MaidAttackType type) {
-		this.setAttackType(type);
-		this.attackingTarget = target;
-		this.attackingTicks = 0;
-	}
-
-	public void finishAttack() {
-		this.setAttackType(MaidAttackType.NO_ATTACKING);
-		this.attackingTarget = null;
-		this.attackingTicks = 0;
 	}
 
 	/**
@@ -960,11 +910,11 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		return this.getJob().equals(MaidJobs.ARCHER) || this.getJob().equals(MaidJobs.POSEIDON) || this.getJob().equals(MaidJobs.HUNTER);
 	}
 
-	@Override
-	@Nullable
-	public LivingEntity getTarget() {
-		return this.getAttackTarget().orElse(null);
-	}
+//	@Override
+//	@Nullable
+//	public LivingEntity getTarget() {
+//		return this.getAttackTarget().orElse(null);
+//	}
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource source) {
@@ -1469,31 +1419,12 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.dataTracker.set(LittleMaidEntity.IS_VARIABLE_COSTUME, value);
 	}
 
-	public Optional<LivingEntity> getAttackTarget() {
-		return this.dataTracker.get(ATTACK_TARGET)
-				.map(id -> (LivingEntity) this.getWorld().getEntityById(id));
-	}
-
-	public void setAttackTarget(LivingEntity value) {
-		this.dataTracker.set(ATTACK_TARGET, Optional.of(value.getId()));
-	}
-
-	public void removeAttackTarget() {
-		this.dataTracker.set(ATTACK_TARGET, Optional.empty());
-	}
-
-	public MaidAttackType getAttackType() {
-		return this.dataTracker.get(ATTACK_TYPE);
-	}
-
-	public void setAttackType(MaidAttackType value) {
-		this.dataTracker.set(ATTACK_TYPE, value);
-	}
-
+	@Override
 	public int getContinuityAttackedCount() {
 		return this.continuityAttackedCount;
 	}
 
+	@Override
 	public void resetContinuityAttackedCount() {
 		this.continuityAttackedCount = 0;
 	}
@@ -1725,18 +1656,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				return state.setAndContinue(ANIMATION_DELIVER);
 			} else if (this.isSwordAttacking()) {
 				return state.setAndContinue(ANIMATION_SWORD_ATTACK);
-			} else if (!this.getAttackType().equals(MaidAttackType.NO_ATTACKING)) {
-				switch (this.getAttackType()) {
-					case SWING_SWORD_DOWNWARD_RIGHT -> {
-						return state.setAndContinue(SWING_SWORD_DOWNWARD_RIGHT);
-					} case SWING_SWORD_DOWNWARD_LEFT -> {
-						return state.setAndContinue(SWING_SWORD_DOWNWARD_LEFT);
-					} case SPEAR -> {
-						return state.setAndContinue(SPEAR_RIGHT);
-					} case HEADBUTT -> {
-						return state.setAndContinue(HEADBUTT);
-					}
-				}
+			} else if (this.isSpearing()) {
+				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, SPEAR_RIGHT, SPEAR_RIGHT));
+			} else if (this.isHeadbutting()) {
+				return state.setAndContinue(HEADBUTT);
 			} else if (this.getItemUseTimeLeft() > 0) {
 				switch (this.getActiveItem().getUseAction()) {
 					case BOW -> {
@@ -1888,7 +1811,5 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		HOME = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		ANCHOR = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS);
 		DELIVERY_BOXES = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.COLLECTION_GLOBAL_POS);
-		ATTACK_TARGET = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.OPTIONAL_INT);
-		ATTACK_TYPE = DataTracker.registerData(LittleMaidEntity.class, ModDataHandlers.MAID_ATTACK_TYPE);
 	}
 }

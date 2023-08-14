@@ -16,6 +16,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.InventoryOwner;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.item.Item;
@@ -61,6 +62,10 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	void setAction(MaidAction value);
 	void removeAction();
 
+	void headbutt(LivingEntity target);
+	int getContinuityAttackedCount();
+	void resetContinuityAttackedCount();
+
 	default boolean canAction() {
 		return this.getAction().isEmpty();
 	}
@@ -98,6 +103,18 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	default boolean isSwordAttacking() {
 		return this.getAction()
 				.map(action -> action == MaidAction.SWORD_ATTACKING)
+				.orElse(false);
+	}
+
+	default boolean isSpearing() {
+		return this.getAction()
+				.map(action -> action == MaidAction.SPEARING)
+				.orElse(false);
+	}
+
+	default boolean isHeadbutting() {
+		return this.getAction()
+				.map(action -> action == MaidAction.HEADBUTTING)
 				.orElse(false);
 	}
 
