@@ -177,10 +177,11 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 		this.setLeftHanded(random.nextDouble() < LittleMaidEntity.LEFT_HAND_CHANCE);
 
-		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 2.0F);
-		this.setEquipmentDropChance(EquipmentSlot.OFFHAND, 2.0F);
-		this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
-		this.setEquipmentDropChance(EquipmentSlot.FEET, 2.0F);
+		// #setEquipmentDropChanceで設定したドロップは耐久値とかも変わっちゃうので#dropInventoryで直接ドロップさせます
+		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
+		this.setEquipmentDropChance(EquipmentSlot.OFFHAND, 0.0F);
+		this.setEquipmentDropChance(EquipmentSlot.HEAD, 0.0F);
+		this.setEquipmentDropChance(EquipmentSlot.FEET, 0.0F);
 
 		this.setCanPickUpLoot(true);
 
@@ -1178,6 +1179,14 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	protected void dropInventory() {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
+
+			if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
+				this.dropStack(itemStack);
+			}
+		}
+
+		for (EquipmentSlot slot : EquipmentSlot.values()) {
+			ItemStack itemStack = this.getEquippedStack(slot);
 
 			if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
 				this.dropStack(itemStack);
