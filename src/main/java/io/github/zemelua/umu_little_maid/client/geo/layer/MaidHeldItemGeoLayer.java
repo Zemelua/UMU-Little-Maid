@@ -10,6 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -66,6 +67,9 @@ public class MaidHeldItemGeoLayer extends BlockAndItemGeoLayer<LittleMaidEntity>
 		ItemStack offStack = maid.getOffHandStack();
 
 		ModMathUtils.scaleMatrices(matrices, 0.7F);
+		if (stack.isIn(ItemTags.AXES)) {
+			ModMathUtils.scaleMatrices(matrices, 1.3F);
+		}
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
 		if (stack.equals(mainStack)) {
 			if (stack.isOf(Items.BOW)) {
@@ -74,6 +78,10 @@ public class MaidHeldItemGeoLayer extends BlockAndItemGeoLayer<LittleMaidEntity>
 				matrices.translate(0.0F, 0.125F, -0.25F);
 			} else if (stack.isOf(Items.CROSSBOW)) {
 				matrices.translate(0.0D, 0.04D, 0.0D);
+			} else if (stack.isIn(ItemTags.AXES)) {
+				if (maid.isAxeAttacking()) {
+					matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-30.0F));
+				}
 			}
 		}
 		else if (stack.equals(offStack)) {

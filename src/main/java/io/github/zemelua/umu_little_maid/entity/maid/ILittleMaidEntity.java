@@ -42,6 +42,7 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	RawAnimation SLEEP = RawAnimation.begin().thenLoop("sleeping");
 	RawAnimation SWING_SWORD_DOWNWARD_RIGHT = RawAnimation.begin().thenPlay("swing_sword_downward_right");
 	RawAnimation SWING_SWORD_DOWNWARD_LEFT = RawAnimation.begin().thenPlay("swing_sword_downward_left");
+	RawAnimation ANIMATION_AXE_ATTACK_RIGHT = RawAnimation.begin().thenPlay("attack.axe.right");
 	RawAnimation SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.spear.right");
 	RawAnimation HOLD_SPEAR_LEFT = RawAnimation.begin().thenPlay("attack.hold.spear.left");
 	RawAnimation HOLD_SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.hold.spear.right");
@@ -103,6 +104,12 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	default boolean isSwordAttacking() {
 		return this.getAction()
 				.map(action -> action == MaidAction.SWORD_ATTACKING)
+				.orElse(false);
+	}
+
+	default boolean isAxeAttacking() {
+		return this.getAction()
+				.map(action -> action == MaidAction.AXE_ATTACKING)
 				.orElse(false);
 	}
 

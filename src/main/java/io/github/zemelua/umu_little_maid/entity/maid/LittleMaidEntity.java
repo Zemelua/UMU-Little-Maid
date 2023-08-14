@@ -499,6 +499,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				|| this.isHealing()
 				|| this.isDelivering()
 				|| this.isSwordAttacking()
+				|| this.isAxeAttacking()
 				|| this.isSpearing()
 				|| this.isHeadbutting())) {
 			this.navigation.stop();
@@ -1656,6 +1657,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				return state.setAndContinue(ANIMATION_DELIVER);
 			} else if (this.isSwordAttacking()) {
 				return state.setAndContinue(ANIMATION_SWORD_ATTACK);
+			} else if (this.isAxeAttacking()) {
+				return state.setAndContinue(ANIMATION_AXE_ATTACK_RIGHT);
 			} else if (this.isSpearing()) {
 				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, SPEAR_RIGHT, SPEAR_RIGHT));
 			} else if (this.isHeadbutting()) {
