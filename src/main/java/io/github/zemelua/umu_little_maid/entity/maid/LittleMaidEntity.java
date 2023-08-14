@@ -324,11 +324,13 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	private static final UUID ATTRIBUTE_ID_CRACKER_SLOW = UUID.fromString("7ED8E765-F4D0-4428-BCBE-654FFF51BAF0");
 	private static final UUID ATTRIBUTE_ID_CRACKER_DAMAGE = UUID.fromString("56A32427-E09D-BA9C-EC1C-A1C7BAD8E88A");
+	private static final UUID ATTRIBUTE_ID_ATTACKING_KNOCKBACK_RESISTANCE = UUID.fromString("069DAE06-846E-9671-4C06-6C71DC476C23");
 
 	private void updateAttributes() {
 		IMaidJob job = this.getJob();
 		EntityAttributeInstance speedAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 		EntityAttributeInstance attackAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+		EntityAttributeInstance knockbackResistanceAttribute = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 
 		if (job.equals(MaidJobs.CRACKER)) {
 			if (speedAttribute.getModifier(ATTRIBUTE_ID_CRACKER_SLOW) == null) {
@@ -349,6 +351,21 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 			if (attackAttribute.getModifier(ATTRIBUTE_ID_CRACKER_DAMAGE) != null) {
 				attackAttribute.removeModifier(ATTRIBUTE_ID_CRACKER_DAMAGE);
+			}
+		}
+
+		if (this.isSwordAttacking()
+				|| this.isAxeAttacking()
+				|| this.isSpearing()
+				|| this.isHeadbutting()) {
+			if (knockbackResistanceAttribute.getModifier(ATTRIBUTE_ID_ATTACKING_KNOCKBACK_RESISTANCE) == null) {
+				knockbackResistanceAttribute.addTemporaryModifier(
+						new EntityAttributeModifier(ATTRIBUTE_ID_ATTACKING_KNOCKBACK_RESISTANCE, "Attacking knockback resistance", 1.0D, Operation.ADDITION)
+				);
+			}
+		} else {
+			if (knockbackResistanceAttribute.getModifier(ATTRIBUTE_ID_ATTACKING_KNOCKBACK_RESISTANCE) != null) {
+				knockbackResistanceAttribute.removeModifier(ATTRIBUTE_ID_ATTACKING_KNOCKBACK_RESISTANCE);
 			}
 		}
 	}
