@@ -2,7 +2,6 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
@@ -523,46 +522,42 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			this.navigation.stop();
 		}
 
-		//攻撃関係
-
 		if (this.isEating()) {
 			this.eatingTicks++;
+
 			if (this.eatingTicks % 5 == 0) {
 				this.spawnEatingParticles();
 			}
 
-			this.navigation.stop();
-		}
-		if (this.eatingTicks >= 16) {
-			if (this.onFinishEating != null) {
-				this.onFinishEating.accept(this.getOffHandStack());
+			if (this.eatingTicks >= 16) {
+				if (this.onFinishEating != null) {
+					this.onFinishEating.accept(this.getOffHandStack());
+				}
+				this.onFinishEating = null;
+				this.eatingTicks = 0;
+				this.getOffHandStack().decrement(1);
+				this.removeAction();
 			}
-			this.onFinishEating = null;
-			this.eatingTicks = 0;
-			this.getOffHandStack().decrement(1);
-			this.setPose(EntityPose.STANDING);
-			this.removeAction();
-		} else if (this.eatingTicks > 0 && this.getPose() == EntityPose.STANDING) {
+		}
+
+		if (this.eatingTicks > 0 && this.getAction().isEmpty()) {
 			this.onFinishEating = null;
 			this.eatingTicks = 0;
 			this.inventory.addStack(this.getOffHandStack().copy());
 			this.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
 		}
 
-		if (this.getPose() == ModEntities.POSE_CHANGING_COSTUME) {
+		if (this.isTransforming()) {
 			this.changingCostumeTicks++;
 
-			this.navigation.stop();
-		}
-		if (this.changingCostumeTicks == 20) {
-			this.jump();
-		}
-		if (this.changingCostumeTicks == 25) {
-			this.setVariableCostume(!this.isVariableCostume());
-		}
-		if (this.changingCostumeTicks >= 59) {
-			this.setPose(EntityPose.STANDING);
-			this.changingCostumeTicks = 0;
+			if (this.changingCostumeTicks == 20) {
+				this.jump();
+			} else if (this.changingCostumeTicks == 25) {
+				this.setVariableCostume(!this.isVariableCostume());
+			} else if (this.changingCostumeTicks >= 59) {
+				this.changingCostumeTicks = 0;
+				this.removeAction();
+			}
 		}
 
 		if (this.attackedCooldown > 0) {
@@ -645,33 +640,31 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.getPose() != POSE_EATING) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_HEAL_FOODS) && this.canAction()) {
 					if (!this.getWorld().isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
-						this.eatFood(food, foodArg -> this.heal(6.5F));
+						this.eatFood(food, f -> this.heal(6.5F));
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.getPose() != POSE_EATING) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_REINFORCE_FOODS) && this.canAction()) {
 					if (!this.getWorld().isClient()) {
 						ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
-						this.eatFood(food, (foodArg) -> {
-							if (food.isFood()) {
-								for (Pair<StatusEffectInstance, Float> effect : Objects.requireNonNull(food.getItem().getFoodComponent()).getStatusEffects()) {
-									if (this.getWorld().getRandom().nextFloat() < effect.getSecond()) {
-										this.addStatusEffect(new StatusEffectInstance(effect.getFirst()));
-									}
-								}
+						this.eatFood(food, (f) -> {
+							if (f.isFood()) {
+								Optional.ofNullable(f.getItem().getFoodComponent()).stream()
+										.flatMap(c -> c.getStatusEffects().stream())
+										.filter(e -> this.getWorld().getRandom().nextFloat() < e.getSecond())
+										.forEach(e -> this.addStatusEffect(new StatusEffectInstance(e.getFirst())));
 							}
 						});
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
-				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.getPose() != ModEntities.POSE_CHANGING_COSTUME) {
+				} else if (interactItem.isIn(ModTags.ITEM_MAID_CHANGE_COSTUMES) && this.canAction()) {
 					if (!this.getWorld().isClient()) {
 						this.setPose(ModEntities.POSE_CHANGING_COSTUME);
-						this.navigation.stop();
-						// this.jump();
+						this.setAction(MaidAction.TRANSFORMING);
 
 						if (!player.getAbilities().creativeMode) {
 							interactItem.decrement(1);
@@ -682,9 +675,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				} else if (interactItem.isIn(ModTags.ITEM_MAID_INSTRUCTORS)) {
 					if (!this.getWorld().isClient()) {
 						IInstructionComponent instructionComponent = player.getComponent(Components.INSTRUCTION);
-						if (instructionComponent.isInstructing()) {
-							// メイドさんのサイト一覧を出力する？
-						} else {
+						if (!instructionComponent.isInstructing()) {
 							instructionComponent.startInstruction(this);
 						}
 					}
@@ -721,10 +712,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				}
 			}
 		} else {
-			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.getPose() != POSE_EATING) {
+			if (interactItem.isIn(ModTags.ITEM_MAID_CONTRACT_FOODS) && this.canAction()) {
 				if (!this.getWorld().isClient()) {
 					ItemStack food = (player.getAbilities().creativeMode ? interactItem.copy() : interactItem).split(1);
-					this.eatFood(food, (foodArg) -> {
+					this.eatFood(food, (f) -> {
 						this.setMaster(player);
 						this.spawnContractParticles();
 						this.playContractSound();
@@ -754,7 +745,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.playEatSound(food);
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.LOOK_TARGET);
-		this.setPose(POSE_EATING);
 		this.setAction(MaidAction.EATING);
 	}
 
@@ -928,12 +918,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
 		return this.getJob().equals(MaidJobs.ARCHER) || this.getJob().equals(MaidJobs.POSEIDON) || this.getJob().equals(MaidJobs.HUNTER);
 	}
-
-//	@Override
-//	@Nullable
-//	public LivingEntity getTarget() {
-//		return this.getAttackTarget().orElse(null);
-//	}
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource source) {
@@ -1162,7 +1146,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 				for (ServerPlayerEntity target : ((ServerWorld) this.getWorld()).getPlayers()) {
 					PacketByteBuf packet = PacketByteBufs.create();
-					packet.writeItemStack(this.getOffHandStack());
+					packet.writeItemStack(this.getOffHandStack().copy());
 					packet.writeDouble(pos.getX());
 					packet.writeDouble(pos.getY());
 					packet.writeDouble(pos.getZ());
@@ -1423,19 +1407,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	public boolean isIdle() {
 		return this.brain.hasActivity(Activity.IDLE);
-	}
-
-	public boolean isGliding() {
-		return this.getAction()
-				.map(action -> action.equals(MaidAction.GLIDING))
-				.orElse(false);
-	}
-
-	@Override
-	public boolean isEating() {
-		return this.getAction()
-				.map(action -> action.equals(MaidAction.EATING))
-				.orElse(false);
 	}
 
 	public boolean isVariableCostume() {

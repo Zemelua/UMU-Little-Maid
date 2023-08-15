@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.maid;
 import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
-import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.IInstructable;
@@ -14,7 +13,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -40,8 +38,6 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	RawAnimation HEADPATTED = RawAnimation.begin().thenLoop("headpatted");
 	RawAnimation EAT = RawAnimation.begin().thenLoop("eat");
 	RawAnimation SLEEP = RawAnimation.begin().thenLoop("sleeping");
-	RawAnimation SWING_SWORD_DOWNWARD_RIGHT = RawAnimation.begin().thenPlay("swing_sword_downward_right");
-	RawAnimation SWING_SWORD_DOWNWARD_LEFT = RawAnimation.begin().thenPlay("swing_sword_downward_left");
 	RawAnimation ANIMATION_AXE_ATTACK_RIGHT = RawAnimation.begin().thenPlay("attack.axe.right");
 	RawAnimation SPEAR_RIGHT = RawAnimation.begin().thenPlay("attack.spear.right");
 	RawAnimation HOLD_SPEAR_LEFT = RawAnimation.begin().thenPlay("attack.hold.spear.left");
@@ -74,6 +70,18 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	default boolean isEating() {
 		return this.getAction()
 				.map(action -> action == MaidAction.EATING)
+				.orElse(false);
+	}
+
+	default boolean isTransforming() {
+		return this.getAction()
+				.map(action -> action == MaidAction.TRANSFORMING)
+				.orElse(false);
+	}
+
+	default boolean isGliding() {
+		return this.getAction()
+				.map(action -> action.equals(MaidAction.GLIDING))
 				.orElse(false);
 	}
 
@@ -123,10 +131,6 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 		return this.getAction()
 				.map(action -> action == MaidAction.HEADBUTTING)
 				.orElse(false);
-	}
-
-	default boolean isTransforming() {
-		return this.getPose().equals(ModEntities.POSE_CHANGING_COSTUME);
 	}
 
 	default ItemStack searchItem(TagKey<Item> tag) {
@@ -191,7 +195,6 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 
 	Brain<?> getBrain();
 	World getWorld();
-	EntityPose getPose();
 	EntityNavigation getNavigation();
 	ItemStack getOffHandStack();
 }
