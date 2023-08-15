@@ -1427,6 +1427,14 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.continuityAttackedCount = 0;
 	}
 
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return Optional.ofNullable(super.getTarget())
+				.orElse(this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
+						.orElse(null));
+	}
+
 	@Override
 	public float getSoundPitch() {
 		return 1.0F;
