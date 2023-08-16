@@ -359,6 +359,71 @@
 				}
 			}
 		},
+		"attack.charge.crossbow.left": {
+			"loop": true,
+			"bones": {
+				"left_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * 50", 0, 0]
+					}
+				}
+			}
+		},
+		"attack.charge.crossbow.right": {
+			"loop": true,
+			"bones": {
+				"left_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * 50", 0, 0]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"vector": ["-55 + query.maid.bow_progress * 20", 0, "23 + query.maid.bow_progress * 45"]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"vector": [-54.6905, -0.23398, -35.99707]
+					}
+				}
+			}
+		},
+		"attack.hold.crossbow.right": {
+			"loop": true,
+			"bones": {
+				"left_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * -50", 0, 0]
+					}
+				},
+				"right_leg": {
+					"rotation": {
+						"vector": ["Math.sin(query.anim_time * query.ground_speed * 4500) * 50", 0, 0]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"vector": ["-90.0 + query.maid.head_pitch", "34.0 + query.maid.head_yaw", 0]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"vector": ["-90 + query.maid.head_pitch", "-17 + query.maid.head_yaw", 0]
+					}
+				}
+			}
+		},
 		"attack.hold.spear.left": {
 			"loop": true,
 			"bones": {
@@ -388,12 +453,6 @@
 					}
 				}
 			}
-		},
-		"attack.hold.crossbow.left": {
-			"loop": true
-		},
-		"attack.hold.crossbow.right": {
-			"loop": true
 		},
 		"swing_sword_downward_right": {
 			"animation_length": 0.5,

@@ -11,6 +11,7 @@ import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 
@@ -23,6 +24,10 @@ public abstract class AbstractLittleMaidEntity extends PathAwareEntity implement
 
 	public Optional<LivingEntity> getTargetOptional() {
 		return Optional.ofNullable(this.getTarget());
+	}
+
+	public boolean isHoldingChargedCrossbow() {
+		return CrossbowItem.isCharged(this.getMainHandStack());
 	}
 
 //	@Override public Brain<?> getBrain() {return super.getBrain();}

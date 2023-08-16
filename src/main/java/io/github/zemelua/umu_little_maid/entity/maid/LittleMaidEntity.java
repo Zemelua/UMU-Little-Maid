@@ -1668,12 +1668,15 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, SPEAR_RIGHT, SPEAR_RIGHT));
 			} else if (this.isHeadbutting()) {
 				return state.setAndContinue(HEADBUTT);
+			} else if (this.isHoldingChargedCrossbow()) {
+				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, ANIMATION_HOLD_CROSSBOW_LEFT, ANIMATION_HOLD_CROSSBOW_RIGHT));
 			} else if (this.getItemUseTimeLeft() > 0) {
 				switch (this.getActiveItem().getUseAction()) {
 					case BOW -> {
 						return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, HOLD_BOW_LEFT, HOLD_BOW_RIGHT));
-					}
-					case SPEAR -> {
+					} case CROSSBOW -> {
+						return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, ANIMATION_CHARGE_CROSSBOW_LEFT, ANIMATION_CHARGE_CROSSBOW_RIGHT));
+					} case SPEAR -> {
 						return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, HOLD_SPEAR_LEFT, HOLD_SPEAR_RIGHT));
 					}
 				}

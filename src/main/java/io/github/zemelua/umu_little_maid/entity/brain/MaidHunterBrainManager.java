@@ -101,7 +101,7 @@ public final class MaidHunterBrainManager {
 		brain.setTaskList(Activity.FIGHT, ImmutableList.of(
 				Pair.of(0, AttackTask.create(5, 0.75F)),
 				Pair.of(1, RangedApproachTask.create(1.0F)),
-				Pair.of(2, new SucceedCrossbowAttackTask<LittleMaidEntity, LittleMaidEntity>())
+				Pair.of(2, new SucceedCrossbowAttackTask<>())
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(ModMemories.HAS_ARROWS, MemoryModuleState.VALUE_PRESENT)
