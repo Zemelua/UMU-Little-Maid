@@ -565,6 +565,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		} else {
 			this.continuityAttackedCount = 0;
 		}
+
+		// メモリ及びtargetフィールドはクライアントに同期されないため、クライアントではAttackingフラグを参照して攻撃中か
+		// どうか判定できます。
+		this.setAttacking(this.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
 	}
 
 	private void updatePose() {
@@ -1668,7 +1672,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, SPEAR_RIGHT, SPEAR_RIGHT));
 			} else if (this.isHeadbutting()) {
 				return state.setAndContinue(HEADBUTT);
-			} else if (this.isHoldingChargedCrossbow()) {
+			} else if (this.isHoldingChargedCrossbow() && this.isAttacking()) {
 				return state.setAndContinue(ModUtils.Livings.getUsingWithHand(this, ANIMATION_HOLD_CROSSBOW_LEFT, ANIMATION_HOLD_CROSSBOW_RIGHT));
 			} else if (this.getItemUseTimeLeft() > 0) {
 				switch (this.getActiveItem().getUseAction()) {
