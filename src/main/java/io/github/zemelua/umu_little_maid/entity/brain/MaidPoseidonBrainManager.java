@@ -7,6 +7,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAncho
 import io.github.zemelua.umu_little_maid.entity.brain.task.attack.trident.*;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateAttackerShouldEatTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.BreathAirTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.swim.ForgetShouldBreathTask;
@@ -16,6 +17,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.TeleportToMasterTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -82,7 +84,18 @@ public final class MaidPoseidonBrainManager {
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.SIT, ImmutableList.of(
 				Pair.of(0, new SitTask()),
-				Pair.of(1, new StayAboveWaterTask(0.8F))
+				Pair.of(1, new StayAboveWaterTask(0.8F)),
+				Pair.of(5, new RandomTask<>(ImmutableList.of(
+						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 8),
+						Pair.of(LookAtMobTask.create(EntityType.VILLAGER, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.CREATURE, 8.0f), 3),
+						Pair.of(LookAtMobTask.create(SpawnGroup.WATER_CREATURE, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.AXOLOTLS, 8.0f), 2),
+						Pair.of(LookAtMobTask.create(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.WATER_AMBIENT, 8.0f), 1),
+						Pair.of(new WaitTask(30, 60), 5)
+				)))
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));

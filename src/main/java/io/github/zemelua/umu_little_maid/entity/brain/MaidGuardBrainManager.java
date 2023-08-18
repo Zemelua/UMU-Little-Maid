@@ -11,12 +11,15 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.guard.ForgetGuardTarg
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.MaidGuardTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.HeadbuttTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.guard.RememberGuardTargetTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.WalkToSleepPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.tameable.SitTask;
 import io.github.zemelua.umu_little_maid.entity.maid.LittleMaidEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -75,7 +78,18 @@ public final class MaidGuardBrainManager {
 
 	public static void addSitTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.SIT, ImmutableList.of(
-				Pair.of(0, new SitTask())
+				Pair.of(0, new SitTask()),
+				Pair.of(5, new RandomTask<>(ImmutableList.of(
+						Pair.of(new LookAtEntityTask<>((self, target) -> target.equals(self.getMaster().orElse(null))), 8),
+						Pair.of(LookAtMobTask.create(EntityType.VILLAGER, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.CREATURE, 8.0f), 3),
+						Pair.of(LookAtMobTask.create(SpawnGroup.WATER_CREATURE, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.AXOLOTLS, 8.0f), 2),
+						Pair.of(LookAtMobTask.create(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0f), 1),
+						Pair.of(LookAtMobTask.create(SpawnGroup.WATER_AMBIENT, 8.0f), 1),
+						Pair.of(new WaitTask(30, 60), 5)
+				)))
 		), ImmutableSet.of(
 				Pair.of(ModMemories.IS_SITTING, MemoryModuleState.VALUE_PRESENT)
 		));
