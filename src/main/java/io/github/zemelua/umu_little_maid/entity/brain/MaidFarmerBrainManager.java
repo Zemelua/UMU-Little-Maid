@@ -144,7 +144,7 @@ public final class MaidFarmerBrainManager {
 
 	private static void addDeliverTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.DELIVER, ImmutableList.of(
-				Pair.of(0, new MaidDeliverTask<>()),
+				Pair.of(0, new MaidDeliverTask<>(ModTags.ITEM_MAID_HARVESTS)),
 				Pair.of(1, new MaidWalkToBoxTask<>())
 		), ImmutableSet.of(
 				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_ABSENT),

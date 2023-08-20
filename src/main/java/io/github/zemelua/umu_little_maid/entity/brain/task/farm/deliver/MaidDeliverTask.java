@@ -17,17 +17,28 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends MultiTickTask<M> {
-	public MaidDeliverTask() {
+	private final Predicate<ItemStack> deliveryItemPredicate;
+
+	public MaidDeliverTask(TagKey<Item> deliveryItemTag) {
+		this(itemStack -> itemStack.isIn(deliveryItemTag));
+	}
+
+	public MaidDeliverTask(Predicate<ItemStack> deliveryItemPredicate) {
 		super(ImmutableMap.of(ModMemories.DELIVERY_BOX, MemoryModuleState.VALUE_PRESENT), 999);
+
+		this.deliveryItemPredicate = deliveryItemPredicate;
 	}
 
 	@Override
@@ -67,7 +78,7 @@ public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends
 		Inventory maidInventory = maid.getInventory();
 		for (int i = 0; i < maidInventory.size(); i++) {
 			ItemStack stack = maidInventory.getStack(i);
-			if (!stack.isIn(ModTags.ITEM_MAID_HARVESTS)) continue;
+			if (!this.deliveryItemPredicate.test(stack)) continue;
 
 			if (ModUtils.Inventories.canInsert(boxInventory.get(), stack)) {
 				return true;
@@ -90,7 +101,7 @@ public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends
 			Inventory maidInventory = maid.getInventory();
 			for (int i = 0; i < maidInventory.size(); i++) {
 				ItemStack original = maidInventory.getStack(i).copy();
-				if (!original.isIn(ModTags.ITEM_MAID_HARVESTS)) continue;
+				if (!this.deliveryItemPredicate.test(original)) continue;
 
 				ItemStack left = HopperBlockEntity.transfer(maidInventory, boxInventory.get(), original, null);
 				if (left.isEmpty() || left.getCount() < original.getCount()) {

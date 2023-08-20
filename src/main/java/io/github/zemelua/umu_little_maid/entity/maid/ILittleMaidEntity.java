@@ -101,6 +101,12 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 				.orElse(false);
 	}
 
+	default boolean isShearing() {
+		return this.getAction()
+				.map(action -> action == MaidAction.SHEARING)
+				.orElse(false);
+	}
+
 	default boolean isHealing() {
 		return this.getAction()
 				.map(action -> action == MaidAction.HEALING)

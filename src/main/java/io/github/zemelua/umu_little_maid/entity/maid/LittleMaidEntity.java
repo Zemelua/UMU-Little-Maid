@@ -513,6 +513,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		if (this.getAction().isPresent() && (this.isEating()
 				|| this.isHarvesting()
 				|| this.isPlanting()
+				|| this.isShearing()
 				|| this.isHealing()
 				|| this.isDelivering()
 				|| this.isSwordAttacking()
@@ -520,6 +521,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				|| this.isSpearing()
 				|| this.isHeadbutting())) {
 			this.navigation.stop();
+		}
+
+		if (this.isShearing()) {
+			this.getBrain().getOptionalRegisteredMemory(ModMemories.SHEAR_TARGET).ifPresent(s -> s.get().getNavigation().stop());
 		}
 
 		if (this.isEating()) {
@@ -1795,6 +1800,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				ModMemories.SHOULD_HEAL,
 				ModMemories.FARMABLE_POSES,
 				ModMemories.FARM_POS,
+				ModMemories.SHEAR_TARGET,
 				ModMemories.THROWN_TRIDENT,
 				ModMemories.THROWN_TRIDENT_COOLDOWN,
 				ModMemories.SHOULD_BREATH,

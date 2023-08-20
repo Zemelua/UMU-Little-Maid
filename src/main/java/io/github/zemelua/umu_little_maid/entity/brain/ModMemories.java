@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import io.github.zemelua.umu_little_maid.entity.brain.task.shear.ShearableMobWrapper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -12,6 +13,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,8 @@ public final class ModMemories {
 	public static final MemoryModuleType<LivingEntity> GUARDABLE_LIVING = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<List<BlockPos>> FARMABLE_POSES = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<BlockPos> FARM_POS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Collection<ShearableMobWrapper<?>>> SHEARABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<ShearableMobWrapper<?>> SHEAR_TARGET = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<BlockPos> DELIVERY_BOX = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<List<Pair<GlobalPos, Long>>> UNDELIVERABLE_BOXES = new MemoryModuleType<>(Optional.of(Codec.pair(GlobalPos.CODEC, Codec.LONG).listOf()));
 	public static final MemoryModuleType<Unit> SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
@@ -49,6 +53,8 @@ public final class ModMemories {
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("guardable_living"), GUARDABLE_LIVING);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farmable_poses"), FARMABLE_POSES);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), FARM_POS);
+		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shearable_livings"), SHEARABLE_LIVINGS);
+		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shear_target"), SHEAR_TARGET);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("delivery_box"), DELIVERY_BOX);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("undeliverable_boxes"), UNDELIVERABLE_BOXES);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), SHOULD_HEAL);
