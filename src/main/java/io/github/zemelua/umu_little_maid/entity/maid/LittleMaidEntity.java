@@ -1223,6 +1223,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	public boolean canPickupItem(ItemStack itemStack) {
 		if (this.getJob().equals(MaidJobs.FARMER)) {
 			return itemStack.isIn(ModTags.ITEM_MAID_PRODUCTS);
+		} else if (this.getJob().equals(MaidJobs.SHEPHERD)) {
+			return itemStack.isIn(ModTags.ITEM_MAID_SHEPHERD_DELIVERS);
 		}
 
 		return false;
