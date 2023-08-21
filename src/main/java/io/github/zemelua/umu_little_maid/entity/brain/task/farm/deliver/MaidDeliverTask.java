@@ -3,7 +3,6 @@ package io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.ILittleMaidEntity;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
@@ -26,19 +25,14 @@ import net.minecraft.util.math.GlobalPos;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends MultiTickTask<M> {
-	private final Predicate<ItemStack> deliveryItemPredicate;
+	private final TagKey<Item> deliveryItemPredicate;
 
 	public MaidDeliverTask(TagKey<Item> deliveryItemTag) {
-		this(itemStack -> itemStack.isIn(deliveryItemTag));
-	}
-
-	public MaidDeliverTask(Predicate<ItemStack> deliveryItemPredicate) {
 		super(ImmutableMap.of(ModMemories.DELIVERY_BOX, MemoryModuleState.VALUE_PRESENT), 999);
 
-		this.deliveryItemPredicate = deliveryItemPredicate;
+		this.deliveryItemPredicate = deliveryItemTag;
 	}
 
 	@Override
@@ -47,7 +41,7 @@ public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends
 		Optional<BlockPos> boxPos = brain.getOptionalRegisteredMemory(ModMemories.DELIVERY_BOX);
 		if (boxPos.isEmpty()) return false;
 
-		if (maid.hasHarvests() && maid.canAction()) {
+		if (!maid.searchItem(this.deliveryItemPredicate).isEmpty() && maid.canAction()) {
 			return boxPos.get().isWithinDistance(maid.getPos(), 1.3D);
 		}
 
@@ -78,7 +72,7 @@ public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends
 		Inventory maidInventory = maid.getInventory();
 		for (int i = 0; i < maidInventory.size(); i++) {
 			ItemStack stack = maidInventory.getStack(i);
-			if (!this.deliveryItemPredicate.test(stack)) continue;
+			if (!stack.isIn(this.deliveryItemPredicate)) continue;
 
 			if (ModUtils.Inventories.canInsert(boxInventory.get(), stack)) {
 				return true;
@@ -101,7 +95,7 @@ public class MaidDeliverTask<M extends LivingEntity & ILittleMaidEntity> extends
 			Inventory maidInventory = maid.getInventory();
 			for (int i = 0; i < maidInventory.size(); i++) {
 				ItemStack original = maidInventory.getStack(i).copy();
-				if (!this.deliveryItemPredicate.test(original)) continue;
+				if (!original.isIn(this.deliveryItemPredicate)) continue;
 
 				ItemStack left = HopperBlockEntity.transfer(maidInventory, boxInventory.get(), original, null);
 				if (left.isEmpty() || left.getCount() < original.getCount()) {

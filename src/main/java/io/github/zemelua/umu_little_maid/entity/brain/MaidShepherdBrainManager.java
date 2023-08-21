@@ -10,6 +10,7 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.eat.MaidEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.eat.UpdateShouldEatTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidDeliverTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidWalkToBoxTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.UpdateDeliveryBoxTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.shear.MaidShearTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.shear.UpdateShearTargetTask;
@@ -37,6 +38,7 @@ public final class MaidShepherdBrainManager {
         addSitTasks(brain);
         addEatTasks(brain);
         addShearTasks(brain);
+        addDeliverTasks(brain);
         addSleepTasks(brain);
 
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -50,8 +52,8 @@ public final class MaidShepherdBrainManager {
         activities.add(ModActivities.EAT);
         activities.add(Activity.REST);
         activities.add(ModActivities.SHEAR);
-        if (maid.hasHarvests()) {
-            activities.add(ModActivities.SHEAR);
+        if (maid.hasWool()) {
+            activities.add(ModActivities.DELIVER);
         }
         activities.add(Activity.IDLE);
 
@@ -68,8 +70,8 @@ public final class MaidShepherdBrainManager {
                 Pair.of(99, new UpdateShouldEatTask<>()),
                 Pair.of(99, new UpdateShouldSleepTask<>()),
                 Pair.of(99, new UpdateSleepPosTask()),
-                Pair.of(99, new UpdateShearTargetTask<>())
-                // Pair.of(99, new UpdateDeliveryBoxTask<>())
+                Pair.of(99, new UpdateShearTargetTask<>()),
+                Pair.of(99, new UpdateDeliveryBoxTask<>())
         ));
     }
 
