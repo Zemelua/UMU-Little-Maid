@@ -43,10 +43,12 @@ public final class ModEntities {
 	public static final MaidPersonality PERSONALITY_TSUNDERE;
 
 	public static final EntityType<LittleMaidEntity> LITTLE_MAID;
+	public static final EntityType<ModFishingBobberEntity> SIMPLE_FISHING_BOBBER;
 
 	@SuppressWarnings({"ConstantValue", "DataFlowIssue"})
 	public static void initialize() {
 		Registry.register(Registries.ENTITY_TYPE, UMULittleMaid.identifier("little_maid"), LITTLE_MAID);
+		Registry.register(Registries.ENTITY_TYPE, UMULittleMaid.identifier("fish_bobber"), SIMPLE_FISHING_BOBBER);
 
 		TrackedDataHandlerRegistry.register(MODE_HANDLER);
 		TrackedDataHandlerRegistry.register(ModEntities.PERSONALITY_HANDLER);
@@ -86,6 +88,16 @@ public final class ModEntities {
 				.trackRangeChunks(10)
 				.spawnRestriction(SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, LittleMaidEntity::canSpawn)
 				.build();
+		SIMPLE_FISHING_BOBBER = FabricEntityTypeBuilder.<ModFishingBobberEntity>create()
+				.spawnGroup(SpawnGroup.MISC)
+				.entityFactory(ModFishingBobberEntity::new)
+				.disableSaving()
+				// .disableSummon()
+				.dimensions(EntityDimensions.fixed(0.25F, 0.25F))
+				.trackRangeChunks(4)
+				.trackedUpdateRate(5)
+				.build();
+
 
 		POSE_EATING = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_EATING);
 		POSE_USING_DRIPLEAF = ClassTinkerers.getEnum(EntityPose.class, EarlyRiser.ENTITY_POSE_USING_DRIPLEAF);

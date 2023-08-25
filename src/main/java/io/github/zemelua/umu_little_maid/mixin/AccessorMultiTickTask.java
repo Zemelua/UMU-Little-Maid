@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MultiTickTask.class)
 public interface AccessorMultiTickTask {
-	@Accessor
-	long getEndTime();
+	@Accessor long getEndTime();
+	@Accessor void setEndTime(long endTime);
 }

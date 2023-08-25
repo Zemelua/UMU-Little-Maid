@@ -1,8 +1,10 @@
 package io.github.zemelua.umu_little_maid.entity.maid;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.zemelua.umu_little_maid.api.IFisher;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
+import io.github.zemelua.umu_little_maid.entity.ModFishingBobberEntity;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.IInstructable;
@@ -32,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 // LittleMaidEntity クラスがめっっちゃ長くなってきたので、こっちに書けるものはこっちに書いときます。
-public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable, InventoryOwner, IInstructable {
+public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattable, InventoryOwner, IInstructable, IFisher {
 	RawAnimation GLIDE = RawAnimation.begin().thenWait(5).thenLoop("glide");
 	RawAnimation TRANSFORM = RawAnimation.begin().thenPlay("transform");
 	RawAnimation HEADPATTED = RawAnimation.begin().thenLoop("headpatted");
@@ -66,6 +68,9 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	void headbutt(LivingEntity target);
 	int getContinuityAttackedCount();
 	void resetContinuityAttackedCount();
+
+	void onThrowFishHook(ModFishingBobberEntity fishHook);
+	void pullFishRod();
 
 	default boolean canAction() {
 		return this.getAction().isEmpty();
@@ -104,6 +109,18 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	default boolean isShearing() {
 		return this.getAction()
 				.map(action -> action == MaidAction.SHEARING)
+				.orElse(false);
+	}
+
+	default boolean isFishWaiting() {
+		return this.getAction()
+				.map(action -> action == MaidAction.FISH_WAITING)
+				.orElse(false);
+	}
+
+	default boolean isFishFighting() {
+		return this.getAction()
+				.map(action -> action == MaidAction.FISH_FIGHTING)
 				.orElse(false);
 	}
 

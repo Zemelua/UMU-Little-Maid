@@ -8,6 +8,7 @@ import io.github.zemelua.umu_little_maid.client.particle.ShockParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.ShockwaveParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.TwinkleParticleFactory;
 import io.github.zemelua.umu_little_maid.client.particle.ZZZParticleFactory;
+import io.github.zemelua.umu_little_maid.client.renderer.ModFishingBobberRenderer;
 import io.github.zemelua.umu_little_maid.client.screen.LittleMaidScreen;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
 import io.github.zemelua.umu_little_maid.inventory.ModInventories;
@@ -61,6 +62,7 @@ public class UMULittleMaidClient implements ClientModInitializer {
 		ClientNetworkHandler.initializeClient();
 
 		EntityRendererRegistry.register(ModEntities.LITTLE_MAID, MaidGeoRenderer::new);
+		EntityRendererRegistry.register(ModEntities.SIMPLE_FISHING_BOBBER, ModFishingBobberRenderer::new);
 		HandledScreens.register(ModInventories.LITTLE_MAID, LittleMaidScreen::new);
 		// EntityModelLayerRegistry.registerModelLayer(UMULittleMaidClient.LAYER_LITTLE_MAID, LittleMaidEntityModel::getTexturedModelData);
 

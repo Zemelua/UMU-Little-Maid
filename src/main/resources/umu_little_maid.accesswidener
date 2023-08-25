@@ -11,6 +11,8 @@ accessible method net/minecraft/entity/projectile/TridentEntity asItemStack ()Ln
 accessible class net/minecraft/entity/ai/brain/task/CrossbowAttackTask$CrossbowState
 accessible method net/minecraft/world/poi/PointOfInterestTypes register (Lnet/minecraft/registry/Registry;Lnet/minecraft/registry/RegistryKey;Ljava/util/Set;II)Lnet/minecraft/world/poi/PointOfInterestType;
 accessible method net/minecraft/block/ShulkerBoxBlock canOpen (Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/ShulkerBoxBlockEntity;)Z
+accessible class net/minecraft/entity/projectile/FishingBobberEntity$State
+accessible class net/minecraft/entity/projectile/FishingBobberEntity$PositionType
 
 accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;ILnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;

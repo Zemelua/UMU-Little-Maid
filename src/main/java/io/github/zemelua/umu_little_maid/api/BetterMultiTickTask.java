@@ -24,6 +24,6 @@ public abstract class BetterMultiTickTask<E extends LivingEntity> extends MultiT
 	}
 
 	protected long getPassedTicks(long time) {
-		return runTime - (((AccessorMultiTickTask) this).getEndTime() - time);
+		return this.runTime - (((AccessorMultiTickTask) this).getEndTime() - time);
 	}
 }

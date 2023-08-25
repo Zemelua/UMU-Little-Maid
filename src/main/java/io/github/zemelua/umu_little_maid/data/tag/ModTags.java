@@ -27,6 +27,7 @@ public final class ModTags {
 	public static final TagKey<Item> ITEM_MAID_ARCHER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_GUARD_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_FARMER_TOOLS;
+	public static final TagKey<Item> ITEM_MAID_FISHER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_HEALER_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_POSEIDON_TOOLS;
 	public static final TagKey<Item> ITEM_MAID_HUNTER_TOOLS;
@@ -96,6 +97,7 @@ public final class ModTags {
 		ITEM_MAID_ARCHER_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_archer_tools"));
 		ITEM_MAID_GUARD_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_guard_tools"));
 		ITEM_MAID_FARMER_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_farmer_tools"));
+		ITEM_MAID_FISHER_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_fisher_tools"));
 		ITEM_MAID_HEALER_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_healer_tools"));
 		ITEM_MAID_POSEIDON_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_poseidon_tools"));
 		ITEM_MAID_HUNTER_TOOLS = TagKey.of(RegistryKeys.ITEM, UMULittleMaid.identifier("maid_hunter_tools"));

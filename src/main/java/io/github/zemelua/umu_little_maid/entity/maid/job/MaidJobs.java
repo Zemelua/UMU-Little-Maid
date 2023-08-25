@@ -18,6 +18,7 @@ public final class MaidJobs {
 	public static final IMaidJob GUARD;
 	public static final IMaidJob HEALER;
 	public static final IMaidJob FARMER;
+	public static final IMaidJob FISHER;
 	public static final IMaidJob SHEPHERD;
 
 	public static void init() {
@@ -30,6 +31,7 @@ public final class MaidJobs {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), GUARD);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("healer"), HEALER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), FARMER);
+		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fisher"), FISHER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("shepherd"), SHEPHERD);
 	}
 
@@ -47,6 +49,7 @@ public final class MaidJobs {
 		GUARD = new BasicMaidJob(ModTags.ITEM_MAID_GUARD_TOOLS, MaidGuardBrainManager::initBrain, MaidGuardBrainManager::tickBrain);
 		HEALER = new BasicMaidJob(ModTags.ITEM_MAID_HEALER_TOOLS, MaidHealerBrainManager::initBrain, MaidHealerBrainManager::tickBrain);
 		FARMER = new BasicMaidJob(ModTags.ITEM_MAID_FARMER_TOOLS, MaidFarmerBrainManager::initBrain, MaidFarmerBrainManager::tickBrain);
+		FISHER = new BasicMaidJob(ModTags.ITEM_MAID_FISHER_TOOLS, MaidFisherBrainManager::initBrain, MaidFisherBrainManager::tickBrain);
 		SHEPHERD = new BasicMaidJob(ModTags.ITEM_MAID_SHEPHERD_TOOLS, MaidShepherdBrainManager::initBrain, MaidShepherdBrainManager::tickBrain);
 	}
 

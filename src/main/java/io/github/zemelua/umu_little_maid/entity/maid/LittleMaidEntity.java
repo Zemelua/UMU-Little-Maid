@@ -11,6 +11,7 @@ import io.github.zemelua.umu_little_maid.client.particle.ZZZParticle;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.ModDataHandlers;
 import io.github.zemelua.umu_little_maid.entity.ModEntities;
+import io.github.zemelua.umu_little_maid.entity.ModFishingBobberEntity;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.brain.sensor.ModSensors;
 import io.github.zemelua.umu_little_maid.entity.control.MaidControl;
@@ -95,6 +96,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -124,6 +126,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	private int eatingTicks;
 	@Nullable private Consumer<ItemStack> onFinishEating;
+	@Nullable private ModFishingBobberEntity fishHook;
 
 	private int changingCostumeTicks;
 
@@ -514,6 +517,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				|| this.isHarvesting()
 				|| this.isPlanting()
 				|| this.isShearing()
+				|| this.isFishFighting()
+				|| this.isFishWaiting()
 				|| this.isHealing()
 				|| this.isDelivering()
 				|| this.isSwordAttacking()
@@ -521,6 +526,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				|| this.isSpearing()
 				|| this.isHeadbutting())) {
 			this.navigation.stop();
+		}
+
+		if (this.isTamed()) {
+			// UMULittleMaid.LOGGER.info(this.getAction());
 		}
 
 		if (this.isShearing()) {
@@ -570,6 +579,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		} else {
 			this.continuityAttackedCount = 0;
 		}
+
+		this.getFishHook().filter(h -> h.isRemoved()).ifPresent(h -> {
+			this.removeFishHook();
+		});
 
 		// メモリ及びtargetフィールドはクライアントに同期されないため、クライアントではAttackingフラグを参照して攻撃中か
 		// どうか判定できます。
@@ -1051,6 +1064,22 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	}
 
 	@Override
+	public void onThrowFishHook(ModFishingBobberEntity fishHook) {
+		this.setAction(MaidAction.FISH_WAITING);
+		this.setFishHook(fishHook);
+	}
+
+	@Override
+	public void onHitFish() {
+		this.setAction(MaidAction.FISH_FIGHTING);
+	}
+
+	@Override
+	public void pullFishRod() {
+		this.getFishHook().ifPresent(h -> h.pull(this.getMainHandStack()));
+	}
+
+	@Override
 	protected void playHurtSound(DamageSource source) {
 		if (!this.damageBlocked) {
 			super.playHurtSound(source);
@@ -1418,6 +1447,18 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 
 	public boolean isIdle() {
 		return this.brain.hasActivity(Activity.IDLE);
+	}
+
+	private void setFishHook(@Nonnull ModFishingBobberEntity value) {
+		this.fishHook = value;
+	}
+
+	private void removeFishHook() {
+		this.fishHook = null;
+	}
+
+	private Optional<ModFishingBobberEntity> getFishHook() {
+		return Optional.ofNullable(this.fishHook);
 	}
 
 	public boolean isVariableCostume() {
