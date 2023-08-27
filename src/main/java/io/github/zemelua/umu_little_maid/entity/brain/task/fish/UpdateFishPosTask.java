@@ -1,6 +1,6 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.fish;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
+import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.api.EveryTickTask;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import net.minecraft.entity.ai.NoWaterTargeting;
@@ -27,7 +27,7 @@ public class UpdateFishPosTask<E extends PathAwareEntity> extends EveryTickTask<
 
 		Brain<?> brain = mob.getBrain();
 		Optional<Collection<BlockPos>> fishableWaters = brain.getOptionalRegisteredMemory(ModMemories.FISHABLE_WATERS);
-		Optional<BlockPos> fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS);
+		Optional<Pair<BlockPos, BlockPos>> fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS);
 
 		if (fishableWaters.isPresent() && fishPos.isEmpty()) {
 			Box scope = Box.of(mob.getSteppingPos().toCenterPos(), 5.0D, 2.0D, 5.0D);
@@ -40,10 +40,6 @@ public class UpdateFishPosTask<E extends PathAwareEntity> extends EveryTickTask<
 						if (pos == null || world.getBlockState(BlockPos.ofFloored(pos).down()).isAir()
 								|| world.getFluidState(BlockPos.ofFloored(pos).down()).isIn(FluidTags.WATER)) return null;
 
-						if (world.getFluidState(BlockPos.ofFloored(pos)).isEmpty()) {
-							UMULittleMaid.LOGGER.info(pos);
-						}
-
 						return world.getFluidState(BlockPos.ofFloored(pos)).isEmpty() ? BlockPos.ofFloored(pos) : null;
 
 					}).filter(Objects::nonNull)
@@ -51,8 +47,7 @@ public class UpdateFishPosTask<E extends PathAwareEntity> extends EveryTickTask<
 			for (BlockPos pos : fishablePoses) {
 				Optional<BlockPos> throwableToWater = searchThrowableToWater(world, fishableWaters.get().stream(), pos);
 				throwableToWater.ifPresent(p -> {
-					brain.remember(ModMemories.FISH_POS, pos, 150L);
-					brain.remember(ModMemories.FISH_WATER, p, 150L);
+					brain.remember(ModMemories.FISH_POS, Pair.of(pos, p), 150L);
 				});
 			}
 		}

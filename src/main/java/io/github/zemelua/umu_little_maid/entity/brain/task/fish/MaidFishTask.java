@@ -1,6 +1,7 @@
 package io.github.zemelua.umu_little_maid.entity.brain.task.fish;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.BetterMultiTickTask;
 import io.github.zemelua.umu_little_maid.entity.ModFishingBobberEntity;
@@ -31,12 +32,12 @@ public class MaidFishTask<M extends LivingEntity & ILittleMaidEntity> extends Be
 	@Override
 	protected boolean shouldRun(ServerWorld world, M maid) {
 		Brain<?> brain = maid.getBrain();
-		BlockPos fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS).orElseThrow();
+		Pair<BlockPos, BlockPos> fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS).orElseThrow();
 
 
 		// UMULittleMaid.LOGGER.info(fishPos);
 
-		return fishPos.isWithinDistance(maid.getPos(), 1.0D);
+		return fishPos.getFirst().isWithinDistance(maid.getPos(), 1.0D);
 	}
 
 	@Override
@@ -44,9 +45,8 @@ public class MaidFishTask<M extends LivingEntity & ILittleMaidEntity> extends Be
 		UMULittleMaid.LOGGER.info("fishta");
 
 		Brain<?> brain = maid.getBrain();
-		BlockPos fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS).orElseThrow();
-		BlockPos fishWater = brain.getOptionalRegisteredMemory(ModMemories.FISH_WATER).orElseThrow();
-		brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(fishWater));
+		Pair<BlockPos, BlockPos> fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS).orElseThrow();
+		brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(fishPos.getSecond()));
 
 		ItemStack fishingRod = maid.getMainHandStack();
 
@@ -61,7 +61,6 @@ public class MaidFishTask<M extends LivingEntity & ILittleMaidEntity> extends Be
 		}
 		maid.emitGameEvent(GameEvent.ITEM_INTERACT_START);
 		brain.remember(ModMemories.FISH_POS, fishPos);
-		brain.remember(ModMemories.FISH_WATER, fishWater);
 		// setActoin Fish waiting
 	}
 
@@ -91,7 +90,6 @@ public class MaidFishTask<M extends LivingEntity & ILittleMaidEntity> extends Be
 
 		if (!this.isTimeLimitExceeded(time)) {
 			brain.forget(ModMemories.FISH_POS);
-			brain.forget(ModMemories.FISH_WATER);
 		}
 	}
 }

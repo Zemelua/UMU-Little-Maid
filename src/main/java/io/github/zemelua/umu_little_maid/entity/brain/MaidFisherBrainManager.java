@@ -3,6 +3,7 @@ package io.github.zemelua.umu_little_maid.entity.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.task.KeepAroundHomeOrAnchorTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.ShelterFromRainTask;
@@ -58,6 +59,8 @@ public final class MaidFisherBrainManager {
 		activities.add(Activity.IDLE);
 
 		brain.resetPossibleActivities(activities.build());
+
+		UMULittleMaid.LOGGER.info(maid.getAction());
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
@@ -134,7 +137,6 @@ public final class MaidFisherBrainManager {
 				Pair.of(1, new WalkToFishPosTask<>())
 		), ImmutableSet.of(
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT),
-				Pair.of(ModMemories.FISH_WATER, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(ModMemories.FISH_POS, MemoryModuleState.VALUE_PRESENT)
 		));
 	}

@@ -33,8 +33,7 @@ public final class ModMemories {
 	public static final MemoryModuleType<ShearableMobWrapper<?>> SHEAR_TARGET = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<Collection<BlockPos>> FISHABLE_WATERS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<Collection<BlockPos>> FISHABLE_OPEN_WATERS = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<BlockPos> FISH_WATER = new MemoryModuleType<>(Optional.empty());
-	public static final MemoryModuleType<BlockPos> FISH_POS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Pair<BlockPos, BlockPos>> FISH_POS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<BlockPos> DELIVERY_BOX = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<List<Pair<GlobalPos, Long>>> UNDELIVERABLE_BOXES = new MemoryModuleType<>(Optional.of(Codec.pair(GlobalPos.CODEC, Codec.LONG).listOf()));
 	public static final MemoryModuleType<Unit> SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());
@@ -59,6 +58,9 @@ public final class ModMemories {
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("farm_pos"), FARM_POS);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shearable_livings"), SHEARABLE_LIVINGS);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("shear_target"), SHEAR_TARGET);
+		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("fishable_water"), FISHABLE_WATERS);
+		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("fishable_open_waters"), FISHABLE_OPEN_WATERS);
+		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("fish_pos"), FISH_POS);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("delivery_box"), DELIVERY_BOX);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("undeliverable_boxes"), UNDELIVERABLE_BOXES);
 		Registry.register(Registries.MEMORY_MODULE_TYPE, UMULittleMaid.identifier("should_heal"), SHOULD_HEAL);

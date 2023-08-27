@@ -1850,7 +1850,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				ModMemories.FISHABLE_WATERS,
 				ModMemories.FISHABLE_OPEN_WATERS,
 				ModMemories.FISH_POS,
-				ModMemories.FISH_WATER,
 				ModMemories.THROWN_TRIDENT,
 				ModMemories.THROWN_TRIDENT_COOLDOWN,
 				ModMemories.SHOULD_BREATH,
