@@ -31,6 +31,10 @@ public final class ModMemories {
 	public static final MemoryModuleType<BlockPos> FARM_POS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<Collection<ShearableMobWrapper<?>>> SHEARABLE_LIVINGS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<ShearableMobWrapper<?>> SHEAR_TARGET = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Collection<BlockPos>> FISHABLE_WATERS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<Collection<BlockPos>> FISHABLE_OPEN_WATERS = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<BlockPos> FISH_WATER = new MemoryModuleType<>(Optional.empty());
+	public static final MemoryModuleType<BlockPos> FISH_POS = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<BlockPos> DELIVERY_BOX = new MemoryModuleType<>(Optional.empty());
 	public static final MemoryModuleType<List<Pair<GlobalPos, Long>>> UNDELIVERABLE_BOXES = new MemoryModuleType<>(Optional.of(Codec.pair(GlobalPos.CODEC, Codec.LONG).listOf()));
 	public static final MemoryModuleType<Unit> SHOULD_HEAL = new MemoryModuleType<>(Optional.empty());

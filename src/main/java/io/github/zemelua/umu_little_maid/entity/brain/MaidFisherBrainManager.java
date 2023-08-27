@@ -12,8 +12,9 @@ import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidDeli
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.MaidWalkToBoxTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.farm.deliver.UpdateDeliveryBoxTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.fish.MaidFishTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.fish.UpdateFishPosTask;
+import io.github.zemelua.umu_little_maid.entity.brain.task.fish.WalkToFishPosTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.look.LookAtEntityTask;
-import io.github.zemelua.umu_little_maid.entity.brain.task.shear.UpdateShearTargetTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.MaidSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateShouldSleepTask;
 import io.github.zemelua.umu_little_maid.entity.brain.task.sleep.UpdateSleepPosTask;
@@ -69,7 +70,7 @@ public final class MaidFisherBrainManager {
 				Pair.of(99, new UpdateShouldEatTask<>()),
 				Pair.of(99, new UpdateShouldSleepTask<>()),
 				Pair.of(99, new UpdateSleepPosTask()),
-				Pair.of(99, new UpdateShearTargetTask<>()),
+				Pair.of(99, new UpdateFishPosTask<>()),
 				Pair.of(99, new UpdateDeliveryBoxTask<>())
 		));
 	}
@@ -129,9 +130,12 @@ public final class MaidFisherBrainManager {
 
 	private static void addFishTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.FISH, ImmutableList.of(
-				Pair.of(0, new MaidFishTask<>())
+				Pair.of(0, new MaidFishTask<>()),
+				Pair.of(1, new WalkToFishPosTask<>())
 		), ImmutableSet.of(
-				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT),
+				Pair.of(ModMemories.FISH_WATER, MemoryModuleState.VALUE_PRESENT),
+				Pair.of(ModMemories.FISH_POS, MemoryModuleState.VALUE_PRESENT)
 		));
 	}
 

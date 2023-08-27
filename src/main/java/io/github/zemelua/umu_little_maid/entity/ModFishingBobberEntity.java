@@ -1,6 +1,5 @@
 package io.github.zemelua.umu_little_maid.entity;
 
-import io.github.zemelua.umu_little_maid.UMULittleMaid;
 import io.github.zemelua.umu_little_maid.api.IFisher;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.BlockState;
@@ -63,10 +62,10 @@ public class ModFishingBobberEntity extends ProjectileEntity {
 		double e = thrower.getEyeY();
 		double l = thrower.getZ() - (double)h * 0.3;
 		this.refreshPositionAndAngles(d, e, l, yaw, pitch);
-		Vec3d vec3d = new Vec3d(-i, MathHelper.clamp(-(k / j), -5.0f, 5.0f), -h);
-		double m = vec3d.length();
+		Vec3d vec3d = new Vec3d(-i, MathHelper.clamp(-(k / j), 0, 5.0f), -h);
+		double m = vec3d.length() * 5;
 		vec3d = vec3d.multiply(0.6 / m + this.random.nextTriangular(0.5, 0.0103365), 0.6 / m + this.random.nextTriangular(0.5, 0.0103365), 0.6 / m + this.random.nextTriangular(0.5, 0.0103365));
-		this.setVelocity(vec3d);
+		this.setVelocity(vec3d.multiply(5));
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
 		this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 57.2957763671875));
 		this.prevYaw = this.getYaw();
@@ -122,7 +121,6 @@ public class ModFishingBobberEntity extends ProjectileEntity {
 
 	@Override
 	public void tick() {
-		UMULittleMaid.LOGGER.info(this.shouldRemove());
 		super.tick();
 		if (!this.getWorld().isClient() && this.shouldRemove()) {
 			this.discard();

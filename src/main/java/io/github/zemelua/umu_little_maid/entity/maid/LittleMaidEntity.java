@@ -1457,7 +1457,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.fishHook = null;
 	}
 
-	private Optional<ModFishingBobberEntity> getFishHook() {
+	public Optional<ModFishingBobberEntity> getFishHook() {
 		return Optional.ofNullable(this.fishHook);
 	}
 
@@ -1844,6 +1844,10 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				ModMemories.FARMABLE_POSES,
 				ModMemories.FARM_POS,
 				ModMemories.SHEAR_TARGET,
+				ModMemories.FISHABLE_WATERS,
+				ModMemories.FISHABLE_OPEN_WATERS,
+				ModMemories.FISH_POS,
+				ModMemories.FISH_WATER,
 				ModMemories.THROWN_TRIDENT,
 				ModMemories.THROWN_TRIDENT_COOLDOWN,
 				ModMemories.SHOULD_BREATH,
@@ -1863,7 +1867,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 				ModSensors.SENSOR_MAID_ATTACKABLE,
 				ModSensors.SENSOR_MAID_ATTRACTABLE_LIVINGS,
 				ModSensors.SENSOR_MAID_GUARDABLE_LIVING,
-				ModSensors.SENSOR_MAID_FARMABLE_POSES
+				ModSensors.SENSOR_MAID_FARMABLE_POSES,
+				ModSensors.SENSOR_FISHABLE_WATERS
 		);
 
 		MASTER = DataTracker.registerData(LittleMaidEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);

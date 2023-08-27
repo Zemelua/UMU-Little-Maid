@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -26,12 +27,14 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
@@ -149,6 +152,52 @@ public final class ModUtils {
 		if (!world.getRegistryKey().equals(globalPos.getDimension())) return false;
 
 		return isSameObject(world, pos, globalPos.getPos());
+	}
+
+	public static boolean isOpenWater(World world, BlockPos pos) {
+		FishingBobberEntity.PositionType positionType = FishingBobberEntity.PositionType.INVALID;
+		for (int i = -1; i <= 2; ++i) {
+			FishingBobberEntity.PositionType positionType2 = getPositionType(world, pos.add(-2, i, -2), pos.add(2, i, 2));
+			switch (positionType2) {
+				case INVALID -> {
+					return false;
+				}
+				case ABOVE_WATER -> {
+					if (positionType != FishingBobberEntity.PositionType.INVALID) break;
+					return false;
+				}
+				case INSIDE_WATER -> {
+					if (positionType != FishingBobberEntity.PositionType.ABOVE_WATER) break;
+					return false;
+				}
+			}
+			positionType = positionType2;
+		}
+		return true;
+	}
+
+	private static FishingBobberEntity.PositionType getPositionType(World world, BlockPos from, BlockPos to) {
+		return BlockPos.stream(from, to)
+				.map(p -> getPositionType(world, p))
+				.reduce((value, type) -> value == type
+						? value
+						: FishingBobberEntity.PositionType.INVALID)
+				.orElse(FishingBobberEntity.PositionType.INVALID);
+	}
+
+	private static FishingBobberEntity.PositionType getPositionType(World world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
+		FluidState fluidState = blockState.getFluidState();
+
+		if (blockState.isAir() || blockState.isOf(Blocks.LILY_PAD)) {
+			return FishingBobberEntity.PositionType.ABOVE_WATER;
+		}
+
+		if (fluidState.isIn(FluidTags.WATER) && fluidState.isStill() && blockState.getCollisionShape(world, pos).isEmpty()) {
+			return FishingBobberEntity.PositionType.INSIDE_WATER;
+		}
+
+		return FishingBobberEntity.PositionType.INVALID;
 	}
 
 	public static boolean hasHarmfulEffect(LivingEntity living) {
