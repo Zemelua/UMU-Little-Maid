@@ -1254,6 +1254,8 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			return itemStack.isIn(ModTags.ITEM_MAID_PRODUCTS);
 		} else if (this.getJob().equals(MaidJobs.SHEPHERD)) {
 			return itemStack.isIn(ModTags.ITEM_MAID_SHEPHERD_DELIVERS);
+		} else if (this.getJob().equals(MaidJobs.FISHER)) {
+			return itemStack.isIn(ModTags.ITEM_MAID_FISHER_DELIVERS);
 		}
 
 		return false;

@@ -38,7 +38,7 @@ public final class MaidFisherBrainManager {
 		addSitTasks(brain);
 		addEatTasks(brain);
 		addFishTasks(brain);
-		// addDeliverTasks(brain);
+		addDeliverTasks(brain);
 		addSleepTasks(brain);
 
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -51,10 +51,10 @@ public final class MaidFisherBrainManager {
 		activities.add(ModActivities.SIT);
 		activities.add(ModActivities.EAT);
 		activities.add(Activity.REST);
+		if (maid.hasFish()) {
+			activities.add(ModActivities.DELIVER);
+		}
 		activities.add(ModActivities.FISH);
-//		if (maid.hasWool()) {
-//			activities.add(ModActivities.DELIVER);
-//		}
 		activities.add(Activity.IDLE);
 
 		brain.resetPossibleActivities(activities.build());
@@ -141,10 +141,9 @@ public final class MaidFisherBrainManager {
 
 	private static void addDeliverTasks(Brain<LittleMaidEntity> brain) {
 		brain.setTaskList(ModActivities.DELIVER, ImmutableList.of(
-				Pair.of(0, new MaidDeliverTask<>(ModTags.ITEM_MAID_SHEPHERD_DELIVERS)),
+				Pair.of(0, new MaidDeliverTask<>(ModTags.ITEM_MAID_FISHER_DELIVERS)),
 				Pair.of(1, new MaidWalkToBoxTask<>())
 		), ImmutableSet.of(
-				Pair.of(ModMemories.SHEAR_TARGET, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(ModMemories.DELIVERY_BOX, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
 		));

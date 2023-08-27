@@ -188,6 +188,14 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 		return !this.getHasWool().isEmpty();
 	}
 
+	default ItemStack getHasFish() {
+		return searchItem(ModTags.ITEM_MAID_FISHER_DELIVERS);
+	}
+
+	default boolean hasFish() {
+		return !this.getHasFish().isEmpty();
+	}
+
 	default List<ItemStack> getHasHarvests() {
 		List<ItemStack> harvests = new ArrayList<>();
 
