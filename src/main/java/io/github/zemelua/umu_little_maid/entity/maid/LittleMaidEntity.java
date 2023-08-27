@@ -1457,6 +1457,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		this.fishHook = null;
 	}
 
+	@Override
 	public Optional<ModFishingBobberEntity> getFishHook() {
 		return Optional.ofNullable(this.fishHook);
 	}

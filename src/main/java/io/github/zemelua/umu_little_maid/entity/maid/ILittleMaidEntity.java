@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Pair;
 import io.github.zemelua.umu_little_maid.api.IFisher;
 import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
-import io.github.zemelua.umu_little_maid.entity.ModFishingBobberEntity;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
 import io.github.zemelua.umu_little_maid.util.IInstructable;
@@ -68,9 +67,6 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	void headbutt(LivingEntity target);
 	int getContinuityAttackedCount();
 	void resetContinuityAttackedCount();
-
-	void onThrowFishHook(ModFishingBobberEntity fishHook);
-	void pullFishRod();
 
 	default boolean canAction() {
 		return this.getAction().isEmpty();
