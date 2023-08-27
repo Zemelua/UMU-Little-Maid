@@ -52,7 +52,7 @@ public final class MaidShepherdBrainManager {
         activities.add(ModActivities.EAT);
         activities.add(Activity.REST);
         activities.add(ModActivities.SHEAR);
-        if (maid.hasWool()) {
+        if (maid.hasWool() && (!brain.hasMemoryModule(ModMemories.SHEAR_TARGET) || !maid.hasEmptySlot())) {
             activities.add(ModActivities.DELIVER);
         }
         activities.add(Activity.IDLE);

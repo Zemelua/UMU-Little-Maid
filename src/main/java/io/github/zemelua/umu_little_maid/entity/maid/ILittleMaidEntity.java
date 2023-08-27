@@ -6,6 +6,8 @@ import io.github.zemelua.umu_little_maid.api.IHeadpattable;
 import io.github.zemelua.umu_little_maid.data.tag.ModTags;
 import io.github.zemelua.umu_little_maid.entity.brain.ModMemories;
 import io.github.zemelua.umu_little_maid.entity.maid.action.MaidAction;
+import io.github.zemelua.umu_little_maid.entity.maid.job.IMaidJob;
+import io.github.zemelua.umu_little_maid.entity.maid.job.MaidJobs;
 import io.github.zemelua.umu_little_maid.util.IInstructable;
 import io.github.zemelua.umu_little_maid.util.ITameable;
 import io.github.zemelua.umu_little_maid.util.ModUtils;
@@ -18,6 +20,7 @@ import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
@@ -59,6 +62,20 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 	RawAnimation ANIMATION_SWORD_ATTACK = RawAnimation.begin().thenPlay("swing_sword_downward_right")
 			.thenPlay("swing_sword_downward_left")
 			.thenPlay("swing_sword_downward_right");
+
+	IMaidJob getJob();
+
+	default boolean isFarmer() {
+		return this.getJob() == MaidJobs.FARMER;
+	}
+
+	default boolean isShepherd() {
+		return this.getJob() == MaidJobs.SHEPHERD;
+	}
+
+	default boolean isFisher() {
+		return this.getJob() == MaidJobs.FISHER;
+	}
 
 	Optional<MaidAction> getAction();
 	void setAction(MaidAction value);
@@ -162,6 +179,17 @@ public interface ILittleMaidEntity extends GeoAnimatable, ITameable, IHeadpattab
 		}
 
 		return ModUtils.searchInInventory(this.getInventory(), tag);
+	}
+
+	default boolean hasEmptySlot() {
+		Inventory inventory = this.getInventory();
+
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack itemStack = inventory.getStack(i);
+			if (itemStack.isEmpty()) return true;
+		}
+
+		return false;
 	}
 
 	default ItemStack getHasSugar() {

@@ -60,7 +60,7 @@ public final class MaidFarmerBrainManager {
 		activities.add(ModActivities.EAT);
 		activities.add(Activity.REST);
 		activities.add(ModActivities.FARM);
-		if (maid.hasHarvests()) {
+		if (maid.hasHarvests() && (!brain.hasMemoryModule(ModMemories.FARM_POS) || !maid.hasEmptySlot())) {
 			activities.add(ModActivities.DELIVER);
 		}
 		activities.add(Activity.IDLE);
@@ -147,7 +147,6 @@ public final class MaidFarmerBrainManager {
 				Pair.of(0, new MaidDeliverTask<>(ModTags.ITEM_MAID_HARVESTS)),
 				Pair.of(1, new MaidWalkToBoxTask<>())
 		), ImmutableSet.of(
-				Pair.of(ModMemories.FARM_POS, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(ModMemories.DELIVERY_BOX, MemoryModuleState.VALUE_PRESENT),
 				Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
 		));

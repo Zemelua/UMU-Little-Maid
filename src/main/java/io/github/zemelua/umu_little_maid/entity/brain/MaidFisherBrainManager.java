@@ -51,7 +51,7 @@ public final class MaidFisherBrainManager {
 		activities.add(ModActivities.SIT);
 		activities.add(ModActivities.EAT);
 		activities.add(Activity.REST);
-		if (maid.hasFish()) {
+		if (maid.hasFish() && (!brain.hasMemoryModule(ModMemories.FISH_POS) || !maid.hasEmptySlot())) {
 			activities.add(ModActivities.DELIVER);
 		}
 		activities.add(ModActivities.FISH);
