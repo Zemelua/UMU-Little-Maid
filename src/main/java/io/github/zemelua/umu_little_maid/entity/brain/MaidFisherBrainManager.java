@@ -60,7 +60,7 @@ public final class MaidFisherBrainManager {
 
 		brain.resetPossibleActivities(activities.build());
 
-		UMULittleMaid.LOGGER.info(maid.getAction());
+		// UMULittleMaid.LOGGER.info(maid.getAction());
 	}
 
 	private static void addCoreTasks(Brain<LittleMaidEntity> brain) {
