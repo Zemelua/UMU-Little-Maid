@@ -7,7 +7,6 @@ import net.minecraft.text.TextContent;
 
 import java.util.List;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class ImmutableText implements Text {
 	private final Text content;
 

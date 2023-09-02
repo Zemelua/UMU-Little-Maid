@@ -37,44 +37,6 @@ public final class ClientCallbacks {
 		}
 	}
 
-//	static void onRegisterSpritesWithBlockAtlas(@SuppressWarnings("unused") SpriteAtlasTexture atlas, ClientSpriteRegistryCallback.Registry registry) {
-//		registry.register(OverlayRenderer.TEXTURE_INSTRUCTION_AVAILABLE);
-//		registry.register(OverlayRenderer.TEXTURE_INSTRUCTION_AVAILABLE_DOWN);
-//		registry.register(OverlayRenderer.TEXTURE_INSTRUCTION_AVAILABLE_UP);
-//		registry.register(OverlayRenderer.TEXTURE_INSTRUCTION_AVAILABLE_LEFT);
-//		registry.register(OverlayRenderer.TEXTURE_INSTRUCTION_AVAILABLE_RIGHT);
-//		registry.register(OverlayRenderer.OVERLAY_DELETABLE_TEXTURE);
-//		registry.register(OverlayRenderer.OVERLAY_DELETABLE_TEXTURE_DOWN);
-//		registry.register(OverlayRenderer.OVERLAY_DELETABLE_TEXTURE_UP);
-//		registry.register(OverlayRenderer.OVERLAY_DELETABLE_TEXTURE_LEFT);
-//		registry.register(OverlayRenderer.OVERLAY_DELETABLE_TEXTURE_RIGHT);
-//		registry.register(OverlayRenderer.OVERLAY_UNAVAILABLE_TEXTURE);
-//		registry.register(OverlayRenderer.OVERLAY_UNAVAILABLE_TEXTURE_DOWN);
-//		registry.register(OverlayRenderer.OVERLAY_UNAVAILABLE_TEXTURE_UP);
-//		registry.register(OverlayRenderer.OVERLAY_UNAVAILABLE_TEXTURE_LEFT);
-//		registry.register(OverlayRenderer.OVERLAY_UNAVAILABLE_TEXTURE_RIGHT);
-//		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE);
-//		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_DOWN);
-//		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_UP);
-//		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_LEFT);
-//		registry.register(OverlayRenderer.OVERLAY_HOME_TEXTURE_RIGHT);
-//		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE);
-//		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_DOWN);
-//		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_UP);
-//		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_LEFT);
-//		registry.register(OverlayRenderer.OVERLAY_ANCHOR_TEXTURE_RIGHT);
-//		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE);
-//		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_DOWN);
-//		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_UP);
-//		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_LEFT);
-//		registry.register(OverlayRenderer.OVERLAY_DELIVERY_BOX_TEXTURE_RIGHT);
-//		registry.register(InstructionRenderer.CROSSHAIR);
-//		registry.register(InstructionRenderer.HEADDRESS);
-//		registry.register(InstructionRenderer.ICON_HOME);
-//		registry.register(InstructionRenderer.ICON_ANCHOR);
-//		registry.register(InstructionRenderer.ICON_DELIVERY_BOX);
-//	}
-
 	static boolean onRenderBlockOutline(WorldRenderContext worldRenderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		Optional<LittleMaidEntity> maid = InstructionUtils.getMaid(client);

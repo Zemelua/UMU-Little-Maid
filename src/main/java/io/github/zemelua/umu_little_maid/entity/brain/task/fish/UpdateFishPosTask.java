@@ -17,9 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,7 +32,7 @@ public class UpdateFishPosTask<E extends PathAwareEntity> extends EveryTickTask<
 
 		if (fishableWaters.isPresent() && fishPos.isEmpty()) {
 			Box scope = Box.of(mob.getSteppingPos().toCenterPos(), 5.0D, 2.0D, 5.0D);
-			Collection<BlockPos> fishablePoses = BlockPos.stream(scope)
+			List<BlockPos> fishablePoses = BlockPos.stream(scope)
 					.map(p -> {
 
 						float pen = mob.getPathfindingPenalty(PathNodeType.WATER_BORDER);
@@ -49,9 +47,12 @@ public class UpdateFishPosTask<E extends PathAwareEntity> extends EveryTickTask<
 						return world.getFluidState(BlockPos.ofFloored(pos)).isEmpty() ? BlockPos.ofFloored(pos) : null;
 
 					}).filter(Objects::nonNull)
-					.collect(Collectors.toSet());
+					.collect(Collectors.toList());
+			Collections.shuffle(fishablePoses);
+			List<BlockPos> newFishableWaters = new ArrayList<>(fishableWaters.get());
+			Collections.shuffle(newFishableWaters);
 			for (BlockPos pos : fishablePoses) {
-				Optional<BlockPos> throwableToWater = searchThrowableToWater(world, fishableWaters.get().stream(), pos);
+				Optional<BlockPos> throwableToWater = searchThrowableToWater(world, newFishableWaters.stream(), pos);
 				throwableToWater.ifPresent(p -> {
 					brain.remember(ModMemories.FISH_POS, Pair.of(pos, p), 150L);
 				});

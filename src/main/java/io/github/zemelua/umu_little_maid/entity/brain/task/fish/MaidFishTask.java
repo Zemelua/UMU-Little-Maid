@@ -10,7 +10,10 @@ import io.github.zemelua.umu_little_maid.entity.maid.ILittleMaidEntity;
 import io.github.zemelua.umu_little_maid.mixin.AccessorMultiTickTask;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.*;
+import net.minecraft.entity.ai.brain.BlockPosLookTarget;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -47,30 +50,33 @@ public class MaidFishTask<M extends LivingEntity & ILittleMaidEntity> extends Be
 		Brain<?> brain = maid.getBrain();
 		Pair<BlockPos, BlockPos> fishPos = brain.getOptionalRegisteredMemory(ModMemories.FISH_POS).orElseThrow();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(fishPos.getSecond()));
-
-		ItemStack fishingRod = maid.getMainHandStack();
-
-		world.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-		if (!world.isClient()) {
-			int i = EnchantmentHelper.getLure(fishingRod);
-			int j = EnchantmentHelper.getLuckOfTheSea(fishingRod);
-			ModFishingBobberEntity fishHook = new ModFishingBobberEntity(world, maid, j, i);
-
-			world.spawnEntity(fishHook);
-			maid.onThrowFishHook(fishHook);
-		}
-		maid.emitGameEvent(GameEvent.ITEM_INTERACT_START);
 		brain.remember(ModMemories.FISH_POS, fishPos);
+		brain.forget(MemoryModuleType.WALK_TARGET);
 		// setActoin Fish waiting
 	}
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, M maid, long time) {
-		return maid.getFishHook().isPresent();
+		return this.getPassedTicks(time) <= 15L || maid.getFishHook().isPresent();
 	}
 
 	@Override
 	protected void keepRunning(ServerWorld world, M maid, long time) {
+		if (this.getPassedTicks(time) == 15L) {
+			ItemStack fishingRod = maid.getMainHandStack();
+
+			world.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+			if (!world.isClient()) {
+				int i = EnchantmentHelper.getLure(fishingRod);
+				int j = EnchantmentHelper.getLuckOfTheSea(fishingRod);
+				ModFishingBobberEntity fishHook = new ModFishingBobberEntity(world, maid, j, i);
+
+				world.spawnEntity(fishHook);
+				maid.onThrowFishHook(fishHook);
+			}
+			maid.emitGameEvent(GameEvent.ITEM_INTERACT_START);
+		}
+
 		if (maid.isFishFighting() && !this.hitFish) {
 			((AccessorMultiTickTask) this).setEndTime(time + 60L);
 			this.hitFish = true;

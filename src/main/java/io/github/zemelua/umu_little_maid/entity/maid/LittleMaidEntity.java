@@ -63,12 +63,10 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -122,7 +120,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	private final EntityNavigation landNavigation;
 	private final EntityNavigation canSwimNavigation;
 	private final SimpleInventory inventory = new SimpleInventory(15);
-	private final List<Item> givenFoods = new ArrayList<>();
 
 	private int eatingTicks;
 	@Nullable private Consumer<ItemStack> onFinishEating;
@@ -1571,7 +1568,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	//<editor-fold desc="Save/Load">
 	private static final String KEY_INVENTORY = "Inventory";
 	private static final String KEY_SLOT = "Slot";
-	private static final String KEY_GIVEN_FOODS = "GivenFoods";
 	private static final String KEY_OWNER = "Owner";
 	private static final String KEY_MODE = "Mode";
 	private static final String KEY_JOB = "Job";
@@ -1597,12 +1593,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			}
 		}
 		nbt.put(LittleMaidEntity.KEY_INVENTORY, inventoryNbt);
-
-		NbtList givenFoodsNbt = new NbtList();
-		for (Item givenFood : this.givenFoods) {
-			givenFoodsNbt.add(NbtString.of(Registries.ITEM.getId(givenFood).toString()));
-		}
-		nbt.put(KEY_GIVEN_FOODS, givenFoodsNbt);
 
 		UUID uuid = this.getMasterUuid();
 		if (uuid != null) {
@@ -1642,14 +1632,6 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 		for (int i = 0; i < inventoryNbt.size(); i++) {
 			NbtCompound nbtCompound = inventoryNbt.getCompound(i);
 			this.inventory.setStack(nbtCompound.getInt("Slot"), ItemStack.fromNbt(nbtCompound));
-		}
-
-		NbtList givenFoodsNbt = nbt.getList(KEY_GIVEN_FOODS, NbtElement.STRING_TYPE);
-		for (int i = 0; i < givenFoodsNbt.size(); i++) {
-			Item foodType = Registries.ITEM.get(Identifier.tryParse(givenFoodsNbt.getString(i)));
-			if (foodType != Items.AIR) {
-				this.givenFoods.add(foodType);
-			}
 		}
 
 		UUID uuid;
