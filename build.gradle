@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -89,6 +90,22 @@ jar {
     from("Amitaro_readme.txt") {
         rename { "${it}" }
     }
+}
+
+import com.modrinth.minotaur.dependencies.ModDependency
+
+modrinth {
+    token = System.getenv("TOKEN")
+    projectId = "iEwt8nJR"
+    versionName = "UMU Little Maid 4.11"
+    versionNumber = "4.11"
+    uploadFile = remapJar
+    gameVersions = ["1.20.2"]
+    loaders = ["fabric"]
+    dependencies = [
+            new ModDependency('P7dR8mSH', 'required'),
+            new ModDependency('8BmcQJ2H', 'required')
+    ]
 }
 
 // configure the maven publication
