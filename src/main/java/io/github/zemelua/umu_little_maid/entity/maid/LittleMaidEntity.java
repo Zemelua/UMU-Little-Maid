@@ -598,12 +598,16 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 			return;
 		}
 
-		if (!this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
+		if (!this.canChangeIntoPose(EntityPose.SWIMMING)) {
 			return;
 		}
 		EntityPose entityPose = this.isFallFlying() ? EntityPose.FALL_FLYING : (this.isSleeping() ? EntityPose.SLEEPING : (this.isSwimming() ? EntityPose.SWIMMING : (this.isUsingRiptide() ? EntityPose.SPIN_ATTACK : (this.isSneaking() ? EntityPose.CROUCHING : EntityPose.STANDING))));
-		EntityPose entityPose2 = this.isSpectator() || this.hasVehicle() || this.wouldPoseNotCollide(entityPose) ? entityPose : (this.wouldPoseNotCollide(EntityPose.CROUCHING) ? EntityPose.CROUCHING : EntityPose.SWIMMING);
+		EntityPose entityPose2 = this.isSpectator() || this.hasVehicle() || this.canChangeIntoPose(entityPose) ? entityPose : (this.canChangeIntoPose(EntityPose.CROUCHING) ? EntityPose.CROUCHING : EntityPose.SWIMMING);
 		this.setPose(entityPose2);
+	}
+
+	protected boolean canChangeIntoPose(EntityPose pose) {
+		return this.getWorld().isSpaceEmpty(this, this.getDimensions(pose).getBoxAt(this.getPos()).contract(1.0E-7));
 	}
 
 	private void updateJob() {
@@ -849,7 +853,7 @@ public class LittleMaidEntity extends AbstractLittleMaidEntity implements ILittl
 	 * @param pullProgress どれだけ弓を引いた状態で撃ったか
 	 */
 	@Override
-	public void attack(LivingEntity target, float pullProgress) {
+	public void shootAt(LivingEntity target, float pullProgress) {
 		ItemStack mainStack = this.getMainHandStack();
 
 		if (this.getJob().equals(MaidJobs.ARCHER)) {

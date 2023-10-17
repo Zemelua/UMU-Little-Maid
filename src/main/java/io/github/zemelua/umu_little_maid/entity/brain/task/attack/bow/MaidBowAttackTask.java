@@ -109,7 +109,7 @@ public class MaidBowAttackTask extends MultiTickTask<LittleMaidEntity> {
 				maid.clearActiveItem();
 			} else if (canSeeTarget && itemUseTime >= 20) {
 				maid.clearActiveItem();
-				maid.attack(target.get(), BowItem.getPullProgress(itemUseTime));
+				maid.shootAt(target.get(), BowItem.getPullProgress(itemUseTime));
 				maid.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, this.interval);
 			}
 		} else if (!maid.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_COOLING_DOWN) && this.targetSeeingTicker >= -60) {

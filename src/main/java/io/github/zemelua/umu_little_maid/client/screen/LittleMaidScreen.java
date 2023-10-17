@@ -42,7 +42,7 @@ public class LittleMaidScreen extends HandledScreen<LittleMaidScreenHandler> {
 			}
 		}
 
-		InventoryScreen.drawEntity(context, centerX + 51, centerY + 65, 25, centerX + 51 - mouseX, centerY + 25 - mouseY, maid);
+		InventoryScreen.drawEntity(context, this.x + 26, this.y + 18, this.x + 77, this.y + 69, 25, 0.0625f, mouseX, mouseY, maid);
 	}
 
 	@Override
