@@ -31,8 +31,8 @@ public final class MaidJobs {
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("guard"), GUARD);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("healer"), HEALER);
 		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("farmer"), FARMER);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fisher"), FISHER);
-		Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("shepherd"), SHEPHERD);
+		// Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("fisher"), FISHER);
+		// Registry.register(ModRegistries.MAID_JOB, UMULittleMaid.identifier("shepherd"), SHEPHERD);
 	}
 
 	public static Stream<IMaidJob> getAllJobs() {
