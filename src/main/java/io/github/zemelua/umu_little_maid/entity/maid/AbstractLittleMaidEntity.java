@@ -5,13 +5,13 @@ import io.github.zemelua.umu_little_maid.util.IAvoidRain;
 import io.github.zemelua.umu_little_maid.util.IInstructable;
 import io.github.zemelua.umu_little_maid.util.IPoseidonMob;
 import io.github.zemelua.umu_little_maid.util.ITameable;
-import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.InventoryOwner;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 
@@ -30,9 +30,9 @@ public abstract class AbstractLittleMaidEntity extends PathAwareEntity implement
 		return CrossbowItem.isCharged(this.getMainHandStack());
 	}
 
-//	@Override public Brain<?> getBrain() {return super.getBrain();}
-//	@Override public World getWorld() {return super.getWorld();}
-//	@Override public EntityPose getPose() {return super.getPose();}
-//	@Override public EntityNavigation getNavigation() {return super.getNavigation();}
-//	@Override public ItemStack getOffHandStack() {return super.getOffHandStack();}
+	@Override public Brain<?> getBrain() {return super.getBrain();}
+	@Override public World getWorld() {return super.getWorld();}
+	@Override public EntityPose getPose() {return super.getPose();}
+	@Override public EntityNavigation getNavigation() {return super.getNavigation();}
+	@Override public ItemStack getOffHandStack() {return super.getOffHandStack();}
 }
