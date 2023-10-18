@@ -97,8 +97,8 @@ import com.modrinth.minotaur.dependencies.ModDependency
 modrinth {
     token = System.getenv("TOKEN")
     projectId = "iEwt8nJR"
-    versionName = "UMU Little Maid 4.11"
-    versionNumber = "4.11"
+    versionName = "UMU Little Maid 4.11.1"
+    versionNumber = "4.11.1"
     uploadFile = remapJar
     gameVersions = ["1.20.2"]
     loaders = ["fabric"]
