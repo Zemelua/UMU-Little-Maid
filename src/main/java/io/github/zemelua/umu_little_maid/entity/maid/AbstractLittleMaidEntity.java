@@ -30,6 +30,8 @@ public abstract class AbstractLittleMaidEntity extends PathAwareEntity implement
 		return CrossbowItem.isCharged(this.getMainHandStack());
 	}
 
+	// 以下、インターフェースで定義された、親のEntity系列クラスにも定義されているメソッドの実装。
+	// これを定義しないと、謎のエラーが起きて定義されてないよって言われる...... TODO: この謎の解明
 	@Override public Brain<?> getBrain() {return super.getBrain();}
 	@Override public World getWorld() {return super.getWorld();}
 	@Override public EntityPose getPose() {return super.getPose();}
