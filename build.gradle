@@ -97,8 +97,8 @@ import com.modrinth.minotaur.dependencies.ModDependency
 modrinth {
     token = System.getenv("TOKEN")
     projectId = "iEwt8nJR"
-    versionName = "UMU Little Maid 4.11.1"
-    versionNumber = "4.11.1"
+    versionName = "UMU Little Maid 4.12"
+    versionNumber = "4.12"
     uploadFile = remapJar
     gameVersions = ["1.20.2"]
     loaders = ["fabric"]
@@ -106,6 +106,7 @@ modrinth {
             new ModDependency('P7dR8mSH', 'required'),
             new ModDependency('8BmcQJ2H', 'required')
     ]
+    changelog = "- Added maid Santa costume. Like the Christmas texture of Chest, the Santa costume replaces the regular costume on Christmas Days."
 }
 
 // configure the maven publication
