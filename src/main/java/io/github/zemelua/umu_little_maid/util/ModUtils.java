@@ -50,10 +50,7 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 public final class ModUtils {
@@ -325,6 +322,14 @@ public final class ModUtils {
 		public static KeyBinding getUseKey() {
 			return MinecraftClient.getInstance().options.useKey;
 		}
+	}
+
+	public static boolean isChristmas() {
+		Calendar calendar = Calendar.getInstance();
+		int month = calendar.get(Calendar.MONTH);
+		int date = calendar.get(Calendar.DATE);
+
+		return month == Calendar.DECEMBER && date >= 24 && date <= 26;
 	}
 
 	private ModUtils() {}
